@@ -53,11 +53,11 @@ function glider(x, y) {
     // Draw a [glider](https://en.m.wikipedia.org/wiki/Glider_(Conway%27s_Life)) 
     // at the given (wrapped) coordinates
     const alive = [
-        [5, 5],
-        [6, 6],
-        [4, 7],
-        [5, 7],
-        [6, 7]
+        [1, 1],
+        [2, 2],
+        [0, 3],
+        [1, 3],
+        [2, 3]
     ];
     for (item of alive) {
         [i, j] = item;
@@ -136,9 +136,8 @@ function draw() {
 
 function touchStarted(){
     // Touch to add a glider. Why not
-    let i = int((mouseX-gapX)/rectSize)
-    let j = int((mouseY-gapY)/rectSize)
-    console.log(i, j)
+    let i = int((mouseX)/rectSize)
+    let j = int((mouseY+gapY)/rectSize)
     glider(i, j)
 }
 
