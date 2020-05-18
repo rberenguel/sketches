@@ -134,6 +134,14 @@ function draw() {
     }
 }
 
+function touchStarted(){
+    // Touch to add a glider. Why not
+    let i = int((mouseX-gapX)/rectSize)
+    let j = int((mouseY-gapY)/rectSize)
+    console.log(i, j)
+    glider(i, j)
+}
+
 function keyReleased() {
     let gui = document.getElementById("gui")
     // Show current configuration overlay
