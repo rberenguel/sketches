@@ -1,6 +1,6 @@
 @font-face {
     font-family: monoid;
-    src: url(monoid-regular-webfont.woff);
+    src: url(../libraries/monoid-regular-webfont.woff);
 }
 
 @media (max-width: 768px) {
@@ -63,7 +63,7 @@
      border-radius: 3px;
      border: 1px solid black;
      color: dark-grey;
-     font-family: Helvetica;
+     font-family: monoid;
      font-size: 15px;
  }
 
