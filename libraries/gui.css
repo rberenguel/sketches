@@ -1,0 +1,76 @@
+@font-face {
+    font-family: monoid;
+    src: url(../libraries/monoid-regular-webfont.woff);
+}
+
+div#gui {
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(5px);
+    background-color: rgba(50, 50, 150, 0.3);
+    background-opacity: 0.1;
+    border-radius: 3px;
+    border: 1px solid black;
+    color: dark-grey;
+    font-family: Helvetica;
+    font-size: 16px;
+    overflow-wrap: break-word;
+    padding: 6px;
+    position: absolute;
+    text-align: justify;
+    top: 10px;
+    visibility: hidden;
+    width: 20em;
+    z-index: 1000;
+}
+
+div#gui .title {
+    font-size:105%;
+}
+
+
+div#gui .variable {
+    font-style: monospace;
+    font-weight: 600;
+}
+
+div#gui .false {
+    color: rgb(211, 73, 52);
+}
+
+div#gui .true {
+    color: rgb(70, 156, 51);
+}
+
+div#gui .integer {
+    color: rgb(61 139 206);
+}
+
+div#gui .string {
+    color: rgb(104, 116, 192);
+}
+
+div#gui .subinfo {
+    font-style: italic;
+    font-size: 80%;
+    display: block;
+    margin-top: 0.5em;
+}
+
+div#gui>p {
+    margin: 0
+}
+
+div#gui>#controls {
+    table-layout: auto;
+    width: 100%;
+}
+
+div#gui>table .t1 {
+    text-align: center;
+    width: 10%;
+    font-weight: 600;
+}
+
+div#gui .t1>code {
+    padding-right: 0.5em;
+}
