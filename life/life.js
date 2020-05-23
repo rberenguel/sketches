@@ -1,24 +1,42 @@
 import { glider, nextState, mod } from './lifeCommon.js'
 
-const gapX = 10
-const gapY = 10
-let rectSize = 10
-let cells, rows, columns, cnt = 0
-let stateMatrix = [],
-    nextStateMatrix = []
+import {
+    Command,
+    GUI,
+    Integer,
+    Key,
+    Control
+} from '../libraries/gui.js'
+
+
 
 // Simple and non-optimised (no hashlife) version of Conway's Game of Life. You
 // can control cell size with i (increase) and d (decrease). Use c to toggle an
 // overlay with the current cell size
 
 const sketch = (s) => {
-    s.disableFriendlyErrors = true
+
+    const gapX = 10
+    const gapY = 10
+    let rectSize = 10
+    let cells, rows, columns, cnt = 0
+    let stateMatrix = [],
+        nextStateMatrix = []
+    let gui
 
     s.setup = () => {
-        s.createCanvas(s.windowWidth, s.windowHeight)
-        s.frameRate(30)
+        let canvas = s.createCanvas(s.windowWidth, s.windowHeight)
+        canvas.mousePressed (() => {
+            // Touch to add a glider. Why not
+            let i = s.int(s.mouseX/rectSize)
+            let j = s.int(s.mouseY/rectSize)
+            glider(i, j, stateMatrix, rows, columns)
+        })
+        s.frameRate(20)
         setupMatrix()
         randomise()
+        gui = createGUI()
+        gui.toggle()
     }
 
     function setupMatrix() {
@@ -79,47 +97,47 @@ const sketch = (s) => {
         }
     }
 
-    s.touchStarted = () => {
-        // Touch to add a glider. Why not
-        let i = s.int(s.mouseX/rectSize)
-        let j = s.int(s.mouseY/rectSize)
-        glider(i, j, stateMatrix, rows, columns)
-    }
+    function createGUI(){
+            let info =
+                `Tap/click on the canvas generate a glider`
+            let subinfo = ""
+            let G = new Key("g", () => {
+                setupMatrix()
+                glider(s.int(s.random(rows)), s.int(s.random(columns)), stateMatrix, rows, columns)
+            })
+        let resetCanvas = new Command(G, "clear the canvas and place a random glider")
 
-    s.keyReleased = () => {
-        let gui = document.getElementById("gui")
-        // Show current configuration overlay
-        if (s.key.toLowerCase() == 'c') {
-            let v = gui.style.visibility
-            if (v == "hidden" || v == "") {
-                gui.style.visibility = "visible"
-            } else {
-                gui.style.visibility = "hidden"
-            }
-        }
-        // Increase cell size
-        if (s.key.toLowerCase() == 'i') {
+        let incR = new Key(")", () => {
             rectSize++
             setupMatrix()
             randomise()
-        }
-        // Decrease cell size
-        if (s.key.toLowerCase() == 'd') {
+        })
+        let decR = new Key("(", () => {
             if (rectSize > 4) {
                 rectSize--
             }
             setupMatrix()
             randomise()
-        }
-        // Clear canvas and place a glider randomly
-        if (s.key.toLowerCase() == 'g') {
-            setupMatrix()
-            glider(s.int(s.random(rows)), s.int(s.random(columns)), stateMatrix, rows, columns)
-        }
+        })
+        let rectSizeInt = new Integer(() => rectSize)
+        let rectSizeControl = new Control([decR, incR],
+                                          "+/- cell size", rectSizeInt)
 
-        gui.innerHTML = "rectSize: " + rectSize
+        let gui = new GUI("Conway's Game of Life, RB 2020/05", info, subinfo, [resetCanvas],
+                          [rectSizeControl])
+        let QM = new Key("?", () => gui.toggle())
+        let hide = new Command(QM, "hide this")
+
+        gui.addCmd(hide)
+        gui.update()
+        return gui
+    }
+
+    s.keyReleased = () => {
+        gui.dispatch(s.key)
     }
 }
 
+p5.disableFriendlyErrors = true
 let p5sketch = new p5(sketch)
 
