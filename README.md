@@ -5,7 +5,10 @@ Generative art sketches. Newest first
 ---
 
 ## Blot/Painting [#p5js](https://p5js.org)
-<img src="samples/blot.jpg" width="360"/><img src="samples/painting.jpg" width="360"/>
+
+<img src="samples/blot.jpg" width="360" style="border-radius: 3px;border: 1px solid black;"/> <img src="samples/painting.jpg" width="360" style="border-radius: 3px;border: 1px solid black;"/>
+
+---
 - [code](life/life.js)
 - Based on Esteban Hufstedler's [Ink Splashes](https://estebanhufstedler.com/2018/10/02/splash/)
 - Explore it [here](https://rberenguel.github.io/sketches/blot-painting/index.html)
@@ -13,7 +16,10 @@ Generative art sketches. Newest first
 ---
 
 ## Going crazy [#p5js](https://p5js.org)
-<img src="samples/crazy.jpg" width="360"/>
+
+<img src="samples/crazy.jpg" width="360" style="border-radius: 3px;border: 1px solid black;"/>
+
+---
 - [code](crazy/crazy.js)
 - Based on Anders Hoff's [Sand Splines](https://inconvergent.net/generative/sand-spline/)
 - See it full screen [here](https://rberenguel.github.io/sketches/crazy/index.html)
@@ -21,14 +27,15 @@ Generative art sketches. Newest first
 ---
 
 ## Conway's Game of Life [#p5js](https://p5js.org)
-- [code](life/life.js))
+- [code](life/life.js)
 - See it full screen [here](https://rberenguel.github.io/sketches/life/simple.html)
 
 ---
 
 ## Sorting myself out [#p5js](https://p5js.org)
 
-<img src="samples/sorting.gif" width="360"/>
+<img src="samples/sorting.gif" width="360" style="border-radius: 3px;border: 1px solid black;"/>
 
-- [Code](sorting/sorting.js) 
+---
+- [code](sorting/sorting.js) 
 - See it [here](https://mostlymaths.net/2020/05/sorting-myself-out.html/)
