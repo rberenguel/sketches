@@ -68,8 +68,6 @@ const sketch = (s) => {
             touched++
         })
 
-        s.deviceShaken(() => gui.toggle())
-
         gui = createGUI()
         gui.toggle()
         blotPointsArray = new Array(5000)
