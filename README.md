@@ -6,7 +6,7 @@ Generative art sketches. Newest first
 
 ## Blot/Painting [#p5js](https://p5js.org)
 
-<img src="samples/blot.jpg" width="360" style="border-radius: 3px;border: 1px solid black;"/> <img src="samples/painting.jpg" width="360" style="border-radius: 3px;border: 1px solid black;"/>
+<img src="samples/blot.jpg" width="360"/> <img src="samples/painting.jpg" width="360"/>
 
 ---
 - [code](life/life.js)
@@ -17,7 +17,7 @@ Generative art sketches. Newest first
 
 ## Going crazy [#p5js](https://p5js.org)
 
-<img src="samples/crazy.jpg" width="360" style="border-radius: 3px;border: 1px solid black;"/>
+<img src="samples/crazy.jpg" width="360"/>
 
 ---
 - [code](crazy/crazy.js)
@@ -34,7 +34,7 @@ Generative art sketches. Newest first
 
 ## Sorting myself out [#p5js](https://p5js.org)
 
-<img src="samples/sorting.gif" width="360" style="border-radius: 3px;border: 1px solid black;"/>
+<img src="samples/sorting.gif" width="360"/>
 
 ---
 - [code](sorting/sorting.js) 
