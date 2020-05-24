@@ -6,7 +6,7 @@ Generative art sketches. Newest first
 
 ## Blot/Painting [#p5js](https://p5js.org)
 
-<img src="samples/blot.jpg" width="360"/> <img src="samples/painting.jpg" width="360"/>
+<a href="https://rberenguel.github.io/sketches/blot-painting/"><img src="samples/blot.jpg" width="360"/></a> <a href="https://rberenguel.github.io/sketches/blot-painting/"><img src="samples/painting.jpg" width="360"/></a>
 
 ---
 - [code](blot-painting/)
@@ -17,7 +17,7 @@ Generative art sketches. Newest first
 
 ## Watercolour [#p5js](https://p5js.org)
 
-<img src="samples/watercolour.jpg" width="360"/>
+<a href="https://rberenguel.github.io/sketches/watercolour/"><img src="samples/watercolour.jpg" width="360"/></a>
 
 ---
 - [code](watercolour/watercolour.js)
@@ -29,7 +29,7 @@ Generative art sketches. Newest first
 
 ## Going crazy [#p5js](https://p5js.org)
 
-<img src="samples/crazy.jpg" width="360"/>
+<a href="https://rberenguel.github.io/sketches/crazy/"><img src="samples/crazy.jpg" width="360"/></a>
 
 ---
 - [code](crazy/crazy.js)
@@ -46,7 +46,7 @@ Generative art sketches. Newest first
 
 ## Sorting myself out [#p5js](https://p5js.org)
 
-<img src="samples/sorting.gif" width="360"/>
+<a href="https://mostlymaths.net/2020/05/sorting-myself-out.html/"><img src="samples/sorting.gif" width="360"/></a>
 
 ---
 - [code](sorting/sorting.js) 
