@@ -22,7 +22,7 @@ Generative art sketches. Newest first
 ---
 - [code](watercolour/watercolour.js)
 - Based on Tyler Hobb's [polygon deformation](https://tylerxhobbs.com/essays/2017/a-generative-approach-to-simulating-watercolor-paints)
-- Explore it [here](https://rberenguel.github.io/sketches/watercolour/)
+- See it [here](https://rberenguel.github.io/sketches/watercolour/)
 
 
 ---
@@ -34,13 +34,13 @@ Generative art sketches. Newest first
 ---
 - [code](crazy/crazy.js)
 - Based on Anders Hoff's [Sand Splines](https://inconvergent.net/generative/sand-spline/)
-- See it full screen [here](https://rberenguel.github.io/sketches/crazy/)
+- See it here [here](https://rberenguel.github.io/sketches/crazy/)
 
 ---
 
 ## Conway's Game of Life [#p5js](https://p5js.org)
 - [code](life/life.js)
-- See it full screen [here](https://rberenguel.github.io/sketches/life/)
+- See it here [here](https://rberenguel.github.io/sketches/life/)
 
 ---
 
@@ -51,3 +51,14 @@ Generative art sketches. Newest first
 ---
 - [code](sorting/sorting.js) 
 - See it [here](https://mostlymaths.net/2020/05/sorting-myself-out.html/)
+
+
+---
+
+## Hailstorm [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/hailstorm/"><img src="samples/hailstorm.jpg" width="360"/></a>
+
+---
+- [code](hailstorm/hailstorm.js) 
+- See it [here](https://rberenguel.github.io/sketches/hailstorm/)
