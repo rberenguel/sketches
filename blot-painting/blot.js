@@ -18,7 +18,10 @@ import {
     Control
 } from '../libraries/gui.js'
 
-import { getLargeCanvas, mod } from '../libraries/misc.js'
+import {
+    getLargeCanvas,
+    mod
+} from '../libraries/misc.js'
 
 const sketch = (s) => {
 
@@ -31,14 +34,19 @@ const sketch = (s) => {
     let blotStrength = 1000
     let vectors = false
     let paint = 0
+    let drawPotential = false
     let blotPoints, blotPointsArray
     let background, canvas
     let mesh400
 
 
     s.setup = () => {
-        let {w, h} = getLargeCanvas(s, 1600)
+        let {
+            w,
+            h
+        } = getLargeCanvas(s, 1600)
         let p5canvas = s.createCanvas(w, h)
+        background = s.createGraphics(p5canvas.width, p5canvas.height)
         canvas = s.createGraphics(p5canvas.width, p5canvas.height)
         mesh400 = baseEvenMesh(400)
         let palette = paintPalette(s)
@@ -49,12 +57,13 @@ const sketch = (s) => {
                 if (randomColor)
                     ink = palette[mod(touched - 1, palette
                         .length)]
-
+                background.clear()
                 drawBlot({
                     s: s,
                     canvas: canvas,
                     background: background,
-                    paint: paint
+                    paint: paint,
+                    drawPotential: drawPotential,
                 }, s.mouseX, s.mouseY, ink, {
                     mesh: mesh400,
                     blotPointsArray: blotPointsArray
@@ -62,7 +71,7 @@ const sketch = (s) => {
                     blotCount: blotCount,
                     blotStrength: blotStrength,
                     blotSpread: blotSpread,
-                    vectors: vectors
+                    vectors: vectors,
                 })
             }
             touched++
@@ -91,7 +100,8 @@ const sketch = (s) => {
     function createGUI() {
         let info =
             `Tap/click on the canvas to trigger an ink blot. It will take a bit (it's expensive to compute)`
-        let subinfo = `If on mobile, make sure the canvas <br/>is focused first`
+        let subinfo =
+            `If on mobile, make sure the canvas <br/>is focused first`
         let C = new Key("c", () => {
             canvas.clear()
             s.clear()
@@ -129,6 +139,10 @@ const sketch = (s) => {
         let blotStrengthFlt = new Float(() => blotStrength)
         let blotStrengthControl = new Control([decI, incI],
             "+/- blot strength", blotStrengthFlt)
+        let R = new Key("r", () => randomColor = !randomColor)
+        let randomColorBool = new Boolean(() => randomColor)
+        let rndColorControl = new Control([R], "toggle random colors",
+            randomColorBool)
         let T = new Key("t", () => {
             paint = mod(paint + 1, 3)
 
@@ -136,25 +150,34 @@ const sketch = (s) => {
                 s: s,
                 canvas: canvas,
                 background: background,
-                paint: paint
+                paint: paint,
+
             })
         })
 
-        let R = new Key("r", () => randomColor = !randomColor)
-        let randomColorBool = new Boolean(() => randomColor)
-        let rndColorControl = new Control([R], "toggle random colors",
-            randomColorBool)
+        let backgroundStates = ["solid/blank", "solid/solid", "alpha/solid"]
+        let paintString = new String(() => backgroundStates[paint])
+        let paintControl = new Control([T],
+            "paint", paintString)
+
         let V = new Key("v", () => vectors = !vectors)
         let vectorsBool = new Boolean(() => vectors)
         let vectorControl = new Control([V], "show vectors", vectorsBool)
+        let F = new Key("F", () => drawPotential = !drawPotential)
+        let potentialBool = new Boolean(() => drawPotential)
+        let potentialControl = new Control([F], "generate field strength",
+            potentialBool)
+
         let focusedBool = new Boolean(() => s.focused)
         let focusedStatus = new Control(undefined, "canvas focused?",
             focusedBool)
-        let controls = [focusedStatus,
+        let controls = [focusedStatus, paintControl, potentialControl,
             rndColorControl, blotCountControl, blotSpreadControl,
             blotStrengthControl, vectorControl
         ]
-        let gui = new GUI("<b>Blot</b>/<a href=\"painting.html\">Painting</a>, RB 2020/05", info, subinfo, cmds,
+        let gui = new GUI(
+            "<b>Blot</b>/<a href=\"painting.html\">Painting</a>, RB 2020/05",
+            info, subinfo, cmds,
             controls)
         let QM = new Key("?", () => gui.toggle())
         let hide = new Command(QM, "hide this")

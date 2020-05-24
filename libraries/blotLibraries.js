@@ -7,6 +7,10 @@ export {
     blotPtsInMesh
 }
 
+import {
+    mod
+} from '../libraries/misc.js'
+
 function paintPalette(s) {
     s.colorMode(s.RGB)
     let orange = s.color(236, 111, 68)
@@ -25,7 +29,6 @@ function drawCloud(drawing, blots, ink) {
         s,
         canvas,
         background,
-        paint
     } = drawing
     let {
         blotPointsArray,
@@ -68,10 +71,14 @@ function canvasUpdate(drawing) {
         paint
     } = drawing
 
+    let backgroundImage
+    if (!background.get()
+        .hasOwnProperty("windowWidth")) backgroundImage = background.get()
+
     if (paint == 1) {
-        backgroundUpdate(s, canvas, background)
+        backgroundUpdate(s, canvas, backgroundImage)
     } else if (paint == 2) {
-        transparentUpdate(s, canvas, background)
+        transparentUpdate(s, canvas, backgroundImage)
     } else {
         s.noTint()
         s.background(s.color(255, 255, 255, 255))
@@ -111,8 +118,9 @@ function drawBlot(drawing, cx, cy, ink, meshes, blotSettings) {
         blotSpread,
         vectors
     } = blotSettings
-    let blot = createBlots(drawing.s, cx, cy, blotCount, blotStrength, blotSpread)
-    let blotPoints = blotPtsInMesh(cx, cy, mesh, blot, blotPointsArray)
+    let blot = createBlots(drawing.s, cx, cy, blotCount, blotStrength,
+        blotSpread)
+    let blotPoints = blotPtsInMesh(cx, cy, mesh, blot, blotPointsArray, drawing)
     drawCloud(drawing, {
         blotPointsArray,
         blotPoints
@@ -124,7 +132,17 @@ function drawBlot(drawing, cx, cy, ink, meshes, blotSettings) {
 }
 
 
-function blotPtsInMesh(cx, cy, msh, blots, blotPointsArray) {
+function blotPtsInMesh(cx, cy, msh, blots, blotPointsArray, drawing) {
+    let {
+        s,
+        canvas,
+        background,
+        paint,
+        drawPotential
+    } = drawing
+    if (drawPotential) {
+        background.beginShape(s.POINTS)
+    }
     performance.mark("blotPtsInMesh")
     let blotPoints = 0
     for (let px of msh) {
@@ -142,12 +160,17 @@ function blotPtsInMesh(cx, cy, msh, blots, blotPointsArray) {
             potential += sqrtSize / r
         }
         let adjusted = potential * Math.sqrt(potential)
+        if (drawPotential) {
+            background.stroke(s.color(100, mod(potential * 255, 255), 100))
+            background.point(i, j)
+        }
         let inBlot = adjusted < 0.4 ? false : true
         if (inBlot) {
             blotPointsArray[blotPoints] = [i, j, adjusted]
             blotPoints++
         }
     }
+    if (drawPotential) background.endShape()
     performance.measure("blotPtsInMeshEnded", "blotPtsInMesh")
     return blotPoints
 }
