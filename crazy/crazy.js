@@ -14,6 +14,7 @@ import {
     Control
 } from '../libraries/gui.js'
 
+import { mod } from '../libraries/misc.js'
 
 const sketch = (s) => {
     // Parameters
@@ -125,11 +126,6 @@ const sketch = (s) => {
             points[i] = [nx, ny]
         }
         return points
-    }
-
-    function mod(m, n) {
-        // Javascript's modulo ain't no modulo
-        return ((m % n) + n) % n
     }
 
     s.draw = () => {

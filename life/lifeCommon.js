@@ -1,7 +1,3 @@
-export function mod(m, n) {
-    // Javascript's modulo ain't no modulo
-    return ((m % n) + n) % n
-}
 
 export function nextState(i, j, matrix, rows, columns) {
     // Finds the next state of a cell according to its neighbours statuses
