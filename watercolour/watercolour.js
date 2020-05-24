@@ -6,6 +6,7 @@ import {
     Control
 } from '../libraries/gui.js'
 
+import { getLargeCanvas, mod } from '../libraries/misc.js'
 
 // Vaguely based on polygon deformation: https://tylerxhobbs.com/essays/2017/a-generative-approach-to-simulating-watercolor-paints
 const sketch = (s) => {
@@ -21,7 +22,8 @@ const sketch = (s) => {
     }
 
     s.setup = () => {
-        s.createCanvas(s.windowWidth, s.windowHeight)
+        let {w, h} = getLargeCanvas(s, 1600)
+        s.createCanvas(w, h)
         s.frameRate(30)
         gui = createGUI()
         gui.toggle()

@@ -1,4 +1,4 @@
-import { glider, nextState, mod } from './lifeCommon.js'
+import { glider, nextState } from './lifeCommon.js'
 
 import {
     Command,
@@ -8,7 +8,7 @@ import {
     Control
 } from '../libraries/gui.js'
 
-
+import { getLargeCanvas, mod } from '../libraries/misc.js'
 
 // Simple and non-optimised (no hashlife) version of Conway's Game of Life. You
 // can control cell size with i (increase) and d (decrease). Use c to toggle an
@@ -25,7 +25,8 @@ const sketch = (s) => {
     let gui
 
     s.setup = () => {
-        let canvas = s.createCanvas(s.windowWidth, s.windowHeight)
+        let {w, h} = getLargeCanvas(s, 1600)
+        let canvas = s.createCanvas(w, h)
         canvas.mousePressed (() => {
             // Touch to add a glider. Why not
             let i = s.int(s.mouseX/rectSize)

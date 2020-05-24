@@ -18,6 +18,7 @@ import {
     Control
 } from '../libraries/gui.js'
 
+import { getLargeCanvas, mod } from '../libraries/misc.js'
 
 const sketch = (s) => {
 
@@ -36,7 +37,8 @@ const sketch = (s) => {
 
 
     s.setup = () => {
-        let p5canvas = s.createCanvas(s.windowWidth, s.windowHeight)
+        let {w, h} = getLargeCanvas(s, 1600)
+        let p5canvas = s.createCanvas(w, h)
         canvas = s.createGraphics(p5canvas.width, p5canvas.height)
         mesh400 = baseEvenMesh(400)
         let palette = paintPalette(s)
@@ -69,11 +71,6 @@ const sketch = (s) => {
         gui.toggle()
         blotPointsArray = new Array(5000)
         blotPoints = 0
-    }
-
-    function mod(m, n) {
-        // Javascript's modulo ain't no modulo
-        return ((m % n) + n) % n
     }
 
 

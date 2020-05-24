@@ -17,6 +17,7 @@ import {
     blotPtsInMesh
 } from '../libraries/blotLibraries.js'
 
+import { mod } from '../libraries/misc.js'
 
 const sketch = (s) => {
 
@@ -72,11 +73,6 @@ const sketch = (s) => {
         gui.toggle()
         blotPointsArray = new Array(5000)
         blotPoints = 0
-    }
-
-    function mod(m, n) {
-        // Javascript's modulo ain't no modulo
-        return ((m % n) + n) % n
     }
 
 

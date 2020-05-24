@@ -1,3 +1,5 @@
+// Ruben Berenguel, 2020/05
+
 export {GUI, Command, Key, Control, Integer, Float, Boolean, String}
 
 let $ = {
