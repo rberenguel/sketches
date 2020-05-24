@@ -120,6 +120,10 @@ class Key {
     }
 }
 
+/**
+A Variable is a binding to a parameter wrapped in a closure. Specific instances add CSS classes for display
+*/
+
 class Variable {
     constructor(variable) {
         this.variable = variable
@@ -197,7 +201,6 @@ class GUI {
 
     update() {
         this.dom.innerHTML = ""
-        console.log(this)
         let br = $.cel("br")
         let needsHr = true
         if(this.title !== undefined){

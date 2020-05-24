@@ -9,9 +9,21 @@ Generative art sketches. Newest first
 <img src="samples/blot.jpg" width="360"/> <img src="samples/painting.jpg" width="360"/>
 
 ---
-- [code](life/life.js)
+- [code](blot-painting/)
 - Based on Esteban Hufstedler's [Ink Splashes](https://estebanhufstedler.com/2018/10/02/splash/)
 - Explore it [here](https://rberenguel.github.io/sketches/blot-painting/index.html)
+
+---
+
+## Watercolour [#p5js](https://p5js.org)
+
+<img src="samples/watercolour.jpg" width="360"/>
+
+---
+- [code](watercolour/watercolour.js)
+- Based on Tyler Hobb's [polygon deformation](https://tylerxhobbs.com/essays/2017/a-generative-approach-to-simulating-watercolor-paints)
+- Explore it [here](https://rberenguel.github.io/sketches/watercolour/index.html)
+
 
 ---
 
