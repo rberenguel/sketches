@@ -11,7 +11,7 @@ Generative art sketches. Newest first
 ---
 - [code](blot-painting/)
 - Based on Esteban Hufstedler's [Ink Splashes](https://estebanhufstedler.com/2018/10/02/splash/)
-- Explore it [here](https://rberenguel.github.io/sketches/blot-painting/)
+- Explore it [here](https://rberenguel.github.io/sketches/blot-painting/index.html)
 
 ---
 
@@ -22,7 +22,7 @@ Generative art sketches. Newest first
 ---
 - [code](watercolour/watercolour.js)
 - Based on Tyler Hobb's [polygon deformation](https://tylerxhobbs.com/essays/2017/a-generative-approach-to-simulating-watercolor-paints)
-- See it [here](https://rberenguel.github.io/sketches/watercolour/)
+- See it [here](https://rberenguel.github.io/sketches/watercolour/index.html)
 
 
 ---
@@ -34,13 +34,13 @@ Generative art sketches. Newest first
 ---
 - [code](crazy/crazy.js)
 - Based on Anders Hoff's [Sand Splines](https://inconvergent.net/generative/sand-spline/)
-- See it here [here](https://rberenguel.github.io/sketches/crazy/)
+- See it here [here](https://rberenguel.github.io/sketches/crazy/index.html)
 
 ---
 
 ## Conway's Game of Life [#p5js](https://p5js.org)
 - [code](life/life.js)
-- See it here [here](https://rberenguel.github.io/sketches/life/)
+- See it here [here](https://rberenguel.github.io/sketches/life/index.html)
 
 ---
 
@@ -50,7 +50,7 @@ Generative art sketches. Newest first
 
 ---
 - [code](sorting/sorting.js) 
-- See it [here](https://mostlymaths.net/2020/05/sorting-myself-out.html/)
+- See it [here](https://mostlymaths.net/2020/05/sorting-myself-out.html/index.html)
 
 
 ---
@@ -61,4 +61,4 @@ Generative art sketches. Newest first
 
 ---
 - [code](hailstorm/hailstorm.js) 
-- See it [here](https://rberenguel.github.io/sketches/hailstorm/)
+- See it [here](https://rberenguel.github.io/sketches/hailstorm/index.html)

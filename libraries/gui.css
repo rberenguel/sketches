@@ -23,6 +23,11 @@ div#gui {
     z-index: 1000;
 }
 
+div#gui a {
+    color: rgb(211, 73, 52);
+    text-decoration: none;
+}
+
 div#gui .title {
     font-size:105%;
 }
