@@ -8,7 +8,7 @@ import {
     Control
 } from '../libraries/gui.js'
 
-import { getLargeCanvas, mod } from '../libraries/misc.js'
+import { getLargeCanvas } from '../libraries/misc.js'
 
 // Simple and non-optimised (no hashlife) version of Conway's Game of Life. You
 // can control cell size with i (increase) and d (decrease). Use c to toggle an

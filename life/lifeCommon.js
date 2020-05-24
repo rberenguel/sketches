@@ -1,3 +1,4 @@
+import { mod } from '../libraries/misc.js'
 
 export function nextState(i, j, matrix, rows, columns) {
     // Finds the next state of a cell according to its neighbours statuses
