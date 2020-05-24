@@ -185,7 +185,7 @@ class GUI {
         this.subinfo = subinfo
         this.cmds = cmds
         this.dom = $.byId("gui")
-
+        document.title = title
         this.states = states
         for (let cmd of this.cmds) {
             cmd.key.gui = this
