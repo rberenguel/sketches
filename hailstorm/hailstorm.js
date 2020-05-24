@@ -63,7 +63,7 @@ function draw(){
             draw()
         })
         let decR = new Key("(", () => {
-            if (squareSize > 2) {
+            if (squareSize > 3) {
                 squareSize-=3
             }
             draw()
