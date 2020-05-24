@@ -42,8 +42,13 @@ div#gui .true {
 }
 
 div#gui .integer {
-    color: rgb(61 139 206);
+    color: rgb(61, 139, 206);
 }
+
+div#gui .float {
+    color: rgb(178, 137, 44);
+}
+
 
 div#gui .string {
     color: rgb(104, 116, 192);
