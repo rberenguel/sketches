@@ -11,7 +11,7 @@ Generative art sketches. Newest first
 ---
 - [code](blot-painting/)
 - Based on Esteban Hufstedler's [Ink Splashes](https://estebanhufstedler.com/2018/10/02/splash/)
-- Explore it [here](https://rberenguel.github.io/sketches/blot-painting/index.html)
+- Explore it [here](https://rberenguel.github.io/sketches/blot-painting/)
 
 ---
 
@@ -22,7 +22,7 @@ Generative art sketches. Newest first
 ---
 - [code](watercolour/watercolour.js)
 - Based on Tyler Hobb's [polygon deformation](https://tylerxhobbs.com/essays/2017/a-generative-approach-to-simulating-watercolor-paints)
-- Explore it [here](https://rberenguel.github.io/sketches/watercolour/index.html)
+- Explore it [here](https://rberenguel.github.io/sketches/watercolour/)
 
 
 ---
@@ -34,13 +34,13 @@ Generative art sketches. Newest first
 ---
 - [code](crazy/crazy.js)
 - Based on Anders Hoff's [Sand Splines](https://inconvergent.net/generative/sand-spline/)
-- See it full screen [here](https://rberenguel.github.io/sketches/crazy/index.html)
+- See it full screen [here](https://rberenguel.github.io/sketches/crazy/)
 
 ---
 
 ## Conway's Game of Life [#p5js](https://p5js.org)
 - [code](life/life.js)
-- See it full screen [here](https://rberenguel.github.io/sketches/life/simple.html)
+- See it full screen [here](https://rberenguel.github.io/sketches/life/)
 
 ---
 
