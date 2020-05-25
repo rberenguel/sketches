@@ -1,6 +1,6 @@
 @font-face {
     font-family: monoid;
-    src: url(../libraries/monoid-regular-webfont.woff);
+    src: url(../libraries/gui/monoid-regular-webfont.woff);
 }
 
 div#gui {
@@ -21,6 +21,22 @@ div#gui {
     visibility: hidden;
     width: 20em;
     z-index: 1000;
+}
+
+div#gui input {
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+div#gui label {
+    padding-left: 0.2em;
+    padding-right: 0.2em;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 div#gui a {
@@ -83,4 +99,6 @@ div#gui>table .t1 {
 
 div#gui .t1>code {
     padding-right: 0.5em;
+    padding-left: 0.2em;
+
 }
