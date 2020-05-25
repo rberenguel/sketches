@@ -50,7 +50,7 @@ const sketch = (s) => {
             .id("canvas")
         s.image(image, 0, 0)
         image.loadPixels()
-
+        colors = []
         for (let j = 0; j < image.pixels.length; j += 4) {
             let r = image.pixels[j];
             let g = image.pixels[j + 1]
