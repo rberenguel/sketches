@@ -4,7 +4,7 @@ import {
     Float,
     Key,
     Control
-} from '../libraries/gui.js'
+} from '../libraries/gui/gui.js'
 
 import { getLargeCanvas, mod } from '../libraries/misc.js'
 

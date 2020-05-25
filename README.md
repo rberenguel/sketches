@@ -4,6 +4,18 @@ Generative art sketches. Newest first
 
 ---
 
+## Palette [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/palette/"><img src="samples/palette.png" width="360"/></a> 
+
+---
+- [code](palette/palette.js)
+- Naive k-means palette extraction. Offers two modes (centroid or closest color to centroid) and allows you to use your own images and change the number of clusters
+- Explore it [here](https://rberenguel.github.io/sketches/palette/index.html)
+
+
+---
+
 ## Blot/Painting [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/blot-painting/"><img src="samples/blot.jpg" width="360"/></a> <a href="https://rberenguel.github.io/sketches/blot-painting/"><img src="samples/painting.jpg" width="360"/></a>

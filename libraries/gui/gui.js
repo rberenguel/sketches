@@ -1,6 +1,6 @@
 // Ruben Berenguel, 2020/05
 
-export {GUI, Command, Key, Control, Integer, Float, Boolean, String}
+export {GUI, Command, Key, Control, Input, Integer, Float, Boolean, String}
 
 let $ = {
     cel: (s) => document.createElement(s),
@@ -94,6 +94,33 @@ class Control {
         return command
     }
 }
+
+
+class Input {
+    constructor(text, type, accept, callback){
+        this.text = text
+        this.type = type 
+        this.accept = accept
+        this.callback = callback
+    }
+    
+    format(){
+        let control = $.cel("tr")
+        let cell = $.cel("td")
+        cell.colSpan="3"
+        let inp = $.cel("input")
+        let lab = $.cel("label")
+        lab.append($.ctn(this.text))
+        inp.type = this.type
+        inp.accept = this.accept
+        inp.addEventListener("change", this.callback, false)
+        lab.append(inp)
+        cell.append(lab)
+        control.append(cell)
+        return control
+    }
+}
+
 
 /**
     A Key description. It is formed of a character and a lambda/method/function
