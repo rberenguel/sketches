@@ -17,9 +17,7 @@ import {
 } from '../libraries/colorKmeans.js'
 
 
-// Simple and non-optimised (no hashlife) version of Conway's Game of Life. You
-// can control cell size with i (increase) and d (decrease). Use c to toggle an
-// overlay with the current cell size
+// Naive k-means to find dominant colours. It will adjust number of clusters in case of problems (i.e. empty clusters). 
 
 const sketch = (s) => {
 
@@ -27,7 +25,8 @@ const sketch = (s) => {
     let gui
     let numClusters = 6
     let colors = [],
-        centroids, closeColors, withText = false, kmeans=false
+        centroids, closeColors, withText = false,
+        kmeans = false
     let cutout, imageW, imageH, canvas
 
     s.preload = () => {
@@ -126,7 +125,7 @@ const sketch = (s) => {
 
     function drawRectangles() {
         let c
-        let ht = s.int(imageH / (1.0 * numClusters))
+        let ht = s.int(imageH / (1.0 * centroids.length))
         centroids.sort((a, b) => a[3] - b[3])
         for (c = 0; c < centroids.length - 1; c++) {
             let [r, g, b, k] = kmeans ? centroids[c] : closeColors[c]
@@ -139,8 +138,7 @@ const sketch = (s) => {
     }
 
     function drawCentroids() {
-        let c
-        [centroids, closeColors] = colorKmeans(colors, numClusters)
+        let c[centroids, closeColors] = colorKmeans(colors, numClusters)
         drawRectangles()
     }
 
@@ -169,7 +167,7 @@ const sketch = (s) => {
         })
 
         let kmeansStates = ["centroids", "close color"]
-        let kmeansString = new String(() => kmeansStates[kmeans+0])
+        let kmeansString = new String(() => kmeansStates[kmeans + 0])
         let kmeansControl = new Control([A],
             "cluster centroid?", kmeansString)
 

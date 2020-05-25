@@ -8,15 +8,15 @@ Naive k-means. It is fast enough even for large images
 
 function colorKmeans(colors, numClusters) {
     let centroids = []
-    let newCentroids = Array(numClusters)
     for (let i = 0; i < numClusters; i++) {
         let index = Math.floor(Math.random() * colors.length)
         centroids.push(colors[index])
     }
-    let assignments = Array(numClusters)
-    for (let i = 0; i < assignments.length; i++) assignments[i] = []
-
+    let assignments
     for (let k = 0; k < 10; k++) {
+        assignments = Array(centroids.length)
+        let newCentroids = []
+        for (let i = 0; i < assignments.length; i++) assignments[i] = []
         let sumDist = 0
         for (let col of colors) {
             let minn = 255 * 3
@@ -33,22 +33,29 @@ function colorKmeans(colors, numClusters) {
             }
             assignments[minIndex].push(col)
         }
-
+        let remainingCentroids = []
         for (let c = 0; c < assignments.length; c++) {
-            if (assignments[c].length > 0)
-                newCentroids[c] = averageColor(assignments[c])
-        }
+            if (assignments[c].length > 0) {
+                remainingCentroids.push(centroids[c])
 
-        for (let c = 0; c < centroids.length; c++) {
-            let [cr, cg, cb] = centroids[c]
+            }
+        }
+        for (let c = 0; c < assignments.length; c++) {
+            if (assignments[c].length > 0) {
+                newCentroids.push(averageColor(assignments[c]))
+            }
+        }
+        for (let c = 0; c < remainingCentroids.length; c++) {
+            let [cr, cg, cb] = remainingCentroids[c]
             let [r, g, b] = newCentroids[c]
 
             sumDist += Math.abs(cr - r) + Math.abs(cg - g) + Math.abs(cb - b)
-            centroids[c][0] = r
-            centroids[c][1] = g
-            centroids[c][2] = b
-            centroids[c][3] = assignments[c].length
+            remainingCentroids[c][0] = r
+            remainingCentroids[c][1] = g
+            remainingCentroids[c][2] = b
+            remainingCentroids[c][3] = assignments[c].length
         }
+        centroids = remainingCentroids
 
         if (sumDist < 100) {
             break;
@@ -57,7 +64,7 @@ function colorKmeans(colors, numClusters) {
     let closestColors = []
     for (let c = 0; c < centroids.length; c++) {
         let minDist = 3 * 255
-        let closestColor
+        let closestColor = centroids[c]
         let [cr, cg, cb] = centroids[c]
         for (let col of assignments[c]) {
             let [r, g, b] = col
