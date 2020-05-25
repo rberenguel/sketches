@@ -12,6 +12,7 @@ import {
 import {
     getLargeCanvas
 } from '../libraries/misc.js'
+
 import {
     colorKmeans
 } from '../libraries/colorKmeans.js'
@@ -138,7 +139,8 @@ const sketch = (s) => {
     }
 
     function drawCentroids() {
-        let c[centroids, closeColors] = colorKmeans(colors, numClusters)
+        let c;
+        [centroids, closeColors] = colorKmeans(colors, numClusters)
         drawRectangles()
     }
 
