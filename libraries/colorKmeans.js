@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+/*jshint asi: true*/
 export {
     colorKmeans
 }
@@ -5,22 +7,27 @@ export {
 /**
 Naive k-means. It is fast enough even for large images
 */
-
-function colorKmeans(colors, numClusters) {
+function colorKmeans(colors, numClusters, error = 50) {
     let centroids = []
     for (let i = 0; i < numClusters; i++) {
         let index = Math.floor(Math.random() * colors.length)
         centroids.push(colors[index])
     }
-    let assignments
-    for (let k = 0; k < 10; k++) {
-        assignments = Array(centroids.length)
-        let newCentroids = []
-        for (let i = 0; i < assignments.length; i++) assignments[i] = []
+    let remainingCentroids;
+    let newCentroidsI;
+    let newCentroids = new Array(centroids.length)
+    let assignments = new Array(centroids.length)
+    for (let k = 0; k < centroids.length; k++) {
+        assignments[k] = new Array(colors.length)
+            .fill([]) // Trade speed for memory
+    }
+    let assignmentsI = new Array(centroids.length)
+    for (let k = 0; k < 15; k++) {
+        assignmentsI = assignmentsI.fill(0)
         let sumDist = 0
         for (let col of colors) {
             let minn = 255 * 3
-            let minIndex
+            let minIndex;
             let [r, g, b] = col
             for (let c = 0; c < centroids.length; c++) {
                 let [cr, cg, cb] = centroids[c]
@@ -31,38 +38,41 @@ function colorKmeans(colors, numClusters) {
                     minIndex = c
                 }
             }
-            assignments[minIndex].push(col)
+            assignments[minIndex][assignmentsI[minIndex]] = col
+            assignmentsI[minIndex] = assignmentsI[minIndex] + 1
         }
-        let remainingCentroids = []
+        newCentroidsI = 0
+        remainingCentroids = 0
         for (let c = 0; c < assignments.length; c++) {
-            if (assignments[c].length > 0) {
-                remainingCentroids.push(centroids[c])
-
+            if (assignmentsI[c] > 0) {
+                centroids[remainingCentroids] = centroids[c]
+                remainingCentroids++
             }
         }
         for (let c = 0; c < assignments.length; c++) {
-            if (assignments[c].length > 0) {
-                newCentroids.push(averageColor(assignments[c]))
+            if (assignmentsI[c] > 0) {
+                newCentroids[newCentroidsI] = averageColor(assignments[c],
+                    assignmentsI[c])
+                newCentroidsI++
             }
         }
-        for (let c = 0; c < remainingCentroids.length; c++) {
-            let [cr, cg, cb] = remainingCentroids[c]
+        for (let c = 0; c < remainingCentroids; c++) {
+            let [cr, cg, cb] = centroids[c]
             let [r, g, b] = newCentroids[c]
 
             sumDist += Math.abs(cr - r) + Math.abs(cg - g) + Math.abs(cb - b)
-            remainingCentroids[c][0] = r
-            remainingCentroids[c][1] = g
-            remainingCentroids[c][2] = b
-            remainingCentroids[c][3] = assignments[c].length
+            centroids[c][0] = r
+            centroids[c][1] = g
+            centroids[c][2] = b
+            centroids[c][3] = assignmentsI[c]
         }
-        centroids = remainingCentroids
 
-        if (sumDist < 100) {
+        if (sumDist < error) {
             break;
         }
     }
     let closestColors = []
-    for (let c = 0; c < centroids.length; c++) {
+    for (let c = 0; c < remainingCentroids; c++) {
         let minDist = 3 * 255
         let closestColor = centroids[c]
         let [cr, cg, cb] = centroids[c]
@@ -79,11 +89,11 @@ function colorKmeans(colors, numClusters) {
     return [centroids, closestColors]
 }
 
-function averageColor(arr) {
+function averageColor(arr, length) {
     let mR = arr[0][0],
         mG = arr[0][1],
         mB = arr[0][2]
-    for (let c = 1; c < arr.length; c++) {
+    for (let c = 1; c < length; c++) {
         let col = arr[c]
         let [r, g, b] = col
         mR += (r - mR) / c

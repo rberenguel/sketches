@@ -4,6 +4,18 @@ Generative art sketches. Newest first
 
 ---
 
+## Divide et impera [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/divide/"><img src="samples/divide.png" width="360"/></a> 
+
+---
+- [code](divide/divide.js)
+- Color treemap via naive k-means palette extraction below
+- Explore it [here](https://rberenguel.github.io/sketches/divide/index.html)
+
+
+---
+
 ## Palette [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/palette/"><img src="samples/palette.png" width="360"/></a> 
