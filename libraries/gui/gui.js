@@ -1,6 +1,6 @@
 // Ruben Berenguel, 2020/05
 
-export {GUI, Command, Key, Control, Input, Integer, Float, Boolean, String}
+export {GUI, Command, Key, Control, Input, Integer, Float, Boolean, String, Variable}
 
 let $ = {
     cel: (s) => document.createElement(s),
@@ -19,6 +19,13 @@ let $ = {
 */
 class Command {
     constructor(key, task) {
+        if(key===undefined)
+            throw new Error("Controls need keys defined")
+        
+        if(task===undefined)
+            throw new Error("Controls need task defined")
+        
+    
         this.key = key
         this.task = task
     }
@@ -37,7 +44,7 @@ class Command {
             let span = $.cel("span")
             span.style.float = "right"
             span.append(this.variable.span())
-            span.onclick = text2.onclick
+            span.onclick = thisKey.onclick
             variableDisplay = span
         } else
             variableDisplay = ""
@@ -63,6 +70,15 @@ class Control {
         this.keys = keys
         this.task = task
         this.variable = variable
+        if(keys===undefined)
+            throw new Error("Controls need keys defined")
+        
+        if(task===undefined)
+            throw new Error("Controls need task defined")
+        
+        if(variable===undefined)
+            throw new Error("Controls needs variable defined")
+        
     }
 
     format() {
@@ -71,9 +87,9 @@ class Control {
         controls.classList.add("t1")
         let textTD = $.cel("td")
         textTD.classList.add("t2")
-        textTD.append($.ctn(` ${this.task}`))
+        textTD.append($.ctn(`${this.task}`))
         let thingTD = $.cel("td")
-        textTD.classList.add("t3")
+        thingTD.classList.add("t3")
         if (this.variable !== undefined) {
             let span = $.cel("span")
             span.style.float = "right"
@@ -102,6 +118,18 @@ class Input {
         this.type = type 
         this.accept = accept
         this.callback = callback
+        if(text===undefined)
+            throw new Error("Controls need keys defined")
+        
+        if(type===undefined)
+            throw new Error("Input needs task defined")
+        
+        if(accept===undefined)
+            throw new Error("Input needs variable defined")
+          
+        if(callback===undefined)
+            throw new Error("Input needs variable defined")
+                  
     }
     
     format(){
