@@ -145,7 +145,7 @@ const sketch = (s) => {
             randomColorBool)
         let T = new Key("t", () => {
             paint = mod(paint + 1, 3)
-
+            if(paint!=0)drawPotential=true
             canvasUpdate({
                 s: s,
                 canvas: canvas,
@@ -155,10 +155,10 @@ const sketch = (s) => {
             })
         })
 
-        let backgroundStates = ["solid/blank", "solid/solid", "alpha/solid"]
+        let backgroundStates = ["solid/none", "solid/solid", "alpha/solid"]
         let paintString = new String(() => backgroundStates[paint])
         let paintControl = new Control([T],
-            "paint", paintString)
+            "Paint/Field", paintString)
 
         let V = new Key("v", () => vectors = !vectors)
         let vectorsBool = new Boolean(() => vectors)
