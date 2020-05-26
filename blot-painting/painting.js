@@ -2,6 +2,7 @@ import {
     Command,
     GUI,
     Boolean,
+    Input,
     Integer,
     String,
     Float,
@@ -17,7 +18,7 @@ import {
     blotPtsInMesh
 } from '../libraries/blotLibraries.js'
 
-import { mod } from '../libraries/misc.js'
+import { mod, getLargeCanvas } from '../libraries/misc.js'
 
 const sketch = (s) => {
 
@@ -29,20 +30,33 @@ const sketch = (s) => {
     let vectors = false
     let paint = 0
     let blotPoints, blotPointsArray
-    let background, canvas
+    let background, canvas, p5canvas
     let mesh400
 
     s.preload = () => {
         background = s.loadImage("../resources/gw.jpg");
     }
 
-    s.setup = () => {
-        background.resize(s.windowWidth, 0)
-        let p5canvas = s.createCanvas(background.width, background.height)
-        canvas = s.createGraphics(p5canvas.width, p5canvas.height)
-        background.loadPixels()
-        mesh400 = baseEvenMesh(400)
+    function prepareImageAndDisplay(image) {
+        let {
+            w,
+            h
+        } = getLargeCanvas(s, 1600)
+        if (p5canvas) p5canvas.remove()
+        if(image.height>image.width){
+            image.resize(0, h)
+        }else{
+            image.resize(w, 0)
+        }
+        image.loadPixels()
+        w = image.width
+        h = image.height
+        p5canvas = s.createCanvas(w, h)
+            .id("canvas")
+        canvas = s.createGraphics(p5canvas.width, p5canvas.height)       
+        background = image
 
+        mesh400 = baseEvenMesh(400)
         p5canvas.mousePressed(() => {
             gui.update()
             if (touched >= 0) {
@@ -68,7 +82,12 @@ const sketch = (s) => {
             }
             touched++
         })
+        
+    }
 
+
+    s.setup = () => {
+        prepareImageAndDisplay(background)
         gui = createGUI()
         gui.toggle()
         blotPointsArray = new Array(5000)
@@ -87,6 +106,27 @@ const sketch = (s) => {
             }
         }
         return pxs
+    }
+
+    function loadImageFromInput(callback) {
+
+        return (inputEvent) => {
+            let filename = inputEvent.target.files[0]
+            let fr = new FileReader()
+            fr.onload = (fileEvent) => {
+                let rawImage = new Image()
+                rawImage.src = fileEvent.target.result
+                rawImage.onload = () => {
+                    let image = s.createImage(rawImage.width,
+                        rawImage
+                        .height)
+                    image.drawingContext.drawImage(rawImage, 0,
+                        0)
+                    callback(image)
+                }
+            }
+            fr.readAsDataURL(filename)
+        }
     }
 
 
@@ -108,6 +148,21 @@ const sketch = (s) => {
         let perfLog = new Command(P, "log performance to console")
 
         let cmds = [resetCanvas, save, perfLog]
+        
+        let fileInputControl = new Input("Choose your own image", "file",
+            "image/*",
+            loadImageFromInput((img) => {
+                s.clear()
+                prepareImageAndDisplay(img)
+            canvasUpdate({
+                s: s,
+                canvas: canvas,
+                background: background,
+                paint: paint
+            })                
+        }))
+
+        
         let incB = new Key(">", () => blotCount++)
         let decB = new Key("<", () => blotCount--)
         let blotCountInt = new Integer(() => blotCount)
@@ -152,7 +207,7 @@ const sketch = (s) => {
         let focusedBool = new Boolean(() => s.focused)
         let focusedStatus = new Control(undefined, "canvas focused?",
             focusedBool)
-        let controls = [focusedStatus, paintControl,
+        let controls = [fileInputControl, focusedStatus, paintControl,
             blotCountControl, blotSpreadControl,
             blotStrengthControl, vectorControl
         ]
