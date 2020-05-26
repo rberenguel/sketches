@@ -36,6 +36,7 @@ Generative art sketches. Newest first
 - [code](blot-painting/)
 - Based on Esteban Hufstedler's [Ink Splashes](https://estebanhufstedler.com/2018/10/02/splash/)
 - Explore it [here](https://rberenguel.github.io/sketches/blot-painting/index.html)
+- You can read a blog post about it [here](https://mostlymaths.net/2020/05/blot-painting-p5js-sketch.html/).
 
 ---
 

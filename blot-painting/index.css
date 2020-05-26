@@ -1,6 +1,6 @@
 @font-face {
     font-family: monoid;
-    src: url(../libraries/monoid-regular-webfont.woff);
+    src: url(../libraries/gui/monoid-regular-webfont.woff);
 }
 
 @media (max-width: 768px) {
