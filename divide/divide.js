@@ -42,14 +42,17 @@ const sketch = (s) => {
             h
         } = getLargeCanvas(s, 1600)
         if (canvas) canvas.remove()
-        image.resize(w, 0)
+        if(image.height>image.width){
+            image.resize(0, h)
+        }else{
+            image.resize(w, 0)
+        }
         w = Math.min(w, image.width)
         h = Math.min(h, image.height)
         imageW = w
         imageH = h
         canvas = s.createCanvas(w, h)
             .id("canvas")
-        //s.image(image, 0, 0)
         image.loadPixels()
         colors = []
         for (let j = 0; j < image.pixels.length; j += 4) {
