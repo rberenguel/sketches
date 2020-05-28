@@ -2,6 +2,25 @@
     font-family: monoid;
     src: url(../libraries/gui/monoid-regular-webfont.woff);
 }
+#container {
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+#gui #triangle{
+    display: inline-block;
+    margin-right: 0.5em;
+}
+
+#gui #triangle:after{
+    content: "\25be";
+}
+
+#gui #triangle.closed:after{
+    content: "\25b8";
+}
 
 div#gui {
     -webkit-backdrop-filter: blur(2px);
@@ -21,6 +40,8 @@ div#gui {
     visibility: hidden;
     width: 20em;
     z-index: 1000;
+    overflow: hidden;
+    margin: 1em;
 }
 
 div#gui input {
