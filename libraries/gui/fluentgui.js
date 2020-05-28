@@ -1,5 +1,4 @@
 // Ruben Berenguel, 2020/05
-
 import {
     $
 } from './dom.js'
@@ -10,7 +9,17 @@ export {
 
 
 class FluentGUI {
-    constructor() {}
+    constructor() {
+        let tri = $.cel("span")
+        tri.id = "triangle"
+        this.triangle = tri
+    }
+    setup() {
+        this.configureDrag()
+        this.switchVisibility()
+        this.toggle()
+    }
+
     withTitle(title) {
         this.title = title
         return this
@@ -52,20 +61,21 @@ class FluentGUI {
     }
 
     _title() {
-        if (this.title) {
-            let titleSpan = $.cel("span")
-            titleSpan.classList.add("title")
-            titleSpan.onclick = () => this.swap()
-            titleSpan.innerHTML += this.title
-            this.dom.append(titleSpan, $.cel("hr"))
-            return false
-        }
+        if (this.title === undefined) this.title = ""
+        let titleSpan = $.cel("span")
+        titleSpan.classList.add("title")
+        titleSpan.onclick = () => this.toggle()
+        titleSpan.append(this.triangle)
+        titleSpan.innerHTML += this.title
+        this.dom.append(titleSpan, $.cel("hr"))
+        return false
+
     }
 
     _info() {
         if (this.info) {
             let infoSpan = $.cel("span")
-            infoSpan.onclick = () => this.swap()
+            infoSpan.onclick = () => this.toggle()
             infoSpan.innerHTML += this.info
             this.dom.append(infoSpan)
             return true
@@ -82,6 +92,76 @@ class FluentGUI {
             this.dom.append(subinfoSpan)
             return true
         }
+    }
+
+
+
+    configureDrag() {
+        let container = $.qs("#container")
+        if (container === null) {
+            let cont = $.cel("div")
+            cont.id = "container"
+            cont.append(this.dom)
+            document.body.append(cont)
+            container = $.qs("#container")
+        }
+
+        let active = false
+        let currentX, currentY, initialX, initialY;
+        let xOffset = 0,
+            yOffset = 0
+
+        const dragStart = (ev) => {
+            if (ev.type === "touchstart") {
+                initialX = ev.touches[0].clientX - xOffset
+                initialY = ev.touches[0].clientY - yOffset
+            } else {
+                initialX = ev.clientX - xOffset
+                initialY = ev.clientY - yOffset
+            }
+
+            if (ev.target === this.dom) {
+                active = true
+            }
+        }
+
+
+        const setTranslate = (xPos, yPos, elt) => {
+            elt.style.transform = "translate3d(" + xPos + "px, " +
+                yPos + "px, 0)";
+        }
+
+
+        const drag = (ev) => {
+            if (active) {
+
+                ev.preventDefault()
+
+                if (ev.type === "touchmove") {
+                    currentX = ev.touches[0].clientX - initialX
+                    currentY = ev.touches[0].clientY - initialY
+                } else {
+                    currentX = ev.clientX - initialX
+                    currentY = ev.clientY - initialY
+                }
+                xOffset = currentX
+                yOffset = currentY
+                setTranslate(currentX, currentY, this.dom)
+            }
+        }
+        
+        const dragEnd = () => {
+            initialX = currentX
+            initialY = currentY
+            active = false
+        }
+        container.addEventListener("touchstart", dragStart, false)
+        container.addEventListener("touchend", dragEnd, false)
+        container.addEventListener("touchmove", drag, false)
+
+        container.addEventListener("mousedown", dragStart, false)
+        container.addEventListener("mouseup", dragEnd, false)
+        container.addEventListener("mousemove", drag, false)
     }
 
     update() {
@@ -111,19 +191,7 @@ class FluentGUI {
         this.cmds.push(cmd)
     }
 
-    swap() {
-        let v = this.dom.style.left
-        if (v !== "10px") {
-            this.dom.style.left = "10px"
-            this.dom.style.right = ""
-
-        } else {
-            this.dom.style.left = ""
-            this.dom.style.right = "10px"
-        }
-    }
-
-    toggle() {
+    switchVisibility() {
         let v = this.dom.style.visibility
         if (v == "hidden" || v == "") {
             this.dom.style.visibility = "visible"
@@ -131,6 +199,18 @@ class FluentGUI {
             this.dom.style.visibility = "hidden"
         }
     }
+
+    toggle() {
+        let v = this.dom.style.height
+        if (v == "") {
+            this.dom.style.height = "1.3em"
+        } else {
+            this.dom.style.height = ""
+        }
+        this.triangle.classList.toggle("closed")        
+        this.update()
+    }
+
 
     dispatch(key) {
         if (this.cmds) {

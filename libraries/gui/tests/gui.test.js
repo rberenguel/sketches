@@ -37,7 +37,7 @@ describe("GUI", () => {
         chai.expect(guiDOM)
             .to.have.tagName("div")
         chai.expect(guiDOM)
-            .to.have.text("a title")
+            .to.contain.text("a title")
     })
 
     it("renders info", () => {
@@ -48,7 +48,7 @@ describe("GUI", () => {
         chai.expect(guiDOM)
             .to.have.tagName("div")
         chai.expect(guiDOM)
-            .to.have.text("the info")
+            .to.contain.text("the info")
     })
 
     it("renders subinfo", () => {
@@ -59,7 +59,7 @@ describe("GUI", () => {
         chai.expect(guiDOM)
             .to.have.tagName("div")
         chai.expect(guiDOM)
-            .to.have.text("the subinfo")
+            .to.contain.text("the subinfo")
     })
 
 
@@ -124,5 +124,18 @@ describe("GUI", () => {
         chai.expect(inner)
             .to.be.equal(0)
     })
-    
+    it("handles collapse with callback", (done) => {
+        let gui = new FluentGUI().withDOM(guiDOM)
+        gui.setup()
+        gui.update()
+        let tri = gui.dom.querySelector("#triangle")
+        tri.click()
+        tri.click()
+        setTimeout(() => {
+            chai.expect(gui.dom.style.height)
+                .to.be.equal("1.3em")
+            done();
+        })
+    })
+
 })

@@ -32,8 +32,8 @@ class GUI {
             .withCommands(cmds)
             .withControls(states)
             .withDOM($.byId("gui"))
-        gui.swap()
         document.title = title
+        gui.setup()
         return gui
     }
 }
