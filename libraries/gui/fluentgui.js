@@ -15,6 +15,9 @@ class FluentGUI {
         this.triangle = tri
     }
     setup() {
+        if(this.dom === undefined){
+            this.dom = $.byId("gui")
+        }
         this.configureDrag()
         this.switchVisibility()
         this.toggle()
