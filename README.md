@@ -4,6 +4,17 @@ Generative art sketches. Newest first
 
 ---
 
+## Crazy nights [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/nights/"><img src="samples/nights.png" width="360"/></a> 
+
+---
+- [code](nights/nights.js)
+- Star field simulation that grew into rolling hills and "moon"
+- Explore it [here](https://rberenguel.github.io/sketches/nights/index.html)
+
+---
+
 ## Divide et impera [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/divide/"><img src="samples/divide.png" width="360"/></a> 
