@@ -23,10 +23,12 @@ import {
 const sketch = (s) => {
 
     let baseImage
-    let gui
+    let gui, quantized = false,
+        palette = []
     let numClusters = 6
     let colors = [],
-        centroids, closeColors, withText = false,
+        centroids, closeColors, colorAssignments,
+        withText = false,
         kmeans = false
     let cutout, imageW, imageH, canvas
 
@@ -34,12 +36,20 @@ const sketch = (s) => {
         baseImage = s.loadImage('../resources/gw.jpg')
     }
 
+    function prepareImageAndCentroids(image) {
+        let img = prepareImageAndDisplay(image)
+        baseImage = img
+        generateCentroids(img)
+    }
+
     function prepareImageAndDisplay(image) {
         let {
             w,
             h
         } = getLargeCanvas(s, 1600)
-        if (canvas) canvas.remove()
+        if (canvas) {
+            canvas.remove()
+        }
         cutout = s.int(w / 4.0)
         image.resize(w - cutout, 0)
         w = Math.min(w, image.width)
@@ -50,6 +60,10 @@ const sketch = (s) => {
             .id("canvas")
         s.image(image, 0, 0)
         image.loadPixels()
+        return image
+    }
+
+    function generateCentroids(image) {
         colors = []
         for (let j = 0; j < image.pixels.length; j += 4) {
             let r = image.pixels[j];
@@ -58,6 +72,32 @@ const sketch = (s) => {
             colors.push([r, g, b]);
         }
         drawCentroids()
+    }
+
+    function quantize(image) {
+        for (let j = 0; j < image.pixels.length; j += 4) {
+            let r = image.pixels[j];
+            let g = image.pixels[j + 1]
+            let b = image.pixels[j + 2]
+            let closestColor = centroids[0]
+            let minDist = 255 * 3
+            for (let c = 0; c < centroids.length; c++) {
+                let [cr, cg, cb] = centroids[c]
+                let dist = Math.abs(cr - r) + Math.abs(cg - g) + Math.abs(
+                    cb - b)
+                if (dist < minDist) {
+                    minDist = dist
+                    closestColor = centroids[c]
+                }
+            }
+            let [cr, cg, cb] = closestColor
+            image.pixels[j] = cr
+            image.pixels[j + 1] = cg
+            image.pixels[j + 2] = cb
+        }
+        image.updatePixels()
+        prepareImageAndDisplay(image)
+        drawRectangles()
     }
 
     function loadImageFromInput(callback) {
@@ -81,7 +121,7 @@ const sketch = (s) => {
         }
     }
     s.setup = () => {
-        prepareImageAndDisplay(baseImage)
+        prepareImageAndCentroids(baseImage)
         gui = createGUI()
         gui.toggle()
     }
@@ -118,20 +158,26 @@ const sketch = (s) => {
             let bs = s.blue(col)
                 .toString()
                 .padStart(2, "0")
-            let text = `RGB(${rs}, ${gs}, ${bs})`
-            s.text(text, x + cutout / 2.0, y + ht / 2.0)
-            console.log(text)
+            let text = `(${rs}, ${gs}, ${bs})`
+            s.text('RGB' + text, x + cutout / 2.0, y + ht / 2.0)
+            palette.push('s.color' + text)
         }
     }
 
     function drawRectangles() {
-        let c
+        let c;
+        palette = []
         let ht = s.int(imageH / (1.0 * centroids.length))
         centroids.sort((a, b) => a[3] - b[3])
         for (c = 0; c < centroids.length - 1; c++) {
             let [r, g, b, k] = kmeans ? centroids[c] : closeColors[c]
             drawRectangle(s.color(r, g, b), imageW, ht * c, ht)
         }
+
+        if (withText) {
+            console.log('[' + palette.join(", ") + ']')
+        }
+
         let [r, g, b, k] = kmeans ? centroids[c] : closeColors[c]
 
         let leftover = imageH - ht * c
@@ -140,7 +186,8 @@ const sketch = (s) => {
 
     function drawCentroids() {
         let c;
-        [centroids, closeColors] = colorKmeans(colors, numClusters)
+        [centroids, closeColors, colorAssignments] = colorKmeans(colors,
+            numClusters, 3)
         drawRectangles()
     }
 
@@ -162,6 +209,27 @@ const sketch = (s) => {
             drawRectangles()
         })
         let rgbCmd = new Command(C, "show RGB values")
+
+        let quantizedBool = new Boolean(() => quantized)
+        let Q = new Key("q", () => {
+            if (!quantized) {
+                let quantizedImage = s.createImage(baseImage.width,
+                    baseImage.height)
+                quantizedImage.copy(baseImage, 0, 0, baseImage
+                    .width, baseImage.height, 0, 0,
+                    quantizedImage.width, quantizedImage.height)
+                quantizedImage.loadPixels()
+                quantize(quantizedImage)
+
+                quantized = true
+            } else {
+                prepareImageAndDisplay(baseImage)
+                drawRectangles()
+                quantized = false
+            }
+        })
+        let quantizeControl = new Control([Q], "quantize", quantizedBool)
+
 
         let A = new Key("a", () => {
             kmeans = !kmeans
@@ -191,12 +259,14 @@ const sketch = (s) => {
             "image/*",
             loadImageFromInput((img) => {
                 s.clear()
-                prepareImageAndDisplay(img)
+                prepareImageAndCentroids(img)
             }))
         let gui = new GUI("K-means on colors, RB 2020/05", info, subinfo, [
                 resetCmd, saveCmd, rgbCmd
             ],
-            [kmeansControl, numClustersControl, fileInput])
+            [quantizeControl, kmeansControl, numClustersControl,
+                fileInput
+            ])
         let QM = new Key("?", () => {
             gui.toggle()
         })
@@ -213,5 +283,5 @@ const sketch = (s) => {
 
 }
 
-p5.disableFriendlyErrors = true
+//p5.disableFriendlyErrors = true
 let p5sketch = new p5(sketch)
