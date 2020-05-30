@@ -25,7 +25,7 @@ import {
 const sketch = (s) => {
 
     let baseImage
-    let gui
+    let gui, palette
     let numClusters = 8
     let colors = [],
         centroids, closeColors, withText = false,
@@ -122,15 +122,17 @@ const sketch = (s) => {
             let bs = s.blue(col)
                 .toString()
                 .padStart(2, "0")
-            let text = `RGB(${rs}, ${gs}, ${bs})`
-            s.text(text, x + wi / 2.0, y + he / 2.0)
-            console.log(text)
+            let text = `(${rs}, ${gs}, ${bs})`
+            s.text('RGB' + text, x + wi / 2.0, y + he / 2.0)
+            palette.push('s.color' + text)
+            
         }
     }
 
     function drawRectangles() {
         s.clear()
         let c
+        palette = []
         let vertical = true
         let width = imageW
         let height = imageH
@@ -156,8 +158,12 @@ const sketch = (s) => {
                 y += rectH
             }
             vertical = !vertical
-
         }
+
+        if(withText){
+            console.log('['+palette.join(", ")+']')
+        }
+
     }
 
     function drawCentroids() {
