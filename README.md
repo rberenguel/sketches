@@ -4,6 +4,17 @@ Generative art sketches. Newest first
 
 ---
 
+## Iris [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/iris/"><img src="samples/iris.png" width="360"/></a> 
+
+---
+- [code](nights/iris.js)
+- Generative irises
+- Explore it [here](https://rberenguel.github.io/sketches/iris/index.html)
+
+---
+
 ## Crazy nights [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/nights/"><img src="samples/nights.png" width="360"/></a> 

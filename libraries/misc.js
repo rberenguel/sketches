@@ -1,4 +1,4 @@
-export { getLargeCanvas, mod }
+export { getLargeCanvas, mod, argMax }
 
 function getLargeCanvas(s, maxSide){
     let w = s.windowWidth, h = s.windowHeight
@@ -17,3 +17,15 @@ function mod(m, n) {
     // Javascript's modulo ain't no modulo
     return ((m % n) + n) % n
 }
+
+    function argMax(arr){
+        let max = 0
+        let ind = -1
+        for(let i=0;i<arr.length;i++){
+            if(arr[i]>max){
+                ind = i
+                max = arr[i]
+            }
+        }
+        return ind
+    }
