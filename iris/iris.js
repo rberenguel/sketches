@@ -296,5 +296,5 @@ const sketch = (s) => {
     }
 }
 
-//p5.disableFriendlyErrors = true
+p5.disableFriendlyErrors = true
 let p5sketch = new p5(sketch)
