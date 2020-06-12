@@ -12,6 +12,7 @@ Generative art sketches. Newest first
 - [code](nights/iris.js)
 - Generative irises
 - Explore it [here](https://rberenguel.github.io/sketches/iris/index.html)
+- You can read a blog post about it [here](https://mostlymaths.net/2020/06/iris-sketch.html/).
 
 ---
 
