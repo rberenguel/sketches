@@ -1,0 +1,130 @@
+/* From http://bost.ocks.org/mike/style.css?20120427 */
+
+@import url(http://fonts.googleapis.com/css?family=PT+Serif|PT+Serif:b|PT+Serif:i|PT+Sans|PT+Sans:b);
+
+@font-face {
+    font-family: "FluentSystemIcons-Regular";
+    src: url("FluentSystemIcons-Regular.ttf") format("truetype");
+}
+
+.icon:before {
+    font-family: FluentSystemIcons-Regular !important;
+    font-size: 150%;
+    font-style: normal;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-ic_fluent_arrow_hook_down_left_28_regular:before {
+    content: "\f8d8";
+}
+
+html {
+    min-width: 1040px;
+}
+
+body {
+    background: #fcfcfa;
+    color: #333;
+    font-family: "PT Sans", sans-serif;
+    margin: 1em auto 4em auto;
+    position: relative;
+    font-size: 16px;
+}
+
+#wrapper {
+    margin-left: 1em;
+}
+
+#chart {
+    width: 65%;
+    padding: 0.3em;
+    border: 1px solid darkslategray;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    float: left;
+}
+
+svg {
+    font: 12px sans-serif;
+}
+
+path.fade {
+    display: none;
+}
+
+svg text {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+svg text::selection {
+    background: none;
+}
+
+#legend {
+    margin-right: 4%;
+    font-size: 16px;
+    width: 28%;
+    text-align: justify;
+    float: right;
+}
+
+#audience-wrapper {
+    min-height: 9rem;
+}
+
+#audience-info {
+    padding: 0.7rem;
+    border: 1px solid black;
+    visibility: hidden;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+}
+
+#legend .label {
+    font-size: 120%;
+}
+
+#search {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+
+}
+
+input {
+    border: 1px solid transparent;
+    padding: 10px;
+    font-size: 16px;
+    display: inline-block;
+    opacity: 0.7;
+}
+
+input:focus {
+    opacity: 1;
+}
+
+header,
+footer,
+h1,
+h2,
+h3,
+h4,
+aside {
+    color: #000;
+    font-family: "PT Sans", sans-serif;
+}
+
+h1,
+h2 {
+    text-rendering: optimizeLegibility;
+}
