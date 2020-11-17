@@ -9,9 +9,9 @@ Generative art sketches. Newest first
 <a href="https://rberenguel.github.io/sketches/chord/"><img src="samples/chord.png" width="360"/></a> 
 
 ---
-- [code](chord/chord.js)
-- [code for the chord matrix](chord/matrix-computation.ipynb)
 - D3 chord diagram with zoom and pan
+- [code](chord/chord.js)
+- Find the code for the chord matrix computation in the Python notebook [here](chord/)
 - Explore it [here](https://rberenguel.github.io/sketches/chord/index.html)
 
 ---
@@ -21,8 +21,8 @@ Generative art sketches. Newest first
 <a href="https://rberenguel.github.io/sketches/iris/"><img src="samples/iris.png" width="360"/></a> 
 
 ---
-- [code](iris/iris.js)
 - Generative irises
+- [code](iris/iris.js)
 - Explore it [here](https://rberenguel.github.io/sketches/iris/index.html)
 - You can read a blog post about it [here](https://mostlymaths.net/2020/06/iris-sketch.html/).
 
@@ -33,8 +33,8 @@ Generative art sketches. Newest first
 <a href="https://rberenguel.github.io/sketches/nights/"><img src="samples/nights.png" width="360"/></a> 
 
 ---
-- [code](nights/nights.js)
 - Star field simulation that grew into rolling hills and "moon"
+- [code](nights/nights.js)
 - Explore it [here](https://rberenguel.github.io/sketches/nights/index.html)
 
 ---
@@ -56,8 +56,8 @@ Generative art sketches. Newest first
 <a href="https://rberenguel.github.io/sketches/palette/"><img src="samples/palette.png" width="360"/></a> 
 
 ---
-- [code](palette/palette.js)
 - Naive k-means palette extraction. Offers two modes (centroid or closest color to centroid) and allows you to use your own images and change the number of clusters
+- [code](palette/palette.js)
 - Explore it [here](https://rberenguel.github.io/sketches/palette/index.html)
 
 
@@ -68,8 +68,8 @@ Generative art sketches. Newest first
 <a href="https://rberenguel.github.io/sketches/blot-painting/"><img src="samples/blot.jpg" width="360"/></a> <a href="https://rberenguel.github.io/sketches/blot-painting/"><img src="samples/painting.jpg" width="360"/></a>
 
 ---
-- [code](blot-painting/)
 - Based on Esteban Hufstedler's [Ink Splashes](https://estebanhufstedler.com/2018/10/02/splash/)
+- [code](blot-painting/)
 - Explore it [here](https://rberenguel.github.io/sketches/blot-painting/index.html)
 - You can read a blog post about it [here](https://mostlymaths.net/2020/05/blot-painting-p5js-sketch.html/).
 
@@ -80,8 +80,8 @@ Generative art sketches. Newest first
 <a href="https://rberenguel.github.io/sketches/watercolour/"><img src="samples/watercolour.jpg" width="360"/></a>
 
 ---
-- [code](watercolour/watercolour.js)
 - Based on Tyler Hobb's [polygon deformation](https://tylerxhobbs.com/essays/2017/a-generative-approach-to-simulating-watercolor-paints)
+- [code](watercolour/watercolour.js)
 - See it [here](https://rberenguel.github.io/sketches/watercolour/index.html)
 
 
@@ -92,8 +92,8 @@ Generative art sketches. Newest first
 <a href="https://rberenguel.github.io/sketches/crazy/"><img src="samples/crazy.jpg" width="360"/></a>
 
 ---
-- [code](crazy/crazy.js)
 - Based on Anders Hoff's [Sand Splines](https://inconvergent.net/generative/sand-spline/)
+- [code](crazy/crazy.js)
 - See it here [here](https://rberenguel.github.io/sketches/crazy/index.html)
 
 ---
