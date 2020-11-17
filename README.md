@@ -4,14 +4,27 @@ Generative art sketches. Newest first
 
 ---
 
+## Chord diagram [#d3js/v6](https://d3js.org)
+
+<a href="https://rberenguel.github.io/sketches/chord/"><img src="samples/chord.png" width="360"/></a> 
+
+---
+- [code](chord/chord.js)
+- [code for the chord matrix](chord/matrix-computation.ipynb)
+- D3 chord diagram with zoom and pan
+- Explore it [here](https://rberenguel.github.io/sketches/chord/index.html)
+
+---
+
 ## Iris [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/iris/"><img src="samples/iris.png" width="360"/></a> 
 
 ---
-- [code](nights/iris.js)
+- [code](iris/iris.js)
 - Generative irises
 - Explore it [here](https://rberenguel.github.io/sketches/iris/index.html)
+- You can read a blog post about it [here](https://mostlymaths.net/2020/06/iris-sketch.html/).
 
 ---
 

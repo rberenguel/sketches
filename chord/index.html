@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
+<body>
+    <script src="../libraries/3rdparty/d3.v6.min.js"></script>
+    <script src="chord.js"></script>
+    <div id="wrapper">
+        <div id="chart"><svg></svg></div>
+        <div id="legend">
+            <div id="graph-info">
+                <h2>Chord diagram of home/away goal difference for La Liga 2019-2020</h2>
+                <p>This graph represents the goal difference (home goal match difference minus away match goal difference) for a season in La Liga.</p>
+                <p>The color of the chord is of the team that had the largest difference, and the size of the landing chord is the size of the difference.</p>
+                <p>You can click on the team short names or the sector markers to focus the view on that team.</p>
+                <p>The diagram is zoomable and panable.</p>
+            </div>
+        </div>
+        <script>
+            chord("categories.csv", "matrix.json")
+        </script>
+</body>
