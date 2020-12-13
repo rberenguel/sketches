@@ -4,6 +4,18 @@ Generative art sketches. Newest first
 
 ---
 
+## Fakembroidery [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/embroided/"><img src="samples/embroided.png" width="360"/></a>
+
+---
+
+- Based on this [Houdini tutorial for generative embroidery](https://www.sidefx.com/tutorials/fakebroidery/), reusing the palette sketch (below) for color quantization. I wrote this several months ago and meant to rewrite it and improve it, but it never happened. Since so much time has passed, I decided to publish it, maybe somebody finds it useful.
+- [code](embroided/embroided.js)
+- Explore it [here](https://rberenguel.github.io/sketches/embroided/index.html)
+
+---
+
 ## DoF [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/dof/"><img src="samples/dof.png" width="360"/></a>
