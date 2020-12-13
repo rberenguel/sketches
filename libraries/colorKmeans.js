@@ -7,11 +7,19 @@ export {
 /**
 Naive k-means. It is fast enough even for large images
 */
-function colorKmeans(colors, numClusters, error = 50) {
+function colorKmeans(colors, numClusters, error = 50, seed) {
     let centroids = []
     for (let i = 0; i < numClusters; i++) {
         let index = Math.floor(Math.random() * colors.length)
-        centroids.push(colors[index])
+        if(seed === undefined)
+           centroids.push(colors[index])
+        else{
+          if(i<seed.length){
+            centroids.push(seed[i]) 
+          }
+          else
+            centroids.push(colors[index])
+           }
     }
     let remainingCentroids;
     let newCentroidsI;
@@ -22,7 +30,7 @@ function colorKmeans(colors, numClusters, error = 50) {
             .fill([]) // Trade speed for memory
     }
     let assignmentsI = new Array(centroids.length)
-    for (let k = 0; k < 15; k++) {
+    for (let k = 0; k < 100; k++) {
         assignmentsI = assignmentsI.fill(0)
         let sumDist = 0
         for (let col of colors) {
@@ -86,7 +94,7 @@ function colorKmeans(colors, numClusters, error = 50) {
         }
         closestColors.push(closestColor)
     }
-    return [centroids, closestColors]
+    return [centroids.slice(0, remainingCentroids), closestColors]
 }
 
 function averageColor(arr, length) {
