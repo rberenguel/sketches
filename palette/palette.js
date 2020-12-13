@@ -10,7 +10,7 @@ import {
 } from '../libraries/gui/gui.js'
 
 import {
-    getLargeCanvas
+    getLargeCanvas, mod, argMax
 } from '../libraries/misc.js'
 
 import {
@@ -24,13 +24,13 @@ const sketch = (s) => {
 
     let baseImage
     let gui, quantized = false,
-        palette = []
-    let numClusters = 6
+        palette = [], histogram, seed
+    let numClusters = 6, colorThreshold=50
     let colors = [],
         centroids, closeColors, colorAssignments,
         withText = false,
         kmeans = false
-    let cutout, imageW, imageH, canvas
+    let vCutout, hCutout, imageW, imageH, canvas
 
     s.preload = () => {
         baseImage = s.loadImage('../resources/gw.jpg')
@@ -39,7 +39,7 @@ const sketch = (s) => {
     function prepareImageAndCentroids(image) {
         let img = prepareImageAndDisplay(image)
         baseImage = img
-        generateCentroids(img)
+        drawCentroids(img)    
     }
 
     function prepareImageAndDisplay(image) {
@@ -50,28 +50,102 @@ const sketch = (s) => {
         if (canvas) {
             canvas.remove()
         }
-        cutout = s.int(w / 4.0)
-        image.resize(w - cutout, 0)
+        hCutout = s.int(w / 4.0)
+        vCutout = s.int(h / 6.0)
+        image.resize(w - hCutout, 0)
+        image.resize(0, h-vCutout)
         w = Math.min(w, image.width)
         h = Math.min(h, image.height)
         imageW = w
         imageH = h
-        canvas = s.createCanvas(w + cutout, h)
+        canvas = s.createCanvas(w + hCutout, h+vCutout)
             .id("canvas")
         s.image(image, 0, 0)
         image.loadPixels()
-        return image
-    }
-
-    function generateCentroids(image) {
         colors = []
         for (let j = 0; j < image.pixels.length; j += 4) {
             let r = image.pixels[j];
             let g = image.pixels[j + 1]
             let b = image.pixels[j + 2]
             colors.push([r, g, b]);
+        }                 
+        histogram = colorHistogram(colors, 8)
+        drawHistogram(histogram)       
+        seed = []        
+        let f = histogram.f
+        let buckets = histogram.buckets
+        let bucketSize = histogram.bucketSize
+        for(let i=0;i<f.length;i++){
+            let m = argMax(f)
+            let rr = Math.floor(mod(m, buckets))
+            let gg = Math.floor(mod((m-rr)/buckets, buckets))
+            let bb = Math.floor((m-rr-gg*buckets)/(buckets*buckets))
+            f.splice(m, 1)
+            let fac = bucketSize-0.5
+            let col = [fac*rr, fac*gg, fac*bb]
+            let mindist = 999
+            for(let see of seed){
+                let [rs, gs, bs] = see
+                let dist = Math.abs(rs - bucketSize*rr) + Math.abs(gs - bucketSize*gg) + Math.abs(bs -
+                    bucketSize*bb)
+                if(dist<mindist)mindist=dist
+            } 
+            if((mindist>colorThreshold && mindist<999) || seed.length==0)
+                 seed.push(col)
         }
-        drawCentroids()
+        console.log(seed)
+        drawSeed(seed, 10)
+        histogram = colorHistogram(colors)        
+        return image
+    }
+
+    function colorHistogram(colors, bucketSize=8){
+        let buckets = s.int(255/bucketSize)+1
+        let rHist = Array(buckets).fill(0)
+        let gHist = Array(buckets).fill(0)
+        let bHist = Array(buckets).fill(0)
+        let rgbHist = Array(buckets*buckets*buckets).fill(0)
+        for(let colour of colors){
+            let [r, g, b] = colour
+            let rBucket = s.int(r/bucketSize)
+            let gBucket = s.int(g/bucketSize)
+            let bBucket = s.int(b/bucketSize)
+            rHist[rBucket]++
+            gHist[gBucket]++
+            bHist[bBucket]++
+            rgbHist[rBucket+buckets*gBucket+buckets*buckets*bBucket]++
+        }
+        return {r: rHist, g: gHist, b: bHist, f: rgbHist, bucketSize: bucketSize, buckets: buckets}
+    }
+
+    function drawHistogram(histogram){
+        let {r, g, b} = histogram
+        let max = s.max(s.max(r), s.max(g), s.max(b))
+        let barWt = imageW/(2*3*r.length)
+        for(let i=0;i<r.length;i++){
+            let barHt = vCutout*r[i]/max
+            s.fill(s.color(200, 0, 0))
+            s.rect(3*i*barWt, imageH, barWt, barHt)
+        }
+        for(let i=0;i<g.length;i++){
+            let barHt = vCutout*g[i]/max
+            s.fill(s.color(0, 200, 0))
+            s.rect(3*i*barWt+barWt, imageH, barWt, barHt)
+        }
+        for(let i=0;i<b.length;i++){
+            let barHt = vCutout*b[i]/max
+            s.fill(s.color(0, 0, 200))
+            s.rect(3*i*barWt+2*barWt, imageH, barWt, barHt)
+        }        
+     }
+
+    function drawSeed(seed, num){
+        let colWt = imageW/(2*num)
+        for(let i=0;i<num;i++){
+            let [r, g, b] = seed[i]
+            s.fill(s.color(r, g, b))
+            s.rect(imageW/2+i*colWt, imageH, colWt, vCutout)
+        }
     }
 
     function quantize(image) {
@@ -122,6 +196,7 @@ const sketch = (s) => {
     }
     s.setup = () => {
         prepareImageAndCentroids(baseImage)
+
         gui = createGUI()
         gui.toggle()
     }
@@ -145,7 +220,7 @@ const sketch = (s) => {
 
     function drawRectangle(col, x, y, ht) {
         s.fill(col)
-        s.rect(x, y, cutout, ht)
+        s.rect(x, y, hCutout, ht)
         if (withText) {
             s.textAlign(s.CENTER, s.CENTER)
             s.fill(balancedOppositeColor(col))
@@ -159,7 +234,7 @@ const sketch = (s) => {
                 .toString()
                 .padStart(2, "0")
             let text = `(${rs}, ${gs}, ${bs})`
-            s.text('RGB' + text, x + cutout / 2.0, y + ht / 2.0)
+            s.text('RGB' + text, x + hCutout / 2.0, y + ht / 2.0)
             palette.push('s.color' + text)
         }
     }
@@ -184,10 +259,39 @@ const sketch = (s) => {
         drawRectangle(s.color(r, g, b), imageW, ht * c, leftover)
     }
 
+
     function drawCentroids() {
         let c;
-        [centroids, closeColors, colorAssignments] = colorKmeans(colors,
-            numClusters, 3)
+        histogram = colorHistogram(colors)
+        let {r, g, b, f} = histogram
+        // Histogram as a seed for k-means is sub-par
+        /*for(let i=0;i<5;i++){
+            let sr = argMax(r)
+            let sg = argMax(g)
+            let sb = argMax(b)
+            r.splice(sr, 1)
+            g.splice(sg, 1)
+            b.splice(sb, 1)
+            seed.push([sr, 0, 0])
+            seed.push([0, 0, sb])
+            seed.push([0, sg, 0])                        
+        }
+        for(let i=0;i<5;i++){
+            let sr = argMax(r)
+            let sg = argMax(g)
+            let sb = argMax(b)
+            r.splice(sr, 1)
+            g.splice(sg, 1)
+            b.splice(sb, 1)        
+            seed.push([sr, sg, 0])
+            seed.push([sr, sg, sb])
+            seed.push([sr, 0, sb])
+            seed.push([0, sg, sb])        
+        }
+        */
+        histogram = colorHistogram(colors);  
+        [centroids, closeColors] = colorKmeans(colors,
+            numClusters, 3, seed)
         drawRectangles()
     }
 
@@ -244,17 +348,27 @@ const sketch = (s) => {
 
         let incC = new Key(")", () => {
             numClusters += 1
-            drawCentroids()
         })
         let decC = new Key("(", () => {
             if (numClusters >= 1) {
                 numClusters -= 1
             }
-            drawCentroids()
         })
         let numClustersInt = new Integer(() => numClusters)
         let numClustersControl = new Control([decC, incC],
             "+/- num clusters", numClustersInt)
+        let incT = new Key(".", () => {
+            colorThreshold += 25
+        })
+        let decT = new Key(",", () => {
+            if (colorThreshold > 25) {
+                colorThreshold -= 25
+            }
+        })
+        let colorThresholdInt = new Integer(() => colorThreshold)
+        let colorThresholdControl = new Control([decT, incT],
+            "+/- seed threshold", colorThresholdInt)
+            
         let fileInput = new Input("Choose your own image", "file",
             "image/*",
             loadImageFromInput((img) => {
@@ -264,7 +378,7 @@ const sketch = (s) => {
         let gui = new GUI("K-means on colors, RB 2020/05", info, subinfo, [
                 resetCmd, saveCmd, rgbCmd
             ],
-            [quantizeControl, kmeansControl, numClustersControl,
+            [quantizeControl, kmeansControl, numClustersControl, colorThresholdControl,
                 fileInput
             ])
         let QM = new Key("?", () => {
