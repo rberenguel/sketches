@@ -4,11 +4,24 @@ Generative art sketches. Newest first
 
 ---
 
+## DoF [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/dof/"><img src="samples/dof.png" width="360"/></a>
+
+---
+
+- Tweakings from the code in [11th Codecember 2020](https://codecember.ink/2020/11) (in turn based in [Depth of Field by Anders Hoff](https://inconvergent.net/2019/depth-of-field/))
+- [code](dof/dof.js)
+- Explore it [here](https://rberenguel.github.io/sketches/dof/index.html)
+
+---
+
 ## Chord diagram [#d3js/v6](https://d3js.org)
 
 <a href="https://rberenguel.github.io/sketches/chord/"><img src="samples/chord.png" width="360"/></a> 
 
 ---
+
 - D3 chord diagram with zoom and pan
 - [code](chord/chord.js)
 - Find the code for the chord matrix computation in the Python notebook [here](chord/)
