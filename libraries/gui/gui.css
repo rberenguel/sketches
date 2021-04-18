@@ -123,3 +123,32 @@ div#gui .t1>code {
     padding-left: 0.2em;
 
 }
+
+/* Spinner: https://codepen.io/vovchisko/pen/vROoYQ */
+
+@keyframes spinner-kf {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+#spinner {
+  width: 1em;
+  height: 1em;
+  transform-origin: 50%;
+  border: 2px solid transparent;
+  border-color: #333 #333 transparent transparent;
+  border-radius: 50%;
+  content: "";
+  position: relative;
+  vertical-align: inherit;
+  line-height: inherit;
+  float: right;
+}
+
+.moving {
+	animation: linear spinner-kf 1500ms infinite;
+}

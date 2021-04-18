@@ -7,20 +7,24 @@ const sketch = (s) => {
 
   let vertexes = [];
   let edges = [];
-  let count = 300;
+  let count = 700;
   let depth = 600;
   let c = 10; // Confusion factor
   let f = 10; // Focus factor
 
   s.setup = () => {
     // A large canvas works best for this
-    let { w, h } = getLargeCanvas(s, 1200);
+    let { w, h } = getLargeCanvas(s, 1800);
     canvas = s.createCanvas(w, h);
     canvas.mousePressed(() => {});
     s.frameRate(20);
     gui = createGUI();
-    gui.toggle();
-    plot();
+    gui.toggle(() => {
+      gui.spin(() => {
+        plot();
+        gui.spin();
+      });
+    });
   };
 
   function randomVec(r) {
@@ -49,13 +53,14 @@ const sketch = (s) => {
     const w = canvas.width;
     const h = canvas.height;
     const seed = s.random(42);
+    const spread = 4;
     vertexes = new Array(count + 1)
       .fill(0)
       .map((_, i) => i)
       .map((i) => [
-        s.noise((i + seed) / 4) * w,
-        s.noise((i + seed + 300) / 4) * h,
-        s.noise((i + seed + 600) / 4) * depth * 2 - depth,
+        s.noise((i + seed) / spread) * w,
+        s.noise((i + seed + 300) / spread) * h,
+        s.noise((i + seed + 600) / spread) * depth * 2 - depth,
       ]);
 
     edges = [];
@@ -75,7 +80,8 @@ const sketch = (s) => {
   function plot() {
     s.background(0);
     generateEdgesAndVertices();
-    for (let j = 0; j < edges.length; j++) {
+    const numEdges = edges.length;
+    for (let j = 0; j < numEdges; j++) {
       const [ia, ib] = edges[j];
       const a = vertexes[ia];
       const b = vertexes[ib];
@@ -85,7 +91,10 @@ const sketch = (s) => {
       for (let i = 0; i < len; i++) {
         const n = lerp3D(a, b, s.random());
         const d = s.abs(n[2] - c);
-        s.stroke(255, 255, 255, (1 - s.min(d / depth, 1) * 5) * 20);
+        let red = 20; //s.lerp(20, 170, s.noise(j+1))
+        let green = s.lerp(110, 150, j / (1.0 * len));
+        let blue = s.lerp(150, 250, s.noise(j + 3));
+        s.stroke(red, green, blue, (1 - s.min(d / depth, 1) * 5) * 20);
         // Focus and confusion appear here. Tweaking these factors (the multiplier and the exponent) can have interesting impact in the result
         const r = 0.17 * s.pow(s.abs(f - d), 0.8);
         const [x, y] = randomVec(r);
@@ -97,30 +106,35 @@ const sketch = (s) => {
   s.draw = () => {};
 
   function createGUI() {
-    let info = "Mostly the same code as in <a href='https://codecember.ink/2020/11'>Codecember, 11th 2020</a> (which in turn, is based in the description in <a href='https://inconvergent.net/2019/depth-of-field/'>Depth of Field</a> by the great Anders Hoff.";
-    let subinfo = "I plan on adding different graphs to this, publishing it as is as a base";
+    let info =
+      "Mostly the same code as in <a href='https://codecember.ink/2020/11'>Codecember, 11th 2020</a> (which in turn, is based in the description in <a href='https://inconvergent.net/2019/depth-of-field/'>Depth of Field</a> by the great Anders Hoff.";
+    let subinfo =
+      "I plan on adding different graphs to this, publishing it as is as a base";
     let S = new Key("s", () => {
       s.save("img.png");
     });
     let saveCmd = new Command(S, "save the canvas");
-    let R = new Key("r", () => {
-      canvas.clear();
-      plot();
-    });
-    let resetCanvas = new Command(R, "reset");
 
     let gui = new GUI(
       "Depth of Field, RB 2020/12",
       info,
       subinfo,
-      [saveCmd, resetCanvas],
+      [saveCmd],
       []
     );
-
     let QM = new Key("?", () => gui.toggle());
     let hide = new Command(QM, "hide this");
-
     gui.addCmd(hide);
+
+    let R = new Key("r", () => {
+      gui.spin(() => {
+        canvas.clear();
+        plot();
+        gui.spin();
+      });
+    });
+    let resetCanvas = new Command(R, "reset");
+    gui.addCmd(resetCanvas);
     gui.update();
     return gui;
   }
