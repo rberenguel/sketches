@@ -13,6 +13,10 @@ class FluentGUI {
         let tri = $.cel("span")
         tri.id = "triangle"
         this.triangle = tri
+		let spinner = $.cel("div")
+		spinner.id = "spinner"
+		//spinner.classList.add("moving")
+		this.spinner = spinner
     }
     setup() {
         if(this.dom === undefined){
@@ -63,16 +67,21 @@ class FluentGUI {
 
     }
 
+    spin(callback) {
+		$.byId("spinner").classList.toggle("moving")
+		setTimeout(callback, 100)
+    }
+	
     _title() {
         if (this.title === undefined) this.title = ""
         let titleSpan = $.cel("span")
         titleSpan.classList.add("title")
         titleSpan.onclick = () => this.toggle()
         titleSpan.append(this.triangle)
-        titleSpan.innerHTML += this.title
+		titleSpan.innerHTML += this.title
+		titleSpan.append(this.spinner)
         this.dom.append(titleSpan, $.cel("hr"))
         return false
-
     }
 
     _info() {
@@ -167,7 +176,7 @@ class FluentGUI {
         container.addEventListener("mousemove", drag, false)
     }
 
-    update() {
+    update(callback) {
         this.dom.innerHTML = ""
         let br = $.cel("br")
         let needsHr = true
@@ -188,6 +197,7 @@ class FluentGUI {
             for (let state of this.states) table.append(state.format())
             this.dom.append(table)
         }
+		setTimeout(callback, 100)
     }
 
     addCmd(cmd) {
@@ -203,7 +213,7 @@ class FluentGUI {
         }
     }
 
-    toggle() {
+    toggle(callback) {
         let v = this.dom.style.height
         if (v == "") {
             this.dom.style.height = "1.3em"
@@ -211,7 +221,7 @@ class FluentGUI {
             this.dom.style.height = ""
         }
         this.triangle.classList.toggle("closed")        
-        this.update()
+        this.update(callback)
     }
 
 
@@ -238,4 +248,4 @@ class FluentGUI {
             }
         }
     }
-}
+	}
