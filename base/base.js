@@ -41,7 +41,13 @@ const sketch = (s) => {
             s.save("img.png")
         })
         let saveCmd = new Command(S, "save the canvas")        
-        let R = new Key("r", () => {})
+        let R = new Key("r", () => {
+            gui.spin(() => {
+            s.clear();
+            s.draw()
+            gui.spin();
+            });});
+    
         let resetCanvas = new Command(R, "reset")
 
         let incR = new Key(")", () => {})
