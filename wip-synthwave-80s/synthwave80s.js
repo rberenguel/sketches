@@ -69,6 +69,31 @@ const sketch = (s) => {
       r: 0.35 * scene.height
     }
   }
+  
+  function drawShootingStar(scene, params){
+    // Simple shooting star
+    const x = 0.4 * scene.width * s.random(0.8, 1.1)
+    const y = 0.3 * scene.height * s.random(0.8, 1.1)
+    const length = s.random(100, 150)
+    const angle = -s.random(0.8, 1.2)*Math.PI/4
+    scene.push()
+    scene.strokeWeight(1)
+    for(let i = 1; i < length; i++){
+      for(let j = 0; j < 200; j++){
+        if(s.random()<1.0/i){
+          const r = s.random(220, 250)
+          const g = s.random(200, 250)        
+          const b = s.random(200, 250)                
+          const color = s.color(r, g, b, 10)
+          scene.stroke(color)
+          const R = 5*s.random(1/i)
+          const th = s.random(0, 2*Math.PI)
+          scene.point(x+i*Math.cos(angle)+R*Math.cos(th), y+i*Math.sin(angle)+R*Math.sin(th))
+        }
+      }
+    }
+    scene.pop()
+  }
 
   function drawStarfield(scene, params) {
     scene.push()
@@ -92,6 +117,7 @@ const sketch = (s) => {
   }
 
   function glowLine(scene, x1, y1, x2, y2, color, r) {
+    // I like this better than using context shadow
     let colorCopy = s.color(s.red(color), s.green(color), s.blue(color), s.alpha(color))
     colorCopy.setAlpha(0)
     const steps = 3 * r
@@ -159,8 +185,17 @@ const sketch = (s) => {
           }
           let x = cx + r * Math.sin(localSlope)
           let y = cy + r * Math.cos(localSlope)
+          if(debug){
+            // TODO Missing code to prevent outliers
+            scene.push()
+            scene.stroke("red")
+            scene.strokeWeight(15)
+            scene.point(cx, cy)
+            scene.pop()
+          }
           scene.strokeWeight(2)
           scene.line(cx, cy, x, y) // Down line
+          
           // Moon/sun glow against the ridges 
           scene.push()
           let shift = 7   
@@ -406,10 +441,9 @@ const sketch = (s) => {
     drawTerrain(scene, params)
     drawStarfield(scene, params)
     drawSun(scene)
+    drawShootingStar(scene)
     drawMountain(scene, params)
-    //clouds(scene, params)
-    //waves(scene, params)
-
+    
 
     let maskCircle = s.createGraphics(scene.width, scene.height)
     maskCircle.clear()
