@@ -1,4 +1,4 @@
-export { granulateChannels, granulateChannelsHD, ctxGranulateChannels }
+export { granulateChannels, oldieHD, ctxGranulateChannels }
 
 function granulateChannels(s, amount, skipWhite) {
 	// Based on a post by GorillaSun and meezwhite on grain
@@ -19,23 +19,52 @@ function granulateChannels(s, amount, skipWhite) {
     s.updatePixels();
 }
 
-function granulateChannelsHD(s, scene, density, hd, mode) {
-  let texture = s.createGraphics(s.width, s.height)
-  //texture.noStroke()
-  texture.noStroke()
+function shuffle(array) {
+  // From https://stackoverflow.com/a/2450976
+  let currentIndex = array.length,  randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex != 0) {
+
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+}
+
+function oldieHD(s, scene, density, hd, mode) {
+  scene.push()
+  let texture = s.createGraphics(scene.width, scene.height)
+  texture.strokeWeight(1.0/hd)
+  let coords = []
   for(let i=0;i<texture.width;i++){
     for(let j=0;j<texture.height;j++){
       if(s.random()<density){
-        const fill = s.color(150+100*s.noise(i, j), 100*s.noise(i, j)+10*hd)
-        texture.fill(fill)
-        texture.circle(i, j, 3*hd*hd)
+        coords.push([i, j])
       }
     }
   }
+  const shuffledCoords = shuffle(coords)
+  for(let coord of shuffledCoords){
+    let [i, j] = coord
+    const grain = 50+100*s.noise(i, j)
+    const fill = s.color(100+grain, 100+grain, grain, grain/3)
+    texture.fill(fill)
+    texture.stroke(fill)
+    texture.circle(i, j, hd*s.random())//s.random()*Math.sqrt(hd)/2)
+  }
   let c = texture.get()
+  c.filter(s.BLUR, 1)
   c.resize(scene.width, 0)
   scene.blendMode(mode)
   scene.image(c, 0, 0)
+  scene.pop()
 }
 
 

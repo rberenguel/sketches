@@ -1,13 +1,14 @@
 import {
-    Command,
-    GUI,
-    Integer,
-    Key,
-    Control
+  Command,
+  GUI,
+  Integer,
+  Float,
+  Key,
+  Control
 } from '../libraries/gui/gui.js'
 
 import {
-    getLargeCanvas
+  getLargeCanvas
 } from '../libraries/misc.js'
 
 
@@ -15,62 +16,88 @@ import {
 
 const sketch = (s) => {
 
-    let gui
+  let gui
+  let largeCanvas
+  let hd = 1
+  s.setup = () => {
+    let {
+      w,
+      h
+    } = getLargeCanvas(s, 1600)
+    let canvas = s.createCanvas(w, h)
+    s.pixelDensity(1)
+    canvas.mousePressed(() => {})
+    s.frameRate(20)
+    gui = createGUI()
+    gui.toggle()
+  }
 
-    s.setup = () => {
-        let {
-            w,
-            h
-        } = getLargeCanvas(s, 1600)
-        let canvas = s.createCanvas(w, h)
-        canvas.mousePressed(() => {})
-        s.frameRate(20)
-        gui = createGUI()
-        gui.toggle()
-    }
+  s.draw = () => {
+    const numPixels = hd * s.width * hd * s.height
+    console.log("Num Pixels: " + numPixels)
+    let scene = s.createGraphics(hd * s.width, hd * s.height)
+    // Here your code against scene
+    largeCanvas = scene
+    let c = scene.get()
+    c.resize(s.width, 0)
+    s.image(c, 0, 0)
+  }
 
-    s.draw = () => {
+  function createGUI() {
+    let info =
+      "Info"
+    let subinfo = "Subinfo<br/>Very high resolutions can fail depending on the browser"
+    let S = new Key("s", () => {
+      largeCanvas.save("img.png")
+    })
+    let saveCmd = new Command(S, "save the canvas")
+    let R = new Key("r", () => {
+      gui.spin(() => {
+        s.clear();
+        s.draw()
+        gui.spin();
+      });
+    });
 
-    }
+    let resetCanvas = new Command(R, "reset")
 
-    function createGUI() {
-        let info =
-            "Info"
-        let subinfo = "Subinfo"
-        let S = new Key("s", () => {
-            s.save("img.png")
-        })
-        let saveCmd = new Command(S, "save the canvas")        
-        let R = new Key("r", () => {
-            gui.spin(() => {
-            s.clear();
-            s.draw()
-            gui.spin();
-            });});
-    
-        let resetCanvas = new Command(R, "reset")
+    let incR = new Key(")", () => {})
+    let decR = new Key("(", () => {})
+    let rInt = new Integer(() => {})
+    let rControl = new Control([decR, incR],
+      "+/- something", rInt)
 
-        let incR = new Key(")", () => {})
-        let decR = new Key("(", () => {})
-        let rInt = new Integer(() => {})
-        let rControl = new Control([decR, incR],
-            "+/- something", rInt)
+    let decH = new Key("(", () => {
+      if (hd > 0) {
+        hd -= 0.1
+      }
+    })
+    let incH = new Key(")", () => {
+      if (hd < 10) {
+        hd += 0.1
+      }
+    })
+    let hdInfo = new Float(() => hd)
+    let hdControl = new Control([decH, incH],
+      "+/- resolution export factor", hdInfo)
 
-        let gui = new GUI("Something, RB 2020/", info, subinfo, [saveCmd,
-                resetCanvas],
-            [rControl])
 
-        let QM = new Key("?", () => gui.toggle())
-        let hide = new Command(QM, "hide this")
+    let gui = new GUI("Something, RB 2020/", info, subinfo, [saveCmd,
+        resetCanvas
+      ],
+      [rControl, hdControl])
 
-        gui.addCmd(hide)
-        gui.update()
-        return gui
-    }
+    let QM = new Key("?", () => gui.toggle())
+    let hide = new Command(QM, "hide this")
 
-    s.keyReleased = () => {
-        gui.dispatch(s.key)
-    }
+    gui.addCmd(hide)
+    gui.update()
+    return gui
+  }
+
+  s.keyReleased = () => {
+    gui.dispatch(s.key)
+  }
 }
 
 p5.disableFriendlyErrors = true
