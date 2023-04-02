@@ -1,4 +1,4 @@
-export { getLargeCanvas, mod, argMax }
+export { getLargeCanvas, mod, argMax , releaseCanvas}
 
 function getLargeCanvas(s, maxSide){
     let w = s.windowWidth, h = s.windowHeight
@@ -29,3 +29,10 @@ function mod(m, n) {
         }
         return ind
     }
+
+  function releaseCanvas(canvas) {
+    canvas.width = 1;
+    canvas.height = 1;
+    const ctx = canvas.drawingContext;
+    ctx && ctx.clearRect(0, 0, 1, 1);
+  }

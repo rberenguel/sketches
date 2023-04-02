@@ -48,7 +48,7 @@ const sketch = (s) => {
         s.frameRate(20)
         gui = createGUI()
         gui.toggle()
-		centeredIris(200, 100, 50)
+    		centeredIris(200, 100, 50)
     }
 	
 	function centeredIris(irisRadius, irisBlur, pupilRadius){

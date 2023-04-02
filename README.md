@@ -4,6 +4,45 @@ Generative art sketches. Newest first
 
 ---
 
+## Synthwave [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/embroided/"><img src="samples/synthwave.png" width="360"/></a>
+
+---
+
+- Reusing the most annoying parts of 70s Patch below; but adding additional faces to the ridges (although without many failsafes for collision). Also has a custom glow for the terrain (I blame Safari on having to do that)
+- [code](synthwave/synthwave-hd.js) This should be largely resolution independent code
+- Explore it [here](https://rberenguel.github.io/sketches/synthwave/index.html)
+
+
+---
+
+## 70s Patch [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/70s-patch/"><img src="samples/70s-patch.png" width="360"/></a>
+
+---
+
+- Inspired on [Panoramas](https://www.reddit.com/r/generative/comments/p0tvfu/generated_panorama_drawings_p5js) by [estienne_ca](https://twitter.com/estienne_ca). Has some interesting techniques.
+- [code](70s-patch/70s-hd.js) This should be largely resolution independent code
+- Explore it [here](https://rberenguel.github.io/sketches/70s-patch/index.html)
+
+
+---
+
+## Pencils [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/pencils/"><img src="samples/pencils.png" width="360"/></a>
+
+---
+
+- Based on [this](https://twitter.com/meezwhite/status/1611791711969181697?s=12&t=ym-awO5tGUYR8G03Ua4bww) 2023 Genuary entry by [meezwhite](https://twitter.com/meezwhite). A large part of the mechanics are based on [Iris](#Iris).
+- [code](pencils/pencils-hd.js) This should be largely resolution independent code
+- Explore it [here](https://rberenguel.github.io/sketches/pencils/index.html)
+
+
+---
+
 ## Fakembroidery [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/embroided/"><img src="samples/embroided.png" width="360"/></a>
@@ -47,7 +86,7 @@ Generative art sketches. Newest first
 
 ---
 - Generative irises
-- [code](iris/iris.js)
+- [code](iris/iris-hd.js) (new version, this should be resolution independent code)
 - Explore it [here](https://rberenguel.github.io/sketches/iris/index.html)
 - You can read a blog post about it [here](https://mostlymaths.net/2020/06/iris-sketch.html/).
 
