@@ -4,9 +4,22 @@ Generative art sketches. Newest first
 
 ---
 
+## Stained [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/stained/"><img src="samples/stained.png" width="360"/></a>
+
+---
+
+- I have a project that needs generative stained glass, so here it is
+- [code](stained/stained.js) This should be resolution independent (except for the noise in the metal) but haven't really tried
+- Explore it [here](https://rberenguel.github.io/sketches/stained/index.html)
+
+
+---
+
 ## Synthwave [#p5js](https://p5js.org)
 
-<a href="https://rberenguel.github.io/sketches/embroided/"><img src="samples/synthwave.png" width="360"/></a>
+<a href="https://rberenguel.github.io/sketches/synthwave/"><img src="samples/synthwave.png" width="360"/></a>
 
 ---
 

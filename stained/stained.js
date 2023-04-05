@@ -8,12 +8,23 @@ import {
 } from '../libraries/gui/gui.js'
 
 import {
-  getLargeCanvas, gaussColor, darken, shuffle
+  getLargeCanvas,
+  gaussColor,
+  darken,
+  shuffle
 } from '../libraries/misc.js'
 
 import {
   sweepFloodfill
 } from '../libraries/floodfill.js'
+
+import {
+  granulateChannelsBW
+} from '../libraries/effects.js'
+
+import {
+  glassTexture
+} from '../libraries/glassLibraries.js'
 
 // Base to avoid writing always the same
 
@@ -22,6 +33,7 @@ const sketch = (s) => {
   let gui, debug = false
   let largeCanvas
   let hd = 1
+  let R
   s.setup = () => {
     let {
       w,
@@ -34,6 +46,7 @@ const sketch = (s) => {
     s.noLoop()
     gui = createGUI()
     gui.toggle()
+    R.action()
   }
 
   const burgundy = "#752D26"
@@ -43,39 +56,45 @@ const sketch = (s) => {
   const pink = "#F07070"
   const green = "#227A62"
   const darkSea = "#1F3336"
-  
-  const colors = [burgundy, 
-                      crimson, 
-                      blueIris, 
-                      beige,
-                      pink,
-                      green,
-                      darkSea]
-  
+
+  const colors = [burgundy,
+    crimson,
+    blueIris,
+    beige,
+    pink,
+    green,
+    darkSea
+  ]
+
   const gray100 = [100, 100, 100, 255]
 
   s.draw = () => {
-    const numPixels = hd * s.width * hd * s.height
+  }
+
+  function plot(hd, seed){
     let scene = s.createGraphics(hd * s.width, hd * s.height)
     scene.background(100)
-    //scene.loadPixels()
-    //sweepFloodfill(scene, x, y, [100, 100, 100, 255], [200, 100, 100, 255])
-    const seed = s.random(-100, 100)
-    curvy(scene, 5, 5, "black", 1*hd, seed)
+
+    curvy(scene, 5, 5, "black", 1 * hd, seed)
     glassy(scene, 5, 5)
-    textureHD(s, scene, 0.05, 7*hd, s.MULTIPLY)
-    textureHD(s, scene, 0.1, 12*hd, s.SOFT_LIGHT)    
-    textureHD(s, scene, 0.05, 3*hd, s.MULTIPLY)    
-    curvy(scene, 5, 5, 100, 15*hd, seed)    
-    curvy(scene, 5, 5, 70, 14.5*hd, seed)
-    curvy(scene, 5, 5, 50, 14*hd, seed)    
-    curvy(scene, 5, 5, 30, 13.5*hd, seed)        
-    curvy(scene, 5, 5, "black", 12*hd, seed)    
+    glassTexture(s, scene, seed, hd)
+    let metal = s.createGraphics(hd * s.width, hd * s.height)
+    metal.background("#00000000")
+    curvy(metal, 5, 5, 100, 15 * hd, seed)
+    curvy(metal, 5, 5, 70, 14 * hd, seed)
+    curvy(metal, 5, 5, 50, 13 * hd, seed)
+    curvy(metal, 5, 5, 30, 12 * hd, seed)
+    curvy(metal, 5, 5, "black", 11 * hd, seed)
+    granulateChannelsBW(metal, [40, 0], true)
+    let c = metal.get()
+    scene.image(c, 0, 0)
     largeCanvas = scene
-    let c = scene.get()
+    c = scene.get()
     c.resize(s.width, 0)
-    s.image(c, 0, 0)
+    s.image(c, 0, 0)    
+    
   }
+  
 
   function curvy(scene, nh, nv, color, weight, seed) {
     // Create a curvy matrix
@@ -113,41 +132,14 @@ const sketch = (s) => {
     }
 
   }
-  
-  function textureHD(s, scene, density, size, mode) {
-  scene.push()
-  let texture = s.createGraphics(scene.width, scene.height)
-  texture.strokeWeight(1.0/hd)
-  let coords = []
-  for(let i=0;i<texture.width;i++){
-    for(let j=0;j<texture.height;j++){
-      if(s.random()<density){
-        coords.push([i, j])
-      }
-    }
-  }
-  const shuffledCoords = shuffle(coords)
-  for(let coord of shuffledCoords){
-    let [i, j] = coord
-    const grain = 50+100*s.noise(i, j)
-    const fill = s.color(100+grain, 100+grain, grain, grain/3)
-    texture.fill(fill)
-    texture.stroke(fill)
-    texture.circle(i, j, size*s.random())//s.random()*Math.sqrt(hd)/2)
-  }
-  let c = texture.get()
-  c.resize(scene.width, 0)
-  scene.blendMode(mode)
-  scene.image(c, 0, 0)
-  scene.pop()
-}
-  
-  
-  
+
+
+
+
   function glassy(scene, nh, nv) {
     const vspan = scene.height / nv
     const hspan = scene.width / nh
-    if(debug){
+    if (debug) {
       scene.stroke("red")
       scene.strokeWeight(3)
     }
@@ -155,9 +147,9 @@ const sketch = (s) => {
       let x = hspan / 2 + Math.floor(i * hspan)
       for (let j = 0; j <= nv + 1; j++) {
         let y = vspan / 2 + Math.floor(j * vspan)
-        if(debug){
+        if (debug) {
           scene.point(x, y)
-        }else{
+        } else {
           let index = Math.floor(Math.random() * colors.length)
           const c2p = colors[index]
           let c2 = darken(scene, gaussColor(scene, c2p, 30), 0.7)
@@ -172,28 +164,22 @@ const sketch = (s) => {
 
   function createGUI() {
     let info =
-      "Info"
-    let subinfo = "Subinfo<br/>Very high resolutions can fail depending on the browser"
+      "Stained glass, formed of several layers of noise based on arcs. Can be slow to generate"
+    let subinfo = "This is just a testbed for a project where I need generative stained glass<br/>Very high resolutions can fail depending on the browser"
     let S = new Key("s", () => {
       largeCanvas.save("img.png")
     })
     let saveCmd = new Command(S, "save the canvas")
-    let R = new Key("r", () => {
+    R = new Key("r", () => {
       gui.spin(() => {
         s.clear();
-        s.draw()
+        plot(hd, window.performance.now())
         gui.spin();
       });
     });
 
     let resetCanvas = new Command(R, "reset")
-
-    let incR = new Key(")", () => {})
-    let decR = new Key("(", () => {})
-    let rInt = new Integer(() => {})
-    let rControl = new Control([decR, incR],
-      "+/- something", rInt)
-
+    
     let decH = new Key("(", () => {
       if (hd > 0) {
         hd -= 0.1
@@ -209,10 +195,10 @@ const sketch = (s) => {
       "+/- resolution export factor", hdInfo)
 
 
-    let gui = new GUI("Something, RB 2020/", info, subinfo, [saveCmd,
+    let gui = new GUI("Stained, RB 2023/04", info, subinfo, [saveCmd,
         resetCanvas
       ],
-      [rControl, hdControl])
+      [hdControl])
 
     let QM = new Key("?", () => gui.toggle())
     let hide = new Command(QM, "hide this")
