@@ -5,14 +5,15 @@ import {
   Float,
   Key,
   Control
-} from '../libraries/gui/gui.js'
+} from './gui/gui.js'
 
 import {
   getLargeCanvas
-} from '../libraries/misc.js'
+} from './misc.js'
 
-
-// Base to avoid writing always the same
+import {
+  sweepFloodfill
+} from './floodfill.js'
 
 const sketch = (s) => {
 
@@ -36,20 +37,27 @@ const sketch = (s) => {
   s.draw = () => {
     const numPixels = hd * s.width * hd * s.height
     let scene = s.createGraphics(hd * s.width, hd * s.height)
-    scene.background("white")
-    testCurve(scene)
-    splineFloodFill(scene, scene.width / 2, scene.height / 2)
+    scene.background(100)
+    scene.noFill()
+    testCurve(scene, 1)
+    let x = scene.width / 2
+    let y = scene.height / 2
+    scene.loadPixels()
+    sweepFloodfill(scene, x, y, [100, 100, 100, 255], [200, 100, 100, 255])
+    scene.updatePixels()
+    testCurve(scene, 2)    
     largeCanvas = scene
     let c = scene.get()
     c.resize(s.width, 0)
     s.image(c, 0, 0)
   }
-
-  function testCurve(scene) {
+  
+  
+  function testCurve(scene, w) {
     let x = scene.width / 5
     let y = scene.height / 5
     scene.stroke(s.color("black"))
-    scene.strokeWeight(3)
+    scene.strokeWeight(w)
     scene.beginShape()
     scene.curveVertex(x+scene.width / 4, y+scene.height / 4)
     scene.curveVertex(x+scene.width / 3, y+scene.height / 4 - 100)
