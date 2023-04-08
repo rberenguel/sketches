@@ -96,9 +96,8 @@ const sketch = (s) => {
       scene.point(0, 0)    
     }
 
-    scene.noFill()
     scene.stroke("black")
-    scene.strokeWeight(3)
+    scene.strokeWeight(5)
     
     scene.beginShape()
     let rx = (i) => r1+s1*Math.cos(foo*i*PI/N)*Math.sin(2*i*PI/N)
@@ -110,17 +109,17 @@ const sketch = (s) => {
       const th = i*2*PI/N
       const x = cx + rx(i)*Math.cos(th)
       const y = cy + ry(i)*Math.sin(th)
-      if(th < scene.PI/4){
+      if(th < PI/2){
         firstQuarter.push([x, y])
       }
-      if(th > scene.PI && th < 3*PI/2){
+      if(2*PI - th > PI/2){
         thirdQuarter.push([x, y])
       }
       scene.curveVertex(x, y)
       if(debug){
         scene.push()
         scene.stroke("green")
-        scene.strokeWeight(6)
+        scene.strokeWeight(4)
         scene.point(x, y)
         scene.pop()
       }
@@ -134,7 +133,7 @@ const sketch = (s) => {
     if(debug){
       scene.push()
       scene.stroke("blue")
-      scene.strokeWeight(6)
+      scene.strokeWeight(4)
       scene.point(cs[0], cs[1])    
       scene.pop()
     }
@@ -145,9 +144,16 @@ const sketch = (s) => {
     let angle = scene.atan2(dy, dx)+scene.random(0.05*PI, 0.1*PI)
     dx = Math.cos(angle), dy = Math.sin(angle)
     let direction = [dx, dy] //reverser(dx, dy)
-    //curveUntilCollision(scene, transform, ts, direction, or)
+    let pull = 0.8
+    let [nextp, nextdir] = curveUntilCollision(scene, ts, direction, or, pull)
+    pull *= -1
+    for(let i = 0; i <5; i++){
+      pull *= 0.4
+      let [step, dir] = curveUntilCollision(scene, nextp, nextdir, or, pull)
+      nextp = step, nextdir = dir
+    }
     
-    
+    /*
     cs = thirdQuarter[Math.floor(scene.random() * thirdQuarter.length)]
     if(debug){
       scene.push()
@@ -163,6 +169,7 @@ const sketch = (s) => {
     dx = Math.cos(angle), dy = Math.sin(angle)
     direction = [dx, dy] //reverser(dx, dy)
     curveUntilCollision(scene, transform, ts, direction, or)
+    */
   }
 
   function arrow(scene, sx, sy, ex, ey){
@@ -180,7 +187,7 @@ const sketch = (s) => {
     scene.pop()
   }
   
-  function curveUntilCollision(scene, transform, start, direction, origin){
+  function curveUntilCollision(scene, start, direction, origin, pull){
     let [x, y] = start
     let [dx, dy] = direction
     let [ox, oy] = origin
@@ -188,9 +195,9 @@ const sketch = (s) => {
     if(debug){
       scene.push()
       scene.stroke("red")
-      scene.strokeWeight(8)
+      scene.strokeWeight(4)
       scene.point(x, y)
-      scene.strokeWeight(5)
+      scene.strokeWeight(2)
       const ex = x+150*dx, ey = y+150*dy
       arrow(scene, x, y, ex, ey)
       scene.pop()
@@ -206,7 +213,7 @@ const sketch = (s) => {
       if(sameColor(color, [0, 0, 0, 255])){
         if(debug){
           scene.push()
-          scene.strokeWeight(10)
+          scene.strokeWeight(4)
           scene.stroke("orange")
           scene.point(nx, ny)
           scene.pop()
@@ -216,50 +223,67 @@ const sketch = (s) => {
       }
       if(debug){
         scene.push()
-        scene.strokeWeight(3)        
+        scene.strokeWeight(1)        
         scene.stroke("blue")
         scene.point(nx<<0, ny<<0)
         scene.pop()
       }      
       i++
       count++
+      if(count>scene.height*hd+scene.width*hd){
+        console.log("Restarting")
+        // Just f-ing restart
+        R.action()
+      }
     }
     let ddx = cex - x, ddy = cey -y    
     let nnx = -ddy, nny = ddx
-    let nrm = Math.sqrt(nnx+nnx+nny*nny)
+    let nrm = Math.sqrt(nnx*nnx+nny*nny)
     nnx = nnx/nrm, nny = nny/nrm
     let mx = x + ddx/2, my = y + ddy/2
-    let distm = Math.sqrt((ox-mx)*(ox-mx) + (oy-my)*(oy-my))
+    let tocx = ox-mx, tocy = oy-my
+    let distm = Math.sqrt(tocx*tocx + tocy*tocy)
+    tocx = tocx/distm, tocy = tocy/distm
     let c1x = x+(cex-x)/3, c1y = y+(cey-y)/4
-    c1x = c1x + distm*nnx, c1y = c1y + distm*nny
+    c1x = c1x + pull*1.5*distm*nnx, c1y = c1y + pull*1.5*distm*nny
     let c2x = x+3*(cex-x)/4, c2y = y+3*(cey-y)/4
-    c2x = c2x + distm*nnx, c2y = c2y + distm*nny
+    c2x = c2x + pull*1.5*distm*nnx, c2y = c2y + pull*1.5*distm*nny
 
     if(debug){
       scene.push()
       scene.stroke("purple")
-      scene.strokeWeight(10)
+      scene.strokeWeight(2)
       scene.point(cex, cey)
       scene.point(mx, my)
       scene.point(x, y)
       scene.stroke("red")
       scene.point(c1x, c1y)
       scene.point(c2x, c2y)
-      scene.strokeWeight(2)
+      scene.strokeWeight(1)
       scene.stroke("purple")
+      scene.point(ox, oy)
       scene.line(x, y, c1x, c1y)
       scene.line(c1x, c1y, c2x, c2y)      
       scene.line(c2x, c2y, cex, cey)
-      scene.line(mx, my, mx+distm*nnx, my+distm*nny)
+      arrow(scene, mx, my, mx+distm*nnx, my+distm*nny)
       scene.pop()
     }
-    scene.strokeWeight(3)
+    scene.strokeWeight(5)
     scene.stroke("black")
     scene.noFill()
     scene.beginShape()
     scene.vertex(x, y) // Anchor 1
     scene.bezierVertex(c1x, c1y, c2x, c2y, cex, cey) // C1, C2, Anchor 2
     scene.endShape()
+    let t = 0
+    if(pull>=0){
+     t = scene.random(0.1, 0.3) 
+    } else {
+      t = scene.random(0.7, 0.9)
+    }
+    let nextx = scene.bezierPoint(x, c1x, c2x, cex, t)
+    let nexty = scene.bezierPoint(y, c1y, c2y, cey, t)
+    return [[nextx, nexty], [tocx, tocy]]
   }
   
   function createGUI() {
