@@ -1,5 +1,5 @@
 export {
-  sweepFloodfill
+  sweepFloodfill, get, set, sameColor
 }
 
 

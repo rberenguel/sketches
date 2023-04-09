@@ -56,7 +56,7 @@ function releaseCanvas(canvas) {
   ctx && ctx.clearRect(0, 0, 1, 1);
 }
 
-function copyColor(color) {
+function copyColor(s, color) {
   const r = s.red(color)
   const g = s.green(color)
   const b = s.blue(color)

@@ -4,6 +4,19 @@ Generative art sketches. Newest first
 
 ---
 
+## La Truche [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/la-truche/"><img src="samples/la-truche.png" width="360"/></a>
+
+---
+
+- While thinking about hiking up to [La Truche](https://maps.app.goo.gl/i4XqRKm9TkGFzD9T8?g_st=ic), I thought about [Truchet](https://en.m.wikipedia.org/wiki/Truchet_tiles) tiles. To make them local, I used the color palette of [an old Swiss map](https://map.geo.admin.ch/?topic=swisstopo&lang=en&bgLayer=voidLayer&layers=ch.swisstopo.zeitreihen&layers_timestamp=18811231&zoom=10&time=1881&E=2575089.75&N=1131965.38) and some fake syllabic generated names.
+- [code](la-truche/truche.js) This is not resolution independent even if it has the controls in place. Could be made to be, though.
+- Explore it [here](https://rberenguel.github.io/sketches/la-truche/index.html)
+
+
+---
+
 ## Stained [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/stained/"><img src="samples/stained.png" width="360"/></a>
