@@ -292,7 +292,7 @@ const sketch = (s) => {
       if(fill){
         fac = scene.random(6, 12)
         for(let i = incs; i >= 0; i--){
-          let rr = r + (-fac+2*fac*scene.noise((i*x/20) << 0, (i*y/20) << 0)) // Needs hd
+          let rr = r - (-fac+2*fac*scene.noise((i*x/20) << 0, (i*y/20) << 0)) // Needs hd
           const angle = start + i*inc
           const p = x + rr*Math.cos(angle)
           const q = y + rr*Math.sin(angle)
