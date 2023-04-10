@@ -2,6 +2,7 @@ export {
   granulateChannels,
   granulateChannelsBW,
   oldieHD,
+  olderHD,
   ctxGranulateChannels
 }
 
@@ -64,7 +65,7 @@ function oldieHD(s, scene, density, hd, mode) {
     const fill = s.color(100 + grain, 100 + grain, grain, grain / 3)
     texture.fill(fill)
     texture.stroke(fill)
-    texture.circle(i, j, hd * s.random()) //s.random()*Math.sqrt(hd)/2)
+    texture.circle(i, j, hd * s.random())
   }
   let c = texture.get()
   c.filter(s.BLUR, 1)
@@ -74,6 +75,55 @@ function oldieHD(s, scene, density, hd, mode) {
   scene.pop()
 }
 
+function wobblyCircle(scene, x, y, r){
+  const n = scene.random(5, 8)
+  scene.beginShape()
+  scene.vertex(x+r, y)
+  for(let i=0;i<n;i++){
+    const rr = r + scene.random(-r/3, r/3)
+    const p = x + rr*Math.cos(i*2*scene.PI/n)
+    const q = y + rr*Math.sin(i*2*scene.PI/n)    
+    scene.curveVertex(p, q)
+  }
+  scene.vertex(x+r, y)
+  scene.endShape(scene.CLOSE)
+}
+
+function olderHD(s, scene, density, hd, mode, alpha, dark) {
+  scene.push()
+  let texture = s.createGraphics(scene.width, scene.height)
+  texture.strokeWeight(1.0 / hd)
+  let coords = []
+  for (let i = 0; i < texture.width; i++) {
+    for (let j = 0; j < texture.height; j++) {
+      if (s.random() < density) {
+        coords.push([i, j])
+      }
+    }
+  }
+  const shuffledCoords = shuffle(coords)
+  for (let coord of shuffledCoords) {
+    let [i, j] = coord
+    const grain = 50 + 100 * s.noise(i, j)
+    const alphaR = alpha/2+s.noise(i, j)*alpha/2
+    let fill
+    if(dark){
+      fill = s.color(grain, grain, grain, alphaR)
+    } else {
+      fill = s.color(100 + grain, 100 + grain, grain, alphaR)
+    }
+    texture.fill(fill)
+    texture.stroke(fill)
+    //texture.circle(i, j, hd * s.random())
+    wobblyCircle(texture, i, j, hd*s.random())
+  }
+  let c = texture.get()
+  c.filter(s.BLUR, 1)
+  c.resize(scene.width, 0)
+  scene.blendMode(mode)
+  scene.image(c, 0, 0)
+  scene.pop()
+}
 
 function ctxGranulateChannels(s, amount, skipWhite) {
   // Based on a post by GorillaSun and meezwhite on grain

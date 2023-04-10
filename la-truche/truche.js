@@ -12,17 +12,18 @@ import {
 } from '../libraries/misc.js'
 
 import {
-  oldieHD
+  olderHD, oldieHD
 } from '../libraries/effects.js'
 
 
 const sketch = (s) => {
 
   let gui, debug=true, seed
+  let R
   let largeCanvas
   const PI = s.PI
   let hd = 1
-  let reforma
+  let essays1743
   const river = s.color("#385991")
   const ground = s.color("#f9edcd")
   const text = s.color("#5b5b4b")
@@ -40,10 +41,11 @@ const sketch = (s) => {
     s.noLoop()
     gui = createGUI()
     gui.toggle()
+    R.action()
   }
 
   s.preload = () => {
-    reforma = s.loadFont("../libraries/fonts/Reforma1969-BlancaItalica.ttf")
+    essays1743 = s.loadFont("../libraries/fonts/Essays1743-Italic.ttf")
   }
   
   function loc(scene, avoid){
@@ -86,6 +88,10 @@ const sketch = (s) => {
   }
   
   s.draw = () => {
+    
+  }
+  
+  function plot() {
     const numPixels = hd * s.width * hd * s.height
     let scene = s.createGraphics(hd * s.width, hd * s.height)
     debug = false
@@ -96,6 +102,9 @@ const sketch = (s) => {
     let wSpans = scene.width/w
     let hSpans = scene.height/w
 
+    // Add texture to the "paper"
+    olderHD(s, scene, 0.9, 10*hd, s.SOFT_LIGHT, 100, true)    
+    olderHD(s, scene, 0.8, 30*hd, s.BURN, 150, true)
 
     let lightRiver = copyColor(s, river)
     lightRiver.setAlpha(50)
@@ -123,8 +132,6 @@ const sketch = (s) => {
       }
     }
 
-    
-    
     w = 100
     wSpans = scene.width/w
     hSpans = scene.height/w
@@ -153,14 +160,36 @@ const sketch = (s) => {
       }
     }
     let x = scene.random(scene.width/10, scene.width/4), y = scene.random(scene.height/10, scene.height/4)
+
+    // Let's play "Fun with textured text"
+    // Create two scenes with the text: one has the text, the other is the mask.
+    // Apply the texturing filter to that with text, then apply the mask.
+    // NOTE: This could be made faster if the texture was applied only where 
+    //       there is text, most of that layer is empty.
+
     const first = loc(scene)
-    addText(scene, x, y, first)
+    let textMask = s.createGraphics(scene.width, scene.height)
+    let textLayer = s.createGraphics(scene.width, scene.height)
+    
+    addText(textMask, x, y, first)
+    addText(textLayer, x, y, first)
+
     x = scene.random(scene.width/2, 3*scene.width/4), y = scene.random(scene.height/3, 3*scene.height/4)
-    addText(scene, x, y, loc(scene), first)
-    oldieHD(s, scene, 0.7, hd, s.HARD_LIGHT)    
-    oldieHD(s, scene, 0.4, hd, s.MULTIPLY)
+    
+    const second = loc(scene, first)    
+    addText(textMask, x, y, second)
+    addText(textLayer, x, y, second)
+
+    oldieHD(s, textLayer, 0.3, 5*hd, s.HARD_LIGHT)    
+    olderHD(s, textLayer, 0.1, hd, s.DARKEST, 100, true)    
+    
+    let c = textLayer.get()
+    c.mask(textMask)
+    scene.image(c, 0, 0)
+
+
     largeCanvas = scene
-    let c = scene.get()
+    c = scene.get()
     c.resize(s.width, 0)
     s.image(c, 0, 0)
   }
@@ -169,7 +198,7 @@ const sketch = (s) => {
     scene.push()
     scene.noStroke()
     scene.fill("black")
-    scene.textFont(reforma, 60)
+    scene.textFont(essays1743, 60)
     scene.text(content, x, y)
     scene.pop()
   }
@@ -260,10 +289,10 @@ const sketch = (s) => {
       largeCanvas.save("img.png")
     })
     let saveCmd = new Command(S, "save the canvas")
-    let R = new Key("r", () => {
+    R = new Key("r", () => {
       gui.spin(() => {
         s.clear();
-        s.draw()
+        plot()
         gui.spin();
       });
     });
