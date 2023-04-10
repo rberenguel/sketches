@@ -9,7 +9,7 @@ function offset(scene, x, y) {
 }
 
 function get(scene, x, y) {
-  const off = offset(scene, x, y)
+  const off = offset(scene, x<<0, y<<0)
   const R = scene.pixels[off + 0]
   const G = scene.pixels[off + 1]
   const B = scene.pixels[off + 2]

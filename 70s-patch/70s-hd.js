@@ -455,15 +455,14 @@ const sketch = (s) => {
     });
     let resetCanvas = new Command(R, "reset")
 
-    let D = new Key("d", () => {
-      debug = !debug;
-      R.action()
-    })
-
     let B = new Key("b", () => {
       bBlack = !bBlack;
       R.action()
     })
+    let D = new Key("d", () => {
+      debug = !debug;
+      R.action()
+    })    
     let debugBool = new Boolean(() => debug)
     let debugBoolControl = new Control([D], "toggle debug drawing",
       debugBool)

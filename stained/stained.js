@@ -154,9 +154,6 @@ const sketch = (s) => {
           const c2p = colors[index]
           let c2 = darken(scene, gaussColor(scene, c2p, 30), 0.7)
           sweepFloodfill(scene, x, y, gray100, c2)
-          /*scene.strokeWeight(15)
-          scene.stroke(c2)
-          scene.point(x, y)*/
         }
       }
     }
