@@ -1,0 +1,105 @@
+@font-face {
+     font-family: monoid;
+     src: url(./libraries/gui/monoid-regular-webfont.woff);
+}
+ @media (max-width: 768px) {
+     #container {
+         flex-flow: column;
+    }
+     #right .titleContainer {
+         margin-top: 1em;
+    }
+}
+ @media (min-width:768px) {
+}
+ body, html {
+     height: 100%;
+}
+ a {
+     color: rgb(211, 73, 52);
+     text-decoration: none;
+}
+ #header {
+     width: 100%;
+     flex-basis: 100%;
+     text-align: center;
+     font-size: 120%;
+     margin: 1em;
+     padding-bottom: 1em;
+     border-bottom: 1px solid black 
+}
+ #footer {
+     width: 100%;
+     flex-basis: 100%;
+     text-align: center;
+     font-size: 120%;
+     margin: 0em;
+     padding-top: 1em;
+     border-top: 1px solid black 
+   }
+ #flexContainer {
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     height: 100%;
+     margin-bottom: 1rem;
+   }
+ #whoContainsTheContainer {
+     display: flex;
+     flex-basis: auto;
+     justify-content: center;
+     margin: auto;
+     margin-top: 1rem;
+     margin-bottom: 5rem;     
+     padding-left: 0.5rem;
+     padding-right: 0.5rem;
+     padding-bottom: 0.5rem;
+     -webkit-backdrop-filter: blur(2px);
+     backdrop-filter: blur(5px);
+     background-color: rgba(50, 50, 150, 0.3);
+     background-opacity: 0.1;
+     border-radius: 3px;
+     border: 1px solid black;
+     color: dark-grey;
+     font-family: monoid;
+     font-size: 15px;
+     width: 85%;
+}
+ #container {
+     justify-content: center;
+     display: flex;
+     flex-wrap: wrap;
+     align-items: center;
+     margin: 0.5rem;
+     gap: 1rem;
+}
+ .wrapper {
+     flex-basis: 336px;
+     justify-content: center;
+     align-items: center;
+     width: 336px;
+     height: auto;
+     margin-bottom: 3rem;
+}
+ .imgContainer {
+     flex-basis: 336px;
+     width: 336px;
+     height: auto;
+     display: block;
+     margin: auto;
+     text-align: center;
+}
+ .titleContainer {
+     font-size: 16px;
+     text-align: center;
+     margin-bottom: 0.5rem;
+}
+ img {
+     text-align: center;
+     margin: auto;
+     object-fit: cover;
+     max-height: 234px;
+     vertical-align: middle;
+     border-radius: 3px;
+     border: 1px solid black;
+}
