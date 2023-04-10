@@ -6,10 +6,7 @@
      #container {
          flex-flow: column;
     }
-     #right .titleContainer {
-         margin-top: 1em;
-    }
-}
+  }
  @media (min-width:768px) {
 }
  body, html {
@@ -62,8 +59,8 @@
      border: 1px solid black;
      color: dark-grey;
      font-family: monoid;
-     font-size: 15px;
-     width: 85%;
+     font-size: 18px;
+     width: 90%;
 }
  #container {
      justify-content: center;
@@ -74,23 +71,19 @@
      gap: 1rem;
 }
  .wrapper {
-     flex-basis: 336px;
+     flex-basis: 35rem;
      justify-content: center;
      align-items: center;
-     width: 336px;
      height: auto;
      margin-bottom: 3rem;
 }
  .imgContainer {
-     flex-basis: 336px;
-     width: 336px;
      height: auto;
      display: block;
      margin: auto;
      text-align: center;
 }
  .titleContainer {
-     font-size: 16px;
      text-align: center;
      margin-bottom: 0.5rem;
 }
@@ -98,7 +91,7 @@
      text-align: center;
      margin: auto;
      object-fit: cover;
-     max-height: 234px;
+     max-height: 25rem;
      vertical-align: middle;
      border-radius: 3px;
      border: 1px solid black;
