@@ -1,5 +1,5 @@
 export {
-  glassTexture
+  glassTexture, glassTextureForRennie
 }
 
 import {
@@ -16,8 +16,20 @@ function glassTexture(s, scene, seed, hd) {
   backlight(s, scene, scene.DODGE, 1.0, "#AAA", "#333")
 }
 
+function glassTextureForRennie(s, scene, seed, hd) {
+  arcBasedTexture(s, scene, seed, 0.001, 2 * hd, scene.SCREEN, "arc", false, hd, 5) // bright
+  arcBasedTexture(s, scene, seed, 0.002, 1.5 * hd, scene.HARD_LIGHT, "arc_filled", true, hd, 7)
+  arcBasedTexture(s, scene, seed, 0.003, 2 * hd, scene.SOFT_LIGHT, "arc", false, hd, 8)
+  arcBasedTexture(s, scene, seed, 0.001, 3 * hd, s.MULTIPLY, "arc", false, hd, 9)
+  backlight(s, scene, scene.DODGE, 1.0, "#AAA", "#333")
+}
 
-function arcBasedTexture(s, scene, seed, density, size, mode, style, light, hd) {
+
+function arcBasedTexture(s, scene, seed, density, size, mode, style, light, hd, mulfactor) {
+  let f = mulfactor
+  if(mulfactor===undefined){
+    f = 1
+  }
   scene.randomSeed(seed)
   scene.push()
   const PI = scene.PI
@@ -55,7 +67,7 @@ function arcBasedTexture(s, scene, seed, density, size, mode, style, light, hd) 
     }
     texture.stroke(color)
     const r = size * scene.random()
-    const factor = scene.random(1.2, 4)
+    const factor = f*scene.random(1.2, 4)
     const start = scene.random(0, 2 * PI)
     const end = scene.random(start + PI - PI / 15, start - PI - PI / 15)
     drawer(i, j, factor, r, start, end)
