@@ -22,12 +22,12 @@ import {
 } from '../libraries/floodfill.js'
 
 import {
-  glassTextureForRennie
+  glassTextureForRennie2
 } from '../libraries/glassLibraries.js'
 
 const sketch = (s) => {
 
-  let gui, R, debug = true
+  let gui, R, debug = false
   let seed = 42
   const PI = s.PI
   let largeCanvas
@@ -68,12 +68,14 @@ const sketch = (s) => {
     const numPixels = hd * s.width * hd * s.height
     let scene = s.createGraphics(hd * s.width, hd * s.height)
     debugLayer = s.createGraphics(scene.width, scene.height)    
-    let roseLayer = s.createGraphics(scene.width, scene.height)
+    let roseMetalLayer = s.createGraphics(scene.width, scene.height)
+    let roseLayer = s.createGraphics(scene.width, scene.height)	
     // Here your code against scene
     scene.background(beige)
-    let crx = roseLayer.random(0.5 * scene.width, 0.8 * scene.width)
-    let cry = roseLayer.random(0.1 * scene.height, 0.3 * scene.height)
-    const contour = rose(roseLayer, crx, cry)
+    let crx = roseMetalLayer.random(0.5 * scene.width, 0.8 * scene.width)
+    let cry = roseMetalLayer.random(0.1 * scene.height, 0.3 * scene.height)
+    const contour = rose(roseMetalLayer, crx, cry)
+	console.log("Rose drawn")
     const xs = contour.map(p => p[0])
     const ys = contour.map(p => p[1])
     xs.sort((a, b) => a-b)    
@@ -92,6 +94,7 @@ const sketch = (s) => {
       debugLayer.strokeWeight(5)
       debugLayer.point(x, y)
     }
+	console.log("Stemmed")
     stems = stems.sort((p, q) => p[0] - q[0])
     stems = stems.slice(2, 7)
     const diffX = stems[1][0] - stems[0][0]
@@ -105,26 +108,29 @@ const sketch = (s) => {
       scene.stroke("black")
       scene.noFill()      
       scene.strokeWeight(8)
-      scene.bezier(...foo)
+      roseMetalLayer.bezier(...foo)
     }
     
     // Could add sweepFloodfill on each stem separation to 
     // tweak a bit the color of the glass later (but this 
     // would not work if there is more metal in the middle)
-    
-    roseLayer.loadPixels()
-    for (let i = 0; i < roseLayer.width; i++) {
-      for (let j = 0; j < roseLayer.height; j++) {
-        const c = get(roseLayer, i, j)
+	// TODO Can use stems comp to get bounding box
+    console.log("Floodfilling")
+    roseMetalLayer.loadPixels()
+    for (let i = 0; i < roseMetalLayer.width; i++) {
+      for (let j = 0; j < roseMetalLayer.height; j++) {
+        const c = get(roseMetalLayer, i, j)
         if (sameColor(c, gray100)) {
           let index = Math.floor(Math.random() * reds.length)
           const c2p = reds[index]
-          let c2 = darken(roseLayer, gaussColor(scene, c2p, 20), 0.9)
-          sweepFloodfill(roseLayer, i, j, gray100, c2)
+          let c2 = darken(roseMetalLayer, gaussColor(scene, c2p, 20), 0.9)
+          sweepFloodfill(roseMetalLayer, i, j, gray100, c2, roseLayer)
         }
       }
     }
 
+	console.log("Floodfilled")	
+	
     let ctx = scene.random(0.1 * scene.width, Math.min(0.8 * crx, scene.width / 4))
     let cty = scene.random(0.1 * scene.height, 0.3 * scene.height)
     let tulipLayer = s.createGraphics(scene.width, scene.height)
@@ -145,20 +151,26 @@ const sketch = (s) => {
     
     
     largeCanvas = scene
-    let layers = [roseLayer, tulipLayer]
+    let layers = [roseLayer]
     if(debug){
       layers.push(debugLayer)
     }
-    for(let layer of layers){
-      let c = layer.get()
-      scene.image(c, 0, 0)
-    }
-    if (!debug) glassTextureForRennie(s, scene, seed, hd)
+	stackLayers(scene, layers)
+    if (!debug) glassTextureForRennie2(s, scene, seed, 50, hd, "arc.filled", 0.1)
+	stackLayers(scene, [roseMetalLayer])
     let c = scene.get()
     c.resize(s.width, 0)
     s.image(c, 0, 0)
   }
 
+  function stackLayers(scene, layers){
+	console.log("stacking")
+    for(let layer of layers){
+      let c = layer.get()
+      scene.image(c, 0, 0)
+    }	
+  }
+  
   function rotation(x, y, angle){
     const nx = (Math.cos(angle) * x - Math.sin(angle) * y) << 0
     const ny = (Math.sin(angle) * x + Math.cos(angle) * y) << 0

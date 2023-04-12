@@ -1,5 +1,5 @@
 export {
-  glassTexture, glassTextureForRennie
+  glassTexture, glassTextureForRennie, glassTextureForRennie2
 }
 
 import {
@@ -24,6 +24,58 @@ function glassTextureForRennie(s, scene, seed, hd) {
   backlight(s, scene, scene.DODGE, 1.0, "#AAA", "#333")
 }
 
+function  glassTextureForRennie2(s, scene, seed, size, hd, style, density){
+  scene.randomSeed(seed)
+  scene.push()
+  const PI = scene.PI
+  let texture = s.createGraphics(scene.width, scene.height)
+  texture.strokeWeight(1.0 / hd)
+  let coords = []
+  let drawer, fill
+  if (style.startsWith("arc")) {
+    drawer = (i, j, factor, r, start, end) => texture.arc(i, j, factor * r, r, start, end)
+  }
+  if (style.startsWith("circle")) {
+    drawer = (i, j, factor, r, start, end) => texture.circle(i, j, r)
+  }
+  if (style.endsWith("filled")) {
+    fill = true
+  } else {
+    fill = false
+  }
+  for (let i = 0; i < texture.width; i++) {
+    for (let j = 0; j < texture.height; j++) {
+      if (scene.random() < density) {
+        coords.push([i, j])
+      }
+    }
+  }
+  const shuffledCoords = shuffle(coords) // might need seeding
+  for (let coord of shuffledCoords) {
+    let [i, j] = coord
+    //const grain = 50 + 100 * scene.noise(i, j)
+    const color = scene.color(20+200*scene.noise(i/scene.width), 20+200*scene.noise(j/scene.height), 20+200*scene.noise(scene.random()), 10*scene.noise(scene.random()))
+    if (fill) {
+      texture.fill(color)
+    } else {
+      texture.noFill()
+    }
+    texture.stroke(color)
+    const r = size * scene.random()
+    const start = scene.random(0, 2 * PI)
+    const end = scene.random(start + PI - PI / 15, start - PI - PI / 15)
+    drawer(i, j, 1, r, start, end)
+  }
+  // This backlight is what gives the final nice touch,
+  // for some reason
+  //if (true) backlight(s, texture, scene.LIGHTEST, 0.9, "#222", "#222")
+  let c = texture.get()
+  c.resize(scene.width, 0)
+  //c.filter(scene.BLUR, 1)
+  scene.blendMode(scene.REMOVE)
+  scene.image(c, 0, 0)
+  scene.pop()
+}
 
 function arcBasedTexture(s, scene, seed, density, size, mode, style, light, hd, mulfactor) {
   let f = mulfactor
