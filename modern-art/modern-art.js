@@ -150,7 +150,7 @@ const sketch = (s) => {
     scene.textStyle(s.BOLD)
     scene.text("Modern art", (l + 0.008) * w, (t + 0.03) * h, 0.2 * h, 0.1 * h)
     scene.textStyle(s.NORMAL)
-    scene.text("2023", (l + 0.058) * w, (t + 0.03) * h, 0.2 * h, 0.1 * h)
+    scene.text("2023", (l + 0.062) * w, (t + 0.03) * h, 0.2 * h, 0.1 * h)
     scene.text("Algorithm on HTMLCanvas", (l + 0.008) * w, (t + 0.05) * h, 0.2 * h, 0.1 * h)
     scene.textStyle(s.ITALIC)
     scene.text("Simulated cloth and stitch effects", (l + 0.008) * w, (t + 0.07) * h, 0.2 * h, 0.1 * h)
@@ -164,7 +164,7 @@ const sketch = (s) => {
   function createGUI() {
     let info =
       "Tried to improve on my generative embroidery project, and ended up with a very convincing cloth texture. Enriched it with <a href='https://github.com/rvanwijnen/spectral.js'>spectral.js</a> color mixing and using <a href='http://www.complexification.net/gallery/machines/substrate/'>Jared Tarbell's Substrate</a> colours"
-    let subinfo = "When I got a stitched patch on I thought it looked like what I'd find in a modern museum, so went all in on the idea."
+    let subinfo = "When I got a stitched patch on I thought it looked like what I'd find in a modern museum, so went all in on the idea. <em>This is designed for landscape only</em>"
     let S = new Key("s", () => {
       largeCanvas.save("img.png")
     })
