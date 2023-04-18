@@ -24,7 +24,10 @@ function glassTextureForRennie(s, scene, seed, hd) {
   backlight(s, scene, scene.DODGE, 1.0, "#AAA", "#333")
 }
 
-function  glassTextureForRennie2(s, scene, seed, size, hd, style, density){
+function  glassTextureForRennie2(s, scene, seed, size, hd, style, density, blurLevel){
+  let maskingLayer = s.createGraphics(scene.width, scene.height)
+  let c = scene.get()
+  maskingLayer.image(c, 0, 0)
   scene.randomSeed(seed)
   scene.push()
   const PI = scene.PI
@@ -69,10 +72,11 @@ function  glassTextureForRennie2(s, scene, seed, size, hd, style, density){
   // This backlight is what gives the final nice touch,
   // for some reason
   //if (true) backlight(s, texture, scene.LIGHTEST, 0.9, "#222", "#222")
-  let c = texture.get()
+  c = texture.get()
   c.resize(scene.width, 0)
-  //c.filter(scene.BLUR, 1)
-  scene.blendMode(scene.REMOVE)
+  c.mask(maskingLayer)
+  if(blurLevel>0)c.filter(scene.BLUR, blurLevel*hd)
+  scene.blendMode(scene.MULTIPLY)
   scene.image(c, 0, 0)
   scene.pop()
 }

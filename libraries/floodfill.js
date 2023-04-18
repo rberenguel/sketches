@@ -1,5 +1,5 @@
 export {
-  sweepFloodfill, get, set, sameColor
+  sweepFloodfill, get, set, sameColor, expandColor
 }
 
 
@@ -79,16 +79,32 @@ function sweepFloodfill(source, x, y, c1p, c2p, destination) {
   while (stack.length > 0) {
     let [nx, ny] = stack.pop()
     let lx = nx
+    let left = false
+    let right = false
     while (inside(source, lx - 1, ny, c1)) {
-      set(source, lx - 1, ny, transp)		
-      set(destination, lx - 1, ny, c2)	  
+      set(source, lx - 1, ny, transp)
+      set(destination, lx - 1, ny, c2)
       lx = lx - 1
+      left = true
     }
+    // This is to make sure we make it to the boundaries when we 
+    // can't redraw boundaries. Doesn't look good
+    /*if(left){
+      set(source, lx - 1, ny, transp)
+      set(destination, lx - 1, ny, c2)
+      left = false      
+    }*/
     while (inside(source, nx, ny, c1)) {
       set(source, nx, ny, transp)		
       set(destination, nx, ny, c2)	  
       nx = nx + 1
+      right = true
     }
+    /*if(right){
+      set(source, nx, ny, transp)		
+      set(destination, nx, ny, c2)
+      right = false      
+    }*/
     scan(source, lx, nx - 1, ny + 1, stack, c1)
     scan(source, lx, nx - 1, ny - 1, stack, c1)
   }

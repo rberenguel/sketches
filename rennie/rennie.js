@@ -18,7 +18,8 @@ import {
   get,
   set,
   sameColor,
-  sweepFloodfill
+  sweepFloodfill,
+  expandColor  
 } from '../libraries/floodfill.js'
 
 import {
@@ -32,8 +33,14 @@ const sketch = (s) => {
   const PI = s.PI
   let largeCanvas
   let hd = 1
-  const gray100 = [100, 100, 100, 255]
   let debugLayer
+
+  const outerStroke = (light) => {
+    return light ? 5 : 10
+  }
+  const innerStroke = (light) => {
+    return light ? 5 : 8
+  }
 
   const reds = [
     s.color("#e8646e"),
@@ -41,14 +48,17 @@ const sketch = (s) => {
     s.color("#f0747d"),
     s.color("#9c1b04"),
   ]
-  
+
   const blues = [
     s.color("#5c9898"),
     s.color("#1a4467")
   ]
 
-  const beige = s.color("#fdefcc")
+  const beige = s.color("#ecdeaa")
+  const darkBeige = s.color("#c1bcaa")
 
+  let gray100 = expandColor(s, s.color(10, 10, 10, 100))
+  
   s.setup = () => {
     let {
       w,
@@ -67,26 +77,29 @@ const sketch = (s) => {
   function plot() {
     const numPixels = hd * s.width * hd * s.height
     let scene = s.createGraphics(hd * s.width, hd * s.height)
-    debugLayer = s.createGraphics(scene.width, scene.height)    
+    debugLayer = s.createGraphics(scene.width, scene.height)
     let roseMetalLayer = s.createGraphics(scene.width, scene.height)
-    let roseLayer = s.createGraphics(scene.width, scene.height)	
+    let roseThickMetalLayer = s.createGraphics(scene.width, scene.height)
+    let armature = s.createGraphics(scene.width, scene.height)    
+    let roseLayer = s.createGraphics(scene.width, scene.height)
     // Here your code against scene
     scene.background(beige)
     let crx = roseMetalLayer.random(0.5 * scene.width, 0.8 * scene.width)
     let cry = roseMetalLayer.random(0.1 * scene.height, 0.3 * scene.height)
-    const contour = rose(roseMetalLayer, crx, cry)
-	console.log("Rose drawn")
+    const seed = window.performance.now()
+    const contour = rose(roseMetalLayer, crx, cry, seed, true)
+    console.log("Rose drawn")
     const xs = contour.map(p => p[0])
     const ys = contour.map(p => p[1])
-    xs.sort((a, b) => a-b)    
-    ys.sort((a, b) => a-b)
-    const midY = (ys[ys.length-1] + ys[0])/2
-    const midX = (xs[xs.length-1] + xs[0])/2
+    xs.sort((a, b) => a - b)
+    ys.sort((a, b) => a - b)
+    const midY = (ys[ys.length - 1] + ys[0]) / 2
+    const midX = (xs[xs.length - 1] + xs[0]) / 2
     let stems = []
-    for(let p of contour){
+    for (let p of contour) {
       const [x, y] = p
-      if(x > midX && y > midY){
-        debugLayer.stroke("firebrick")        
+      if (x > midX && y > midY) {
+        debugLayer.stroke("firebrick")
         stems.push([x, y])
       } else {
         debugLayer.stroke("darkslateblue")
@@ -94,27 +107,32 @@ const sketch = (s) => {
       debugLayer.strokeWeight(5)
       debugLayer.point(x, y)
     }
-	console.log("Stemmed")
+    let midStems = []
+    console.log("Stemmed")
     stems = stems.sort((p, q) => p[0] - q[0])
     stems = stems.slice(2, 7)
     const diffX = stems[1][0] - stems[0][0]
-    for(let i=0; i< stems.length-1; i++){
+    for (let i = 0; i < stems.length - 1; i++) {
       const [x, y] = stems[i]
       const diffY = scene.height - stems[i][1]
       debugLayer.stroke("purple")
       debugLayer.strokeWeight(1)
-      const foo = [x, y, x+6*diffX, y+diffY/4, x+4*diffX, y+2*diffY/3, x+2*diffX, scene.height]
-      bezierB(debugLayer, ...foo)
+      const bP = [x, y, x + 6 * diffX, y + diffY / 4, x + 4 * diffX, y + 2 * diffY / 3, x + 2 * diffX, scene.height]
+      const bPx = debugLayer.bezierPoint(bP[0], bP[2], bP[4], bP[6], 0.1) + diffX / 2
+      const bPy = debugLayer.bezierPoint(bP[1], bP[3], bP[5], bP[7], 0.1)
+      midStems.push([bPx, bPy])
+      bezierB(debugLayer, ...bP)
       scene.stroke("black")
-      scene.noFill()      
-      scene.strokeWeight(8)
-      roseMetalLayer.bezier(...foo)
+      scene.noFill()
+      scene.strokeWeight(outerStroke(false))
+      roseMetalLayer.bezier(...bP)
     }
-    
+    midStems.pop()
+
     // Could add sweepFloodfill on each stem separation to 
     // tweak a bit the color of the glass later (but this 
     // would not work if there is more metal in the middle)
-	// TODO Can use stems comp to get bounding box
+    // TODO Can use stems comp to get bounding box
     console.log("Floodfilling")
     roseMetalLayer.loadPixels()
     for (let i = 0; i < roseMetalLayer.width; i++) {
@@ -128,56 +146,119 @@ const sketch = (s) => {
         }
       }
     }
+    
+    let [x, y] = stems[stems.length-1]
+    x = x + 2*diffX
+    y = scene.height    
+    debugLayer.stroke("green")
+    debugLayer.strokeWeight(5)
+    debugLayer.point(x, y)
+    let miss = scene.width - xs[xs.length-1]
+    let end = xs[0]-scene.width/(7*hd)
+    let ends = []
+    for(let i=0; i< 4;i++){
+      ends.push(end)
+      let bez = [x, y, x+miss/2, 2*scene.height/3, x+miss/4, scene.height/3, end, 0]
+      debugLayer.strokeWeight(1)
+      debugLayer.stroke("purple")
+      bezierB(debugLayer, ...bez)
+            if (debug) {
+        armature.strokeWeight(5)
+      } else {
+        armature.strokeWeight(7)
+      }
+      
+      armature.stroke("black")
+      armature.noFill()
+      armature.bezier(...bez)
+      miss += 6*diffX
+      end += diffX/2
+    }
+    ends.sort((a, b) => b - a)
+    for(let i=0;i<4;i++){
+      let x = ends[i]
+      let bez = [x, 0, 1.2*x/3-i*diffX, scene.height/3, x/3-i*diffX, 2*scene.height/3, 1.1*x, scene.height]
+      debugLayer.point(x, y)
+      debugLayer.strokeWeight(1)
+      debugLayer.stroke("purple")
+      bezierB(debugLayer, ...bez)
+            if (debug) {
+        armature.strokeWeight(5)
+      } else {
+        armature.strokeWeight(7)
+      }
+      
+      armature.stroke("black")
+      armature.noFill()
+      armature.bezier(...bez)      
+    }
+    
+    for (let ms of midStems) {
+      const [mx, my] = ms
+      debugLayer.stroke("blue")
+      debugLayer.strokeWeight(3)
+      debugLayer.point(mx, my)
+      let c2 = darken(roseMetalLayer, gaussColor(scene, beige, 15), 0.9)
+      sweepFloodfill(roseMetalLayer, mx, my, s.color(0, 0, 0, 0), c2, roseLayer)
+    }
 
-	console.log("Floodfilled")	
-	
     let ctx = scene.random(0.1 * scene.width, Math.min(0.8 * crx, scene.width / 4))
     let cty = scene.random(0.1 * scene.height, 0.3 * scene.height)
     let tulipLayer = s.createGraphics(scene.width, scene.height)
-    tulip(tulipLayer, ctx, cty)
+    let tulipMetalLayer = s.createGraphics(scene.width, scene.height)
+    tulip(tulipMetalLayer, ctx, cty)
 
-    tulipLayer.loadPixels()
+    tulipMetalLayer.loadPixels()
     for (let i = 0; i < tulipLayer.width; i++) {
       for (let j = 0; j < tulipLayer.height; j++) {
-        const c = get(tulipLayer, i, j)
+        const c = get(tulipMetalLayer, i, j)
         if (sameColor(c, gray100)) {
           let index = Math.floor(Math.random() * blues.length)
           const c2p = blues[index]
-          let c2 = darken(tulipLayer, gaussColor(scene, c2p, 20), 0.9)
-          sweepFloodfill(tulipLayer, i, j, gray100, c2)
+          let c2 = darken(tulipMetalLayer, gaussColor(scene, c2p, 20), 0.9)
+          sweepFloodfill(tulipMetalLayer, i, j, gray100, c2, tulipLayer)
         }
       }
     }
-    
-    
+
+
     largeCanvas = scene
-    let layers = [roseLayer]
-    if(debug){
+    let layers = [tulipLayer]
+    if (debug) {
       layers.push(debugLayer)
     }
-	stackLayers(scene, layers)
-    if (!debug) glassTextureForRennie2(s, scene, seed, 50, hd, "arc.filled", 0.1)
-	stackLayers(scene, [roseMetalLayer])
+    stackLayers(roseLayer, layers)
+    //let maskingLayer1 = s.createGraphics(scene.width, scene.height)
+    //let c = roseLayer.get()
+    //maskingLayer1.image(c, 0, 0)
+    if (!debug) {
+      glassTextureForRennie2(s, roseLayer, seed, 50, hd, "arc.filled", 0.1, 2)
+      glassTextureForRennie2(s, scene, seed, 50, hd, "arc.filled", 0.1, 0)
+    }
+    //let c = roseLayer.get()
+    //c.mask(maskingLayer1)
+    //maskingLayer1.image(c, 0, 0)
+    stackLayers(scene, [armature, roseLayer, roseMetalLayer, tulipMetalLayer])
     let c = scene.get()
     c.resize(s.width, 0)
     s.image(c, 0, 0)
   }
 
-  function stackLayers(scene, layers){
-	console.log("stacking")
-    for(let layer of layers){
+  function stackLayers(scene, layers) {
+    console.log("stacking")
+    for (let layer of layers) {
       let c = layer.get()
       scene.image(c, 0, 0)
-    }	
+    }
   }
-  
-  function rotation(x, y, angle){
+
+  function rotation(x, y, angle) {
     const nx = (Math.cos(angle) * x - Math.sin(angle) * y) << 0
     const ny = (Math.sin(angle) * x + Math.cos(angle) * y) << 0
-    return [nx, ny]    
+    return [nx, ny]
   }
-  
-  function rose(scene, crx, cry) {
+
+function rose(scene, crx, cry) {
     seed = window.performance.now()
     scene.push()
 
@@ -224,7 +305,7 @@ const sketch = (s) => {
       debugLayer.stroke("green")
       debugLayer.point(0, 0)
     }
-    scene.fill(100)
+    scene.fill(gray100)
     scene.stroke("black")
     if (debug) {
       scene.strokeWeight(5)
@@ -290,13 +371,13 @@ const sketch = (s) => {
 
   function tulip(scene, ctx, cty) {
     scene.push()
-    scene.fill(100)
-    const angle = 0.05*PI
+    scene.fill(gray100)
+    const angle = 0.05 * PI
     scene.rotate()
     if (debug) {
       scene.strokeWeight(5)
     } else {
-      scene.strokeWeight(15)
+      scene.strokeWeight(outerStroke(false))
     }
 
     scene.stroke("black")
@@ -331,17 +412,17 @@ const sketch = (s) => {
     let [l2ex, l2ey] = rotation(s2x, scene.height, angle)
     scene.bezierVertex(s2x, s2y, e2x, e2y, l2ex, l2ey)
     scene.endShape()
-    
+
     scene.pop()
   }
 
-  function bezierB(scene, x, y, c1x, c1y, c2x, c2y, ex, ey){
+  function bezierB(scene, x, y, c1x, c1y, c2x, c2y, ex, ey) {
     scene.line(x, y, c1x, c1y)
     scene.line(c1x, c1y, c2x, c2y)
-    scene.line(c2x, c2y, ex, ey)      
+    scene.line(c2x, c2y, ex, ey)
   }
-    
-  
+
+
   function arrow(scene, sx, sy, ex, ey) {
     let dx = sx - ex,
       dy = sy - ey
@@ -359,7 +440,7 @@ const sketch = (s) => {
     scene.pop()
   }
 
-  function curveUntilCollision(scene, start, direction, origin, pull, scale) {
+  function curveUntilCollision(scene, start, direction, origin, pull, scale, light) {
     let [x, y] = start
     let [dx, dy] = direction
     let [ox, oy] = origin
@@ -450,8 +531,10 @@ const sketch = (s) => {
     if (debug) {
       scene.strokeWeight(3)
     } else {
-      scene.strokeWeight(scale * 15)
+      scene.strokeWeight(innerStroke(light))
     }
+
+
 
     scene.stroke("black")
     scene.noFill()
@@ -459,6 +542,7 @@ const sketch = (s) => {
     scene.vertex(x, y) // Anchor 1
     scene.bezierVertex(c1x, c1y, c2x, c2y, cex, cey) // C1, C2, Anchor 2
     scene.endShape()
+
     let t = 0
     if (pull >= 0) {
       t = scene.random(0.1, 0.3)
