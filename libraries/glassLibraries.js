@@ -1,5 +1,5 @@
 export {
-  glassTexture
+  glassTexture, glassTextureForRennie, glassTextureForRennie2
 }
 
 import {
@@ -16,8 +16,76 @@ function glassTexture(s, scene, seed, hd) {
   backlight(s, scene, scene.DODGE, 1.0, "#AAA", "#333")
 }
 
+function glassTextureForRennie(s, scene, seed, hd) {
+  arcBasedTexture(s, scene, seed, 0.001, 2 * hd, scene.SCREEN, "arc", false, hd, 5) // bright
+  arcBasedTexture(s, scene, seed, 0.002, 1.5 * hd, scene.HARD_LIGHT, "arc_filled", true, hd, 7)
+  arcBasedTexture(s, scene, seed, 0.003, 2 * hd, scene.SOFT_LIGHT, "arc", false, hd, 8)
+  arcBasedTexture(s, scene, seed, 0.001, 3 * hd, s.MULTIPLY, "arc", false, hd, 9)
+  backlight(s, scene, scene.DODGE, 1.0, "#AAA", "#333")
+}
 
-function arcBasedTexture(s, scene, seed, density, size, mode, style, light, hd) {
+function  glassTextureForRennie2(s, scene, seed, size, hd, style, density, blurLevel){
+  let maskingLayer = s.createGraphics(scene.width, scene.height)
+  let c = scene.get()
+  maskingLayer.image(c, 0, 0)
+  scene.randomSeed(seed)
+  scene.push()
+  const PI = scene.PI
+  let texture = s.createGraphics(scene.width, scene.height)
+  texture.strokeWeight(1.0 / hd)
+  let coords = []
+  let drawer, fill
+  if (style.startsWith("arc")) {
+    drawer = (i, j, factor, r, start, end) => texture.arc(i, j, factor * r, r, start, end)
+  }
+  if (style.startsWith("circle")) {
+    drawer = (i, j, factor, r, start, end) => texture.circle(i, j, r)
+  }
+  if (style.endsWith("filled")) {
+    fill = true
+  } else {
+    fill = false
+  }
+  for (let i = 0; i < texture.width; i++) {
+    for (let j = 0; j < texture.height; j++) {
+      if (scene.random() < density) {
+        coords.push([i, j])
+      }
+    }
+  }
+  const shuffledCoords = shuffle(coords) // might need seeding
+  for (let coord of shuffledCoords) {
+    let [i, j] = coord
+    //const grain = 50 + 100 * scene.noise(i, j)
+    const color = scene.color(20+200*scene.noise(i/scene.width), 20+200*scene.noise(j/scene.height), 20+200*scene.noise(scene.random()), 10*scene.noise(scene.random()))
+    if (fill) {
+      texture.fill(color)
+    } else {
+      texture.noFill()
+    }
+    texture.stroke(color)
+    const r = size * scene.random()
+    const start = scene.random(0, 2 * PI)
+    const end = scene.random(start + PI - PI / 15, start - PI - PI / 15)
+    drawer(i, j, 1, r, start, end)
+  }
+  // This backlight is what gives the final nice touch,
+  // for some reason
+  //if (true) backlight(s, texture, scene.LIGHTEST, 0.9, "#222", "#222")
+  c = texture.get()
+  c.resize(scene.width, 0)
+  c.mask(maskingLayer)
+  if(blurLevel>0)c.filter(scene.BLUR, blurLevel*hd)
+  scene.blendMode(scene.MULTIPLY)
+  scene.image(c, 0, 0)
+  scene.pop()
+}
+
+function arcBasedTexture(s, scene, seed, density, size, mode, style, light, hd, mulfactor) {
+  let f = mulfactor
+  if(mulfactor===undefined){
+    f = 1
+  }
   scene.randomSeed(seed)
   scene.push()
   const PI = scene.PI
@@ -55,7 +123,7 @@ function arcBasedTexture(s, scene, seed, density, size, mode, style, light, hd) 
     }
     texture.stroke(color)
     const r = size * scene.random()
-    const factor = scene.random(1.2, 4)
+    const factor = f*scene.random(1.2, 4)
     const start = scene.random(0, 2 * PI)
     const end = scene.random(start + PI - PI / 15, start - PI - PI / 15)
     drawer(i, j, factor, r, start, end)

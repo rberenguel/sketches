@@ -1,5 +1,5 @@
 export {
-  sweepFloodfill, get, set, sameColor
+  sweepFloodfill, get, set, sameColor, expandColor
 }
 
 
@@ -56,14 +56,21 @@ function inside(scene, x, y, c1) {
   return sameColor(get(scene, x, y), c1)
 }
 
-function sweepFloodfill(scene, x, y, c1p, c2p) {
+function sweepFloodfill(source, x, y, c1p, c2p, destination) {
   // For now converts from c1 to c2, with Wikipedia's algorithm.
   // Once I can find the boundaries, I'll refine.
-  const c1 = expandColor(scene, c1p)
-  const c2 = expandColor(scene, c2p)
-  scene.loadPixels()
-  if (!inside(scene, x, y, c1)) {
-    scene.updatePixels()
+  if(destination===undefined){
+	  console.log("Setting destination")
+	  destination = source
+  }
+  const c1 = expandColor(source, c1p)
+  const c2 = expandColor(source, c2p)
+  const transp = [255,0,255,0]
+  source.loadPixels()
+  destination.loadPixels()
+  if (!inside(source, x, y, c1)) {
+    destination.updatePixels()
+	source.updatePixels()
     return
   }
   let stack = [
@@ -72,18 +79,37 @@ function sweepFloodfill(scene, x, y, c1p, c2p) {
   while (stack.length > 0) {
     let [nx, ny] = stack.pop()
     let lx = nx
-    while (inside(scene, lx - 1, ny, c1)) {
-      set(scene, lx - 1, ny, c2)
+    let left = false
+    let right = false
+    while (inside(source, lx - 1, ny, c1)) {
+      set(source, lx - 1, ny, transp)
+      set(destination, lx - 1, ny, c2)
       lx = lx - 1
+      left = true
     }
-    while (inside(scene, nx, ny, c1)) {
-      set(scene, nx, ny, c2)
+    // This is to make sure we make it to the boundaries when we 
+    // can't redraw boundaries. Doesn't look good
+    /*if(left){
+      set(source, lx - 1, ny, transp)
+      set(destination, lx - 1, ny, c2)
+      left = false      
+    }*/
+    while (inside(source, nx, ny, c1)) {
+      set(source, nx, ny, transp)		
+      set(destination, nx, ny, c2)	  
       nx = nx + 1
+      right = true
     }
-    scan(scene, lx, nx - 1, ny + 1, stack, c1)
-    scan(scene, lx, nx - 1, ny - 1, stack, c1)
+    /*if(right){
+      set(source, nx, ny, transp)		
+      set(destination, nx, ny, c2)
+      right = false      
+    }*/
+    scan(source, lx, nx - 1, ny + 1, stack, c1)
+    scan(source, lx, nx - 1, ny - 1, stack, c1)
   }
-  scene.updatePixels()
+  destination.updatePixels()
+  source.updatePixels()  
 }
 
 function scan(scene, lx, rx, y, stack, c1) {

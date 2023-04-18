@@ -4,6 +4,18 @@ Generative art sketches. Newest first
 
 ---
 
+## Modern Art [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/modern-art/"><img src="samples/modern-art.png" width="360"/></a>
+
+---
+
+- I was going to work on a renewed embroidery sketch and ended up with this cloth texture generator
+- [code](modern-art/modern-art.js) This is not resolution independent even if it has the controls in place. Could be made to be, though.
+- Explore it [here](https://rberenguel.github.io/sketches/modern-art/index.html)
+
+---
+
 ## La Truche [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/la-truche/"><img src="samples/la-truche.png" width="360"/></a>
