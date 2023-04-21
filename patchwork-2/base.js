@@ -1,179 +1,333 @@
 import {
-  Command,
-  GUI,
-  Integer,
-  Float,
-  Key,
-  Control
+    Command,
+    GUI,
+    Integer,
+    Float,
+    Key,
+    Control
 } from '../libraries/gui/gui.js'
 
 import {
-  getLargeCanvas
+    getLargeCanvas,
+    releaseCanvas
 } from '../libraries/misc.js'
 
 import {
-  textile
+    textile
 } from '../libraries/textile.js'
+
+import {
+    canvasRGBA
+} from '../libraries/3rdparty/stackblur.js'
 
 const sketch = (s) => {
 
-  let gui
-  let largeCanvas
-  let hd = 1
-  const PI = s.PI
-  s.setup = () => {
-    let {
-      w,
-      h
-    } = getLargeCanvas(s, 1600)
-    let canvas = s.createCanvas(w, h)
-    s.pixelDensity(1)
-    canvas.mousePressed(() => {})
-    s.frameRate(20)
-    s.noLoop()
-    gui = createGUI()
-    gui.toggle()
-  }
-
-  function petal(scene, x, y, a, scale){
-    console.log("Drawing petal")
-    scene.push()
-    //scene.strokeWeight(10)
-    scene.strokeWeight(2)
-    if(scale !== undefined){
-      scene.scale(scale)
+    let gui
+    let largeCanvas
+    let hd = 1
+    const PI = s.PI
+	
+	let cachedRedCloth, cachedBlueCloth, cachedGreenCloth
+	
+    s.setup = () => {
+        let {
+            w,
+            h
+        } = getLargeCanvas(s, 1600)
+        let canvas = s.createCanvas(w, h)
+        s.pixelDensity(1)
+        canvas.mousePressed(() => {})
+        s.frameRate(1)
+        s.noLoop()
+        gui = createGUI()
+        gui.toggle()
     }
-    scene.rotate(a)
-    //scene.point(0, 0)
-    const anch1 = [10, -10]
-    const anch2 = [-10, -10]
-    const ctrl1 = [100, -110]
-    const ctrl2 = [-100, -110]
-    const ctrl3 = [0, -15]
-    const ctrl4 = [0, -15]
-    scene.beginShape()
-    scene.vertex(...anch1) // anchor
-    scene.bezierVertex(...ctrl1, ...ctrl2, ...anch2)
-    scene.bezierVertex(...ctrl3, ...ctrl4, ...anch1)
-    scene.endShape()
-    scene.pop()
-  }
-  
-  s.draw = () => {
-    const numPixels = hd * s.width * hd * s.height
-    console.log("Num Pixels: " + numPixels)
-    let scene = s.createGraphics(hd * s.width, hd * s.height)
-    let redCloth
-    let petalMask
-    
-    textile(scene, 0, 0, scene.width, scene.height, 1, 8)
-    
-    
-    const mx = scene.width/2
-    const my = scene.height/2
-    for(let i = 0; i < 6; i++){
-      const a = i*PI/3
-      let angle = scene.random(a-PI/37, a+PI/37)
-      redCloth = s.createGraphics(scene.width, scene.height)
-      redCloth.translate(mx, my)
-      redCloth.rotate(angle)
-      redCloth.translate(-300, -300)
-      textile(redCloth, 0, 0, 600, 600, 1, 8, ["#AA3333", "#991525", "#9A1258"])
-      petalMask = s.createGraphics(scene.width, scene.height)
-      petalMask.translate(mx, my)
-      petalMask.fill("white")
-      petal(petalMask, 0, 0, angle)
-      redCloth.rotate(angle)
-      let d = redCloth.get()
-      d.mask(petalMask)
-      scene.image(d, 0, 0)
-      let ctx = scene.drawingContext
-      ctx.shadowOffsetX = 0
-      ctx.shadowOffsetY = 0
-      ctx.shadowBlur = 8
-      ctx.shadowColor = "#10101099"
-      scene.stroke("#00000099")
-      ctx.setLineDash([3, 5, 3, 5])
-      scene.noFill()
-      scene.push()
-      scene.translate(mx, my)
-      petal(scene, 0, 0, angle, 0.97)
-      scene.pop()
+
+	//let canvas, mask, shadow
+	
+    function applique(s, scene, cloth, drawer, w, h, transf, x, y) {
+        // Generates a canvas texture running cloth(canvas, w, h) translated to the center
+        // Generates a clipping mask running drawer(mask, 1) translated to the center
+        // Drawer can't set up any coloring or stroke
+        // Will sew the cloth to scene.
+        // transf.canvas[] will contain transformations to canvas
+        // transf.mask[] will contain transformations to mask
+        let d, f
+		//console.log("Creating cloth canvas")
+		let canvas = s.createGraphics(w, h)
+		//console.log("Creating mask canvas")
+		let mask = s.createGraphics(w, h)
+		//console.log("Creating shadow canvas")
+		let shadow = s.createGraphics(w, h)
+        let ctx
+        const mx = scene.width / 2
+        const my = scene.height / 2
+        scene.push()
+        scene.translate(-w/2, -h/2)
+		/*if(transf && transf.scene){
+			transf.scene(scene)
+		}*/
+        scene.translate(x, y)
+        canvas.translate(w/2, h/2)
+        mask.translate(w/2, h/2)
+        if (transf && transf.canvas) {
+            transf.canvas(canvas)
+        }
+        if (transf && transf.mask) {
+            //transf.mask(mask)
+        }
+
+        // Resolution independent shadow
+        shadow.translate(w/2, h/2)
+        shadow.fill("#10101090")
+        shadow.stroke("#10101090")
+        drawer(shadow, 1.04)
+        //d = shadow.get()
+        ctx = shadow.drawingContext
+        // Trick because Safari has no ctx.filter(blur)
+        canvasRGBA(ctx.canvas, 0, 0, w, h, 5 * hd)
+        scene.image(shadow, 0, 0)
+
+        // Cut applique out of canvas
+        cloth(canvas, w, h)
+        mask.fill("white")
+		mask.translate(0, 0)
+        drawer(mask, 1)
+        //d = canvas.get()
+        //d.mask(mask)
+        //scene.image(d, 0, 0)
+		ctx = mask.drawingContext
+		ctx.globalCompositeOperation = 'source-in'
+		mask.image(canvas, -w/2, -h/2)
+		ctx.globalCompositeOperation = 'source-over'
+		ctx = scene.drawingContext
+		ctx.globalCompositeOperation = 'source-over'
+		scene.image(mask, 0, 0)
+		
+        // Stitch shadow and stitches
+        scene.push()
+        f = hd
+        if (transf && transf.stitchScaleCorrection) {
+            f *= 1.0 / transf.stitchScaleCorrection
+        }
+        scene.translate(w/2, h/2)
+        ctx = scene.drawingContext
+        ctx.setLineDash([3 * f, 5 * f, 3 * f, 5 * f])
+        scene.stroke("#10101030")
+        scene.noFill()
+        scene.strokeWeight(4 * f)
+        drawer(scene, 0.97)
+        scene.stroke("#10101090")
+        scene.strokeWeight(1 * f)
+        drawer(scene, 0.97)
+        scene.pop()
+        scene.pop()
+				
+		releaseCanvas(shadow)
+		releaseCanvas(mask)
+		releaseCanvas(canvas)
+
+		shadow.remove()
+		mask.remove()
+		canvas.remove()
     }
-    /*redCloth = s.createGraphics(scene.width, scene.height)
-    redCloth.translate(mx, my)
-    redCloth.strokeWeight(15)
-    redCloth.point(300, 300)
-    redCloth.rotate(PI/4)
-    redCloth.translate(-300, -300)
-    redCloth.stroke("red")
-    redCloth.strokeWeight(8)
-    redCloth.point(300, 300)    
-    textile(redCloth, 0, 0, 600, 600, 1, 8, ["#AA3333", "#991525"])
-    scene.image(redCloth.get(), 0, 0)
-    */
-    largeCanvas = scene
-    let c = scene.get()
-    c.resize(s.width, 0)
-    s.image(c, 0, 0)
-  }
 
-  function createGUI() {
-    let info =
-      "Info"
-    let subinfo = "Subinfo<br/>Very high resolutions can fail depending on the browser"
-    let S = new Key("s", () => {
-      largeCanvas.save("img.png")
-    })
-    let saveCmd = new Command(S, "save the canvas")
-    let R = new Key("r", () => {
-      gui.spin(() => {
-        s.clear();
-        s.draw()
-        gui.spin();
-      });
-    });
+	const sleep = ms => new Promise(r => setTimeout(r, ms));
+	
+    function petal(scene, angle, scale) {
+        scene.push()
+        if (scale !== undefined) {
+            scene.scale(scale)
+        }
+        scene.rotate(angle)
+        const anch1 = [10, -10]
+        const anch2 = [-10, -10]
+        const ctrl1 = [100, -110]
+        const ctrl2 = [-100, -110]
+        const ctrl3 = [0, -15]
+        const ctrl4 = [0, -15]
+        scene.beginShape()
+        scene.vertex(...anch1) // anchor
+        scene.bezierVertex(...ctrl1, ...ctrl2, ...anch2)
+        scene.bezierVertex(...ctrl3, ...ctrl4, ...anch1)
+        scene.endShape()
+        scene.pop()
+    }
 
-    let resetCanvas = new Command(R, "reset")
+	function fakeFlower(scene, x, y, scale, a){
+        scene.push()
+        //scene.rotate(a)
+        scene.scale(scale)
+		scene.strokeWeight(3)
+		scene.noFill()
+		scene.circle(x, y, 150)
+		scene.pop()		
+	}
+	
+    function flower(scene, x, y, scale, shift) {
+        let transf = {}
+        scene.push()
+        scene.scale(scale)
+        //scene.rotate(angle)
+        // No cloth caching: 3.2 seconds, caching: 0.6 sec
+		if(!cachedRedCloth){
+			//console.log("Generating red cloth")
+        cachedRedCloth = s.createGraphics(600*hd, 600*hd)
+        textile(cachedRedCloth, 0, 0, 600*hd, 600*hd, 1, 8, ["#AA3333", "#991525", "#9A1258"])			
+		}
+        transf.stitchScaleCorrection = scale
+		//transf.scene = (e) => e.rotate(a)
+        for (let i = 0; i < 6; i++) {
+            const a = i * PI / 3 + shift
+            let angle = scene.random(a - PI / 37, a + PI / 37)
+            transf.canvas = (e) => {
+                e.rotate(angle) & e.translate(-300*hd, -300*hd)
+            }
+            const c = (e, w, h) => {
+                //let d = cachedRedCloth.get()
+                e.image(cachedRedCloth, 0, 0)
+            }
+            const d = (e, scale) => petal(e, angle+shift, scale)
+            applique(s, scene, c, d, 600*hd, 600*hd, transf, x, y)
+        }
+		/*if(!cachedBlueCloth){
+						//console.log("Generating blue cloth")
+        cachedBlueCloth = s.createGraphics(300*hd, 300*hd)
+        textile(cachedBlueCloth, 0, 0, 300*hd, 300*hd, 1, 8, ["#3333AA", "#152599", "#12589A"])		
+		}
+        transf.stitchScaleCorrection = scale * 0.5
+        for (let i = 0; i < 5; i++) {
+            const a = i * 0.4 * PI + shift
+            let angle = scene.random(a - PI / 37, a + PI / 37)
+            transf.canvas = (e) => {
+                e.rotate(angle) & e.translate(-150*hd, -150*hd)
+            }
+            const c = (e, w, h) => {
+                let d = cachedBlueCloth.get()
+                e.image(d, 0, 0)
+            }
+            const d = (e, scale) => petal(e, angle, 0.5 * scale)
+            applique(s, scene, c, d, 300*hd, 300*hd, transf, x, y)
+        }
+        transf.canvas = (e) => {
+            e.translate(-50*hd, -50*hd)
+        }
+        transf.stitchScaleCorrection = scale
+		if(!cachedGreenCloth){
+						//console.log("Generating green cloth")
+	        cachedGreenCloth = s.createGraphics(scene.width, scene.height)
+    	    textile(cachedGreenCloth, 0, 0, 100*hd, 100*hd, 1, 8, ["#075239", "#13541d", "#127A58"])
+		}
+		
+        const greenClother = (e, w, h) => {
+                let d = cachedGreenCloth.get()
+                e.image(d, 0, 0)
+            }
+			//(e, w, h) => textile(e, 0, 0, w, h, 1, 8, ["#075239", "#13541d", "#127A58"])
+        const drawer = (e, scale) => {
+            e.push()
+            e.scale(scale)
+            e.circle(0, 0, 25*hd)
+            e.pop()
+        }
+        applique(s, scene, greenClother, drawer, 100, 100, transf, x, y)*/
+        scene.pop()
+    }
 
-    let incR = new Key(")", () => {})
-    let decR = new Key("(", () => {})
-    let rInt = new Integer(() => {})
-    let rControl = new Control([decR, incR],
-      "+/- something", rInt)
+    s.draw = () => {
+        const numPixels = hd * s.width * hd * s.height
+        let scene = s.createGraphics(hd * s.width, hd * s.height)
+		//let sceneswap = s.createGraphics(hd * s.width, hd * s.height)
+        let redCloth
+        let petalMask
 
-    let decH = new Key("(", () => {
-      if (hd > 0) {
-        hd -= 0.1
-      }
-    })
-    let incH = new Key(")", () => {
-      if (hd < 10) {
-        hd += 0.1
-      }
-    })
-    let hdInfo = new Float(() => hd)
-    let hdControl = new Control([decH, incH],
-      "+/- resolution export factor", hdInfo)
+        textile(scene, 0, 0, scene.width, scene.height, 1, 8)
+//FOO
+        for (let i = 0; i < 1; i++) {
+            const x = scene.random(0.2 * scene.width, 0.8 * scene.width)
+            const y = scene.random(0.2 * scene.height, 0.8 * scene.height)
+            const scale = scene.random(0.3, 1.2)
+            const shift = scene.random(0, PI)
+			console.log(i)//x, y, scale)
+            flower(scene, 500, 500, 1, shift)
+			/*if(i%2 == 0){
+				console.log(i)
+				sceneswap.remove()
+				sceneswap = s.createGraphics(hd * s.width, hd * s.height)
+				let c = scene.get()
+				sceneswap.image(c, 0, 0)
+				scene.remove()
+				scene = s.createGraphics(hd * s.width, hd * s.height)
+				c = sceneswap.get()
+				scene.image(c, 0, 0)
+			}*/
+			//fakeFlower(scene, x, y, scale, shift)
+        }
 
 
-    let gui = new GUI("Something, RB 2020/", info, subinfo, [saveCmd,
-        resetCanvas
-      ],
-      [rControl, hdControl])
+        largeCanvas = scene
+        let c = scene.get()
+        c.resize(s.width, 0)
+        s.image(c, 0, 0)
+    }
 
-    let QM = new Key("?", () => gui.toggle())
-    let hide = new Command(QM, "hide this")
+    function createGUI() {
+        let info =
+            "Info"
+        let subinfo = "Subinfo<br/>Very high resolutions can fail depending on the browser"
+        let S = new Key("s", () => {
+            largeCanvas.save("img.png")
+        })
+        let saveCmd = new Command(S, "save the canvas")
+        let R = new Key("r", () => {
+            gui.spin(() => {
+                s.clear();
+                s.draw()
+                gui.spin();
+            });
+        });
 
-    gui.addCmd(hide)
-    gui.update()
-    return gui
-  }
+        let resetCanvas = new Command(R, "reset")
 
-  s.keyReleased = () => {
-    gui.dispatch(s.key)
-  }
+        let incR = new Key(")", () => {})
+        let decR = new Key("(", () => {})
+        let rInt = new Integer(() => {})
+        let rControl = new Control([decR, incR],
+            "+/- something", rInt)
+
+        let decH = new Key("(", () => {
+            if (hd > 0) {
+                hd -= 0.1
+            }
+        })
+        let incH = new Key(")", () => {
+            if (hd < 10) {
+                hd += 0.1
+            }
+        })
+        let hdInfo = new Float(() => hd)
+        let hdControl = new Control([decH, incH],
+            "+/- resolution export factor", hdInfo)
+
+
+        let gui = new GUI("Something, RB 2020/", info, subinfo, [saveCmd,
+                resetCanvas
+            ],
+            [rControl, hdControl])
+
+        let QM = new Key("?", () => gui.toggle())
+        let hide = new Command(QM, "hide this")
+
+        gui.addCmd(hide)
+        gui.update()
+        return gui
+    }
+
+    s.keyReleased = () => {
+        gui.dispatch(s.key)
+    }
 }
 
 p5.disableFriendlyErrors = true
+
 let p5sketch = new p5(sketch)
