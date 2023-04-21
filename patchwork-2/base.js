@@ -24,10 +24,11 @@ const sketch = (s) => {
 
     let gui
     let largeCanvas
-    let hd = 1
+    let hd = 1.5
     const PI = s.PI
 	
-	let cachedRedCloth, cachedBlueCloth, cachedGreenCloth
+	let cachedRedCloth = []
+	let cachedBlueCloth, cachedGreenCloth
 	
     s.setup = () => {
         let {
@@ -85,7 +86,7 @@ const sketch = (s) => {
         //d = shadow.get()
         ctx = shadow.drawingContext
         // Trick because Safari has no ctx.filter(blur)
-        canvasRGBA(ctx.canvas, 0, 0, w, h, 5 * hd)
+        canvasRGBA(shadow.canvas, 0, 0, w, h, 5 * hd)
         scene.image(shadow, 0, 0)
 
         // Cut applique out of canvas
@@ -99,9 +100,9 @@ const sketch = (s) => {
 		ctx = mask.drawingContext
 		ctx.globalCompositeOperation = 'source-in'
 		mask.image(canvas, -w/2, -h/2)
-		ctx.globalCompositeOperation = 'source-over'
-		ctx = scene.drawingContext
-		ctx.globalCompositeOperation = 'source-over'
+		//ctx.globalCompositeOperation = 'source-over'
+		//ctx = scene.drawingContext
+		//ctx.globalCompositeOperation = 'source-over'
 		scene.image(mask, 0, 0)
 		
         // Stitch shadow and stitches
@@ -170,10 +171,11 @@ const sketch = (s) => {
         scene.scale(scale)
         //scene.rotate(angle)
         // No cloth caching: 3.2 seconds, caching: 0.6 sec
-		if(!cachedRedCloth){
+		if(!cachedRedCloth | cachedRedCloth.length < 5){
 			//console.log("Generating red cloth")
-        cachedRedCloth = s.createGraphics(600*hd, 600*hd)
-        textile(cachedRedCloth, 0, 0, 600*hd, 600*hd, 1, 8, ["#AA3333", "#991525", "#9A1258"])			
+        	cachedRedCloth.push(s.createGraphics(600*hd, 600*hd))
+			const l = cachedRedCloth.length
+        textile(cachedRedCloth[l-1], 0, 0, 600*hd, 600*hd, 1, 8, ["#AA3333", "#991525", "#9A1258"])			
 		}
         transf.stitchScaleCorrection = scale
 		//transf.scene = (e) => e.rotate(a)
@@ -184,13 +186,14 @@ const sketch = (s) => {
                 e.rotate(angle) & e.translate(-300*hd, -300*hd)
             }
             const c = (e, w, h) => {
-                //let d = cachedRedCloth.get()
-                e.image(cachedRedCloth, 0, 0)
+                //let d = cachedRedCloth.get() // This is memory-worse
+				const l = cachedRedCloth.length
+                e.image(cachedRedCloth[e.random(l-1) << 0], 0, 0)
             }
             const d = (e, scale) => petal(e, angle+shift, scale)
             applique(s, scene, c, d, 600*hd, 600*hd, transf, x, y)
         }
-		/*if(!cachedBlueCloth){
+		if(!cachedBlueCloth){
 						//console.log("Generating blue cloth")
         cachedBlueCloth = s.createGraphics(300*hd, 300*hd)
         textile(cachedBlueCloth, 0, 0, 300*hd, 300*hd, 1, 8, ["#3333AA", "#152599", "#12589A"])		
@@ -203,8 +206,8 @@ const sketch = (s) => {
                 e.rotate(angle) & e.translate(-150*hd, -150*hd)
             }
             const c = (e, w, h) => {
-                let d = cachedBlueCloth.get()
-                e.image(d, 0, 0)
+                //let d = cachedBlueCloth.get()
+                e.image(cachedBlueCloth, 0, 0)
             }
             const d = (e, scale) => petal(e, angle, 0.5 * scale)
             applique(s, scene, c, d, 300*hd, 300*hd, transf, x, y)
@@ -220,17 +223,17 @@ const sketch = (s) => {
 		}
 		
         const greenClother = (e, w, h) => {
-                let d = cachedGreenCloth.get()
-                e.image(d, 0, 0)
+                //let d = cachedGreenCloth.get()
+                e.image(cachedGreenCloth, 0, 0)
             }
 			//(e, w, h) => textile(e, 0, 0, w, h, 1, 8, ["#075239", "#13541d", "#127A58"])
         const drawer = (e, scale) => {
             e.push()
             e.scale(scale)
-            e.circle(0, 0, 25*hd)
+            e.circle(0, 0, 25*Math.sqrt(hd))
             e.pop()
         }
-        applique(s, scene, greenClother, drawer, 100, 100, transf, x, y)*/
+        applique(s, scene, greenClother, drawer, 100, 100, transf, x, y)
         scene.pop()
     }
 
@@ -242,14 +245,14 @@ const sketch = (s) => {
         let petalMask
 
         textile(scene, 0, 0, scene.width, scene.height, 1, 8)
-//FOO
-        for (let i = 0; i < 1; i++) {
+//FOO Up to 60 or so
+        for (let i = 0; i < 9; i++) {
             const x = scene.random(0.2 * scene.width, 0.8 * scene.width)
             const y = scene.random(0.2 * scene.height, 0.8 * scene.height)
-            const scale = scene.random(0.3, 1.2)
+            const scale = scene.random(0.5, 2.3)
             const shift = scene.random(0, PI)
 			console.log(i)//x, y, scale)
-            flower(scene, 500, 500, 1, shift)
+            flower(scene, x, y, scale, shift)
 			/*if(i%2 == 0){
 				console.log(i)
 				sceneswap.remove()
@@ -289,12 +292,6 @@ const sketch = (s) => {
 
         let resetCanvas = new Command(R, "reset")
 
-        let incR = new Key(")", () => {})
-        let decR = new Key("(", () => {})
-        let rInt = new Integer(() => {})
-        let rControl = new Control([decR, incR],
-            "+/- something", rInt)
-
         let decH = new Key("(", () => {
             if (hd > 0) {
                 hd -= 0.1
@@ -313,7 +310,7 @@ const sketch = (s) => {
         let gui = new GUI("Something, RB 2020/", info, subinfo, [saveCmd,
                 resetCanvas
             ],
-            [rControl, hdControl])
+            [hdControl])
 
         let QM = new Key("?", () => gui.toggle())
         let hide = new Command(QM, "hide this")

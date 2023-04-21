@@ -54,10 +54,10 @@ function argMax(arr) {
 }
 
 function releaseCanvas(canvas) {
-  canvas.width = 1;
-  canvas.height = 1;
-  const ctx = canvas.drawingContext;
-  ctx && ctx.clearRect(0, 0, 1, 1);
+  canvas.width = 1
+  canvas.height = 1
+  canvas.elt.setAttribute('style', 'width: 1px; height: 1px') // THIS!
+  canvas.drawingContext.clearRect(0, 0, 1, 1)
 }
 
 function copyColor(s, color) {
