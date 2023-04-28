@@ -6,10 +6,12 @@ import {
   bezierB,
   darken,
   gaussColor,
-  arrow,
-  shimmeringColorHex
+  arrow
 } from '../libraries/misc.js'
 
+import {
+  shimmeringColorHex
+} from '../libraries/palettes.js'
 
 import '../libraries/3rdparty/spectral.js'
 
