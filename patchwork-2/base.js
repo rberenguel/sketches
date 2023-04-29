@@ -24,7 +24,7 @@ const sketch = (s) => {
 
     let gui
     let largeCanvas
-    let hd = 1.5
+    let hd = 1.
     const PI = s.PI
 	
 	let cachedRedCloth = []
@@ -246,10 +246,10 @@ const sketch = (s) => {
 
         textile(scene, 0, 0, scene.width, scene.height, 1, 8)
 //FOO Up to 60 or so
-        for (let i = 0; i < 9; i++) {
+        for (let i = 0; i < 150; i++) {
             const x = scene.random(0.2 * scene.width, 0.8 * scene.width)
             const y = scene.random(0.2 * scene.height, 0.8 * scene.height)
-            const scale = scene.random(0.5, 2.3)
+            const scale = scene.random(0.5, 1.8)
             const shift = scene.random(0, PI)
 			console.log(i)//x, y, scale)
             flower(scene, x, y, scale, shift)
