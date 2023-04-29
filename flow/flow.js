@@ -31,7 +31,7 @@ const sketch = (s) => {
   let largeCanvas
   let hd = 1
   let freq = 8
-  let squiggly //1 / 800.0
+  let squiggly
   let lineStroke = 0.8 * hd
   let dist
   let layers = 10
@@ -176,7 +176,6 @@ const sketch = (s) => {
     for (let y = base; y < scene.height; y += freq) {
       let _y = y;
       let stroke = lineStroke;
-      //let c = scene.random(palette.length) << 0
       let c = (scene.noise(_y * squiggly) * palette.colors.length) << 0
       let color = scene.color(palette.colors[c])
       particles.push(new Particle(particleSeed, 0, _y, stroke, color));
