@@ -6,10 +6,12 @@ import {
   bezierB,
   darken,
   gaussColor,
-  arrow,
-  shimmeringColorHex
+  arrow
 } from '../libraries/misc.js'
 
+import {
+  shimmeringColorHex
+} from '../libraries/palettes.js'
 
 import '../libraries/3rdparty/spectral.js'
 
@@ -32,7 +34,7 @@ function textile(scene, x, y, w, h, width, height, colors, lerp_steps, dly) {
       cs.push(scene.color(mixed))
     }
   } else {
-
+    cs = colors
   }
   for (let p = x; p < x + w; p += width + 0.5) {
     let yy = y
@@ -42,6 +44,7 @@ function textile(scene, x, y, w, h, width, height, colors, lerp_steps, dly) {
 }
 
 function straightThread(scene, x, y, width, height, color, length, dly) {
+  // Vertical chain of braids. Does not use the braid function for _reasons_
   const shade = darken(scene, color, 0.8)
   const shine = darken(scene, color, 1.6)
   let st = [x, y]
@@ -68,6 +71,8 @@ function braid(scene, st, en, width, color, shade, shine, angle, dly) {
 
 
 function halfBraid(scene, st, en, shift, color, shade, shine, dly) {
+  // Left or right brad in a downward thread. In debug mode will also compute tangents
+  // to find exact width. Will be slow, only use debug with large sizes.
   if (dly !== undefined) {
     dly.stroke("blue")
     dly.strokeWeight(2)
@@ -92,7 +97,6 @@ function halfBraid(scene, st, en, shift, color, shade, shine, dly) {
     dly.stroke("purple") & dly.strokeWeight(2)
     bezierB(dly, ...bez)
     let [mins, mpx, mpy] = findTangent(bez)
-    //console.log(mins, px, py)
     dly.strokeWeight(15) & dly.stroke("red")
     dly.point(mpx, mpy)
     dly.strokeWeight(1) & dly.stroke("cyan")
@@ -115,6 +119,8 @@ function halfBraid(scene, st, en, shift, color, shade, shine, dly) {
 
 
 function findTangent(scene, bezier, dly) {
+  // I was too lazy to worry about this and just looked for a minimum to 
+  // find the zero.
   let [x, y, pt1x, pt1y, pt2x, pt2y, enx, eny] = bezier
   let start = 0,
     end = 1

@@ -34,7 +34,7 @@ class Command {
         let command = $.cel("p");
         let press = $.ctn("Press ")
         let thisKey = this.key.format()
-        let toDoThis = $.ctn(` to ${this.task}`)
+        let toDoThis = $.ctn(`: ${this.task}`)
         let variableDisplay
         if (this.variable !== undefined) {
             let span = $.cel("span")

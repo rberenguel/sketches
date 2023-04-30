@@ -15,7 +15,6 @@ class FluentGUI {
         this.triangle = tri
 		let spinner = $.cel("div")
 		spinner.id = "spinner"
-		//spinner.classList.add("moving")
 		this.spinner = spinner
     }
     setup() {

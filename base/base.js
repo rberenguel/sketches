@@ -34,7 +34,6 @@ const sketch = (s) => {
 
   s.draw = () => {
     const numPixels = hd * s.width * hd * s.height
-    console.log("Num Pixels: " + numPixels)
     let scene = s.createGraphics(hd * s.width, hd * s.height)
     // Here your code against scene
     largeCanvas = scene
