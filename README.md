@@ -4,6 +4,18 @@ Generative art sketches. Newest first
 
 ---
 
+## Flows [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/flows/"><img src="samples/flows.png" width="360"/></a>
+
+---
+
+- Layered particle flow in a noise field. Variable size and alpha of the dots gives it a grainy, painterly look
+- [code](flows/flows.js) Resolution independent and the first (so far) reproducible via seed and parameters, see the lower-right area of a saved image.
+- Explore it [here](https://rberenguel.github.io/sketches/flows/index.html)
+
+---
+
 ## Modern Art [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/modern-art/"><img src="samples/modern-art.png" width="360"/></a>
