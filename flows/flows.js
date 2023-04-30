@@ -17,7 +17,8 @@ import {
   solarizedDarkPalette,
   wernerBase,
   wernerBasePalette,
-  shimmeringColorArray
+  shimmeringColorArray,
+  c82GeoPrimesPalette
 } from '../libraries/palettes.js'
 
 import {
@@ -73,6 +74,12 @@ const sketch = (s) => {
       palette.background = shimmeringColorArray[0]
   }
 
+  const geometricPrimes = () => {
+    palette.colors = c82GeoPrimesPalette.slice(0, c82GeoPrimesPalette.length-2),
+      palette.name = "±C82GeoPrimes",
+      palette.short = "gp",
+      palette.background = c82GeoPrimesPalette[c82GeoPrimesPalette.length-1]
+  }
 
   // Mostly the implementation in here: 
   // https://www.schmidtynotes.com/blog/p5/2022-03-05-random-vectors/
@@ -267,6 +274,8 @@ const sketch = (s) => {
     let werCmd = new Command(wer, "use Werner nomenclature palette")
     let shi = new Key("p", shimmering)
     let shiCmd = new Command(shi, "use Pollock's shimmering palette")
+    let geo = new Key("g", geometricPrimes)
+    let geoCmd = new Command(geo, "use C82 Geometric Primes 1 palette")	
     let paletteShow = new String(() => palette.name)
     let paletteControl = new Control([],
       "Current palette", paletteShow)
@@ -324,7 +333,7 @@ const sketch = (s) => {
 
 
     let gui = new GUI("Flows, RB 2023/04 \u{1F1E8}\u{1F1ED}", info, subinfo, [saveCmd,
-        resetCanvas, enterSeedCommand, solCmd, werCmd, shiCmd
+        resetCanvas, enterSeedCommand, solCmd, werCmd, shiCmd, geoCmd
       ],
       [modeControl, seedControl, paletteControl, rControl, hdControl])
 

@@ -5,7 +5,8 @@ export {
     solarizedDarkPalette,
     shimmeringColor,
     shimmeringColorHex,
-    shimmeringColorArray
+    shimmeringColorArray,
+	c82GeoPrimesPalette
 }
 
 // Werner's nomenclature of colors palette
@@ -56,3 +57,20 @@ function shimmeringColorHex(s) {
 function shimmeringColor(s) {
     return s.color(shimmeringColorHex(s));
 }
+
+// Palette used by Nicholas Rougeaux in his Geometric Primes,
+// with an additional dark green to use as background
+
+
+const c82GeoPrimesPalette = [
+"#f0e9cc",
+"#cfd1a4",
+"#a3bd81",
+"#a6c06e",
+"#cccb5e",
+"#e5bf50",
+"#dc9942",
+"#c8773e",
+"#a3603d",
+"#794c3b",
+"#2b5113"]
