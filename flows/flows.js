@@ -75,10 +75,35 @@ const sketch = (s) => {
   }
 
   const geometricPrimes = () => {
-    palette.colors = c82GeoPrimesPalette.slice(0, c82GeoPrimesPalette.length-2),
+    palette.colors = c82GeoPrimesPalette.slice(0, c82GeoPrimesPalette.length - 2),
       palette.name = "±C82GeoPrimes",
       palette.short = "gp",
-      palette.background = c82GeoPrimesPalette[c82GeoPrimesPalette.length-1]
+      palette.background = c82GeoPrimesPalette[c82GeoPrimesPalette.length - 1]
+  }
+
+  const palettes = [solarized, werner, shimmering, geometricPrimes]
+  let palettesIndex = 0
+
+  function cyclePalettes() {
+    palettesIndex = (palettesIndex + 1) % palettes.length
+    palettes[palettesIndex]()
+  }
+
+  const particleDistributions = [{
+    fun: createParticles,
+    name: "edges",
+    short: "e"
+  }, {
+    fun: createParticlesCircle,
+    name: "circles",
+    short: "c"
+  }]
+  let particleDistribution = particleDistributions[0]
+  let particleDistributionsIndex = 0
+
+  function cycleParticleDistributions() {
+    particleDistributionsIndex = (particleDistributionsIndex + 1) % particleDistributions.length
+    particleDistribution = particleDistributions[particleDistributionsIndex]
   }
 
   // Mostly the implementation in here: 
@@ -87,21 +112,21 @@ const sketch = (s) => {
 
   class Particle {
     constructor(rand, x, y, size, color, alpha, _dist) {
-      this.x = x;
-      this.y = y;
-      this.size = size;
-      this.color = color;
+      this.x = x
+      this.y = y
+      this.size = size
+      this.color = color
 
-      this.alpha = alpha ? _alpha : 10;
-      this.dist = _dist ? _dist : dist;
+      this.alpha = alpha ? _alpha : 10
+      this.dist = _dist ? _dist : dist
       this.stopped = false
       this.rand = rand
     }
     move(scene) {
-      let theta = scene.noise(this.x * squiggly + this.rand, this.y * squiggly + this.rand) * PI * 2;
+      let theta = scene.noise(this.x * squiggly + this.rand, this.y * squiggly + this.rand) * PI * 2
       let v = p5.Vector.fromAngle(theta, this.dist)
-      this.x += v.x;
-      this.y += v.y;
+      this.x += v.x
+      this.y += v.y
     }
     draw(scene) {
       const na = scene.random(0.5 * this.alpha, this.alpha)
@@ -112,11 +137,11 @@ const sketch = (s) => {
     }
     stop(scene) {
       if (this.x > scene.width || this.x < 0) {
-        this.dist = 0;
+        this.dist = 0
         this.stopped = true
       }
       if (this.y > scene.height || this.y < 0) {
-        this.dist = 0;
+        this.dist = 0
         this.stopped = true
       }
     }
@@ -169,27 +194,48 @@ const sketch = (s) => {
   }
 
   function createParticles(scene, whatever) {
-    let particles = [];
+    let particles = []
     const particleSeed = scene.noise(whatever)
     const base = scene.random(freq)
     for (let x = base; x < scene.width; x += freq) {
-      let _x = x;
-      let stroke = lineStroke;
-      let c = (scene.noise(_x * squiggly) * palette.colors.length) << 0
+      let stroke = lineStroke
+      let c = (scene.noise(x * squiggly) * palette.colors.length) << 0
       let color = scene.color(palette.colors[c])
-      particles.push(new Particle(particleSeed, _x, 0, stroke, color));
-      particles.push(new Particle(particleSeed, _x, scene.height, stroke, color));
+      particles.push(new Particle(particleSeed, x, 0, stroke, color))
+      particles.push(new Particle(particleSeed, x, scene.height, stroke, color))
     }
     for (let y = base; y < scene.height; y += freq) {
-      let _y = y;
-      let stroke = lineStroke;
-      let c = (scene.noise(_y * squiggly) * palette.colors.length) << 0
+      let stroke = lineStroke
+      let c = (scene.noise(y * squiggly) * palette.colors.length) << 0
       let color = scene.color(palette.colors[c])
-      particles.push(new Particle(particleSeed, 0, _y, stroke, color));
-      particles.push(new Particle(particleSeed, scene.width, _y, stroke, color));
+      particles.push(new Particle(particleSeed, 0, y, stroke, color))
+      particles.push(new Particle(particleSeed, scene.width, y, stroke, color))
     }
     return particles
   }
+
+  function createParticlesCircle(scene, whatever) {
+    let particles = []
+    const particleSeed = scene.noise(whatever)
+    const base = scene.random(freq)
+    for (let i = 0; i < 5; i++) {
+      let r = scene.random(0.1 * scene.width, 0.3 * scene.width)
+      let cx = scene.random(0.2 * scene.width, 0.8 * scene.width)
+      let cy = scene.random(0.2 * scene.height, 0.8 * scene.height)
+      for (let j = 0; j < freq; j++) {
+        for (let th = base; th < 2 * PI; th += 2 * PI / (800 / freq)) {
+          let x = cx + r * Math.cos(th)
+          let y = cy + r * Math.sin(th)
+          let stroke = lineStroke
+          let c = (scene.noise(x * squiggly, y * squiggly) * palette.colors.length) << 0
+          let color = scene.color(palette.colors[c])
+          particles.push(new Particle(particleSeed, x, y, stroke, color))
+        }
+      }
+    }
+    return particles
+  }
+
 
   function stepThrough(scene, particles) {
     while (!allStop(particles)) {
@@ -197,9 +243,9 @@ const sketch = (s) => {
         if (p.stopped) {
           continue
         }
-        p.draw(scene);
-        p.move(scene);
-        p.stop(scene);
+        p.draw(scene)
+        p.move(scene)
+        p.stop(scene)
       }
     }
   }
@@ -224,10 +270,10 @@ const sketch = (s) => {
     scene.noiseSeed(seed)
     let particles
     for (let i = 0; i < layers; i++) {
-      particles = createParticles(scene, (0.4 * i) / layers)
+      particles = particleDistribution.fun(scene, (0.4 * i) / layers)
       stepThrough(scene, particles)
     }
-    const identifier = `${palette.short}.${seed}.${layers}×${hd.toPrecision(2)}`
+    const identifier = `${particleDistribution.short}.${palette.short}.${seed}.${layers}@${hd.toPrecision(2)}`
     addText(scene, scene.width - 10 * hd, scene.height - 15 * hd, identifier)
     addText(scene, scene.width - 10 * hd, scene.height - 7 * hd, "rb'23")
     largeCanvas = scene
@@ -262,23 +308,22 @@ const sketch = (s) => {
     let saveCmd = new Command(S, "save the canvas (3:2)")
     R = new Key("r", () => {
       gui.spin(() => {
-        s.clear();
+        s.clear()
         plot()
-        gui.spin();
-      });
-    });
+        gui.spin()
+      })
+    })
 
-    let sol = new Key("d", solarized)
-    let solCmd = new Command(sol, "use Solarized Dark palette")
-    let wer = new Key("w", werner)
-    let werCmd = new Command(wer, "use Werner nomenclature palette")
-    let shi = new Key("p", shimmering)
-    let shiCmd = new Command(shi, "use Pollock's shimmering palette")
-    let geo = new Key("g", geometricPrimes)
-    let geoCmd = new Command(geo, "use C82 Geometric Primes 1 palette")	
+    let pals = new Key("p", cyclePalettes)
     let paletteShow = new String(() => palette.name)
-    let paletteControl = new Control([],
-      "Current palette", paletteShow)
+    let paletteControl = new Control([pals],
+      "Cycle palettes", paletteShow)
+
+    let pDists = new Key("d", cycleParticleDistributions)
+    let pDistsCmd = new Command(pDists, "cycle through palette distributions")
+    let pDistsShow = new String(() => particleDistribution.name)
+    let pDistsControl = new Control([pDists],
+      "Cycle distributions", pDistsShow)
     let M = new Key("m", () => {
       if (mode == "fine") {
         mode = "rough"
@@ -333,9 +378,9 @@ const sketch = (s) => {
 
 
     let gui = new GUI("Flows, RB 2023/04 \u{1F1E8}\u{1F1ED}", info, subinfo, [saveCmd,
-        resetCanvas, enterSeedCommand, solCmd, werCmd, shiCmd, geoCmd
+        resetCanvas, enterSeedCommand
       ],
-      [modeControl, seedControl, paletteControl, rControl, hdControl])
+      [modeControl, seedControl, paletteControl, pDistsControl, rControl, hdControl])
 
     let QM = new Key("?", () => gui.toggle())
     let hide = new Command(QM, "hide this")
