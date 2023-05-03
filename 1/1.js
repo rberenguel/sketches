@@ -19,6 +19,8 @@ import {
   $
 } from '../libraries/gui/dom.js'
 
+// TODO: recover random seed from provided seed
+
 const sketch = (s) => {
 
   let gui

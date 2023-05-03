@@ -60,18 +60,12 @@ const sketch = (s) => {
 
     let resetCanvas = new Command(R, "reset")
 
-    let incR = new Key(")", () => {})
-    let decR = new Key("(", () => {})
-    let rInt = new Integer(() => {})
-    let rControl = new Control([decR, incR],
-      "+/- something", rInt)
-
-    let decH = new Key("(", () => {
+    let decH = new Key(",", () => {
       if (hd > 0) {
         hd -= 0.1
       }
     })
-    let incH = new Key(")", () => {
+    let incH = new Key(".", () => {
       if (hd < 10) {
         hd += 0.1
       }
@@ -84,7 +78,7 @@ const sketch = (s) => {
     let gui = new GUI("Something, RB 2020/", info, subinfo, [saveCmd,
         resetCanvas
       ],
-      [rControl, hdControl])
+      [hdControl])
 
     let QM = new Key("?", () => gui.toggle())
     let hide = new Command(QM, "hide this")
