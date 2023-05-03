@@ -156,7 +156,7 @@ const sketch = (s) => {
     }
     scene.endShape(s.CLOSE)
   }
-
+  
   function plot() {
     outer = outerH * hd
     inner = innerH * hd
