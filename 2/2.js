@@ -72,7 +72,8 @@ const sketch = (s) => {
           }
         }
         const pigment = load[j]
-        const op = smoothStep(0, maxCap, maxCap-pigment)        
+        const op = smoothStep(0, maxCap, maxCap-pigment)
+        const nop = 0.5*smoothStep(0, 0.7*length, i)
         const previous = previousLoad[j]
 //        const drop = previous*scene.noise(i/50)+2*scene.random()
         const drop = Math.abs(0.5*previous+0.5*previous*scene.noise(i/50)+(-2+4*scene.random()))
@@ -82,12 +83,10 @@ const sketch = (s) => {
           c.setAlpha(255)  
         } else {
           if(previous<0.01){
-            if(op<0.0000005){
-              continue
-            }
-            const e = copyColor(s, c)
-            e.setAlpha(50*(1-op))
+            let e = copyColor(s, c)
+            e.setAlpha(140*(0.5-nop))
             scene.stroke(e)
+            scene.fill(e)
             wobble(scene, x+j, y+i, drop/2)
           }
           continue
