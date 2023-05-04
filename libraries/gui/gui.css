@@ -18,6 +18,10 @@
     content: "\25be";
 }
 
+#gui #triangle.dirty:after{
+    content: "\2762";
+}
+
 #gui #triangle.closed:after{
     content: "\25b8";
 }

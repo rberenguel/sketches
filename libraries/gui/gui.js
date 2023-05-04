@@ -34,6 +34,7 @@ class GUI {
             .withDOM($.byId("gui"))
         document.title = title
         gui.setup()
+        this.title = title
         return gui
     }
 }
