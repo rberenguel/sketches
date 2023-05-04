@@ -18,7 +18,8 @@ const sketch = (s) => {
 
   let gui
   let largeCanvas
-  let hd = 1
+  let hd = 3
+  let shader
   s.setup = () => {
     let {
       w,
@@ -28,14 +29,22 @@ const sketch = (s) => {
     s.pixelDensity(1)
     canvas.mousePressed(() => {})
     s.frameRate(20)
+    s.noLoop()
     gui = createGUI()
     gui.toggle()
   }
 
+  s.preload = () => {
+    shader = s.loadShader('shader.vert', 'shader.frag');
+  }
+
+  
   s.draw = () => {
     const numPixels = hd * s.width * hd * s.height
-    let scene = s.createGraphics(hd * s.width, hd * s.height)
-    // Here your code against scene
+    let scene = s.createGraphics(hd * s.width, hd * s.height, s.WEBGL)
+    scene.shader(shader)
+    scene.noStroke()
+    scene.rect(-scene.width,0,scene.width, scene.height)
     largeCanvas = scene
     let c = scene.get()
     c.resize(s.width, 0)
@@ -60,12 +69,18 @@ const sketch = (s) => {
 
     let resetCanvas = new Command(R, "reset")
 
-    let decH = new Key(",", () => {
+    let incR = new Key(")", () => {})
+    let decR = new Key("(", () => {})
+    let rInt = new Integer(() => {})
+    let rControl = new Control([decR, incR],
+      "+/- something", rInt)
+
+    let decH = new Key("(", () => {
       if (hd > 0) {
         hd -= 0.1
       }
     })
-    let incH = new Key(".", () => {
+    let incH = new Key(")", () => {
       if (hd < 10) {
         hd += 0.1
       }
@@ -78,7 +93,7 @@ const sketch = (s) => {
     let gui = new GUI("Something, RB 2020/", info, subinfo, [saveCmd,
         resetCanvas
       ],
-      [hdControl])
+      [rControl, hdControl])
 
     let QM = new Key("?", () => gui.toggle())
     let hide = new Command(QM, "hide this")

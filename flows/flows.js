@@ -234,8 +234,7 @@ const sketch = (s) => {
       }
     }
     return particles
-  }
-
+  }  
 
   function stepThrough(scene, particles) {
     while (!allStop(particles)) {
