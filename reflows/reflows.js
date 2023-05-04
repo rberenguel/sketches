@@ -31,18 +31,20 @@ const sketch = (s) => {
   let gui
   let largeCanvas
   let hd = 1
-  let freq = 8
+  let freq = 3
   let squiggly
   let lineStroke = 0.8 * hd
   let dist
   let layers = 10
   let R
   let palette = {}
-  let mode = "rough"
+  let mode = "fine"
   let drawer
   let seed = 42
   let monoid
-
+  const MAX_STEPS = 1500
+  const ESCAPE = 500
+  
   function setMode() {
     if (mode == "fine") {
       dist = 1.2 * lineStroke
@@ -81,12 +83,31 @@ const sketch = (s) => {
       palette.background = c82GeoPrimesPalette[c82GeoPrimesPalette.length-1]
   }
 
+  let ha = 1.2, hb = 1.01
+  const lx = 0.5
+  const rx = 0.9
+  const uy = -0.5
+  const by = 0.5
+  function henon(scene, px, py, ha, hb){
+    // Map x: -1:1 and y 0.4:-0.4 to canvas coordinates
+    const x = lx + px*(rx-lx)/scene.width 
+    const y = uy + py*(by-uy)/scene.height // This is probably reflexed
+    //console.log(x, y)
+    const csa = Math.cos(ha)
+    const sna = Math.sin(ha)
+    const ds = (y-x*x)
+    const nx = x*csa-ds*sna
+    const ny = x*sna+ds*csa
+    //console.log(nx, ny)
+    return [(nx - lx)*scene.width/(rx-lx), (ny - uy)*scene.height/(by-uy), x, y]
+  }
+  
   // Mostly the implementation in here: 
   // https://www.schmidtynotes.com/blog/p5/2022-03-05-random-vectors/
   // with added stop conditions
 
   class Particle {
-    constructor(rand, x, y, size, color, alpha, _dist) {
+    constructor(nha, nhb, x, y, size, color, alpha, _dist) {
       this.x = x;
       this.y = y;
       this.size = size;
@@ -95,34 +116,43 @@ const sketch = (s) => {
       this.alpha = alpha ? _alpha : 10;
       this.dist = _dist ? _dist : dist;
       this.stopped = false
-      this.rand = rand
+      //this.rand = rand
+      this.steps = 0
+      this.xx = 0
+      this.yy = 0
+      this.ha = nha
+      this.hb = nhb
     }
     move(scene) {
-      let theta = scene.noise(this.x * squiggly + this.rand, this.y * squiggly + this.rand) * PI * 2;
-      let v = p5.Vector.fromAngle(theta, this.dist)
-	  if(this.rand>0.5){
-	      this.x += v.x;
-    	  this.y += v.y;}
-		else {
-			      this.x -= v.x;
-				  this.y -= v.y;
-		}
+      let [px, py, xx, yy] = henon(scene, this.x, this.y, this.ha, this.hb)
+    this.x = px
+    this.y = py
+    this.xx = xx
+    this.yy = yy
+    this.steps+=1
     }
     draw(scene) {
-      const na = scene.random(0.5 * this.alpha, this.alpha)
+      if(this.stopped){
+      const na = this.steps * this.alpha
       this.color.setAlpha(na)
       scene.fill(this.color)
       const ns = scene.random(0.4 * this.size, 2 * this.size)
-      drawer(scene, this.x, this.y, ns)
+      drawer(scene, this.x, this.y, ns)      
+      }
+      if(this.x < scene.width && this.x >= 0 && this.y < scene.height && this.y >= 0){
+        const na = scene.random(this.alpha)
+        this.color.setAlpha(na)
+        scene.fill(this.color)
+        const ns = scene.random(0.4 * this.size, 2 * this.size)
+        drawer(scene, this.x, this.y, ns)      
+      }
     }
     stop(scene) {
-      if (this.x > scene.width || this.x < 0) {
-        this.dist = 0;
+      if(this.steps > MAX_STEPS){
         this.stopped = true
       }
-      if (this.y > scene.height || this.y < 0) {
-        this.dist = 0;
-        this.stopped = true
+      if(this.xx*this.xx+this.yy*this.yy>ESCAPE){
+          this.stopped = true
       }
     }
   }
@@ -176,23 +206,45 @@ const sketch = (s) => {
   function createParticles(scene, whatever) {
     let particles = [];
     const particleSeed = scene.noise(whatever)
-    const base = scene.random(freq)
-	for(let i = 0; i<5; i++){
-		let r = scene.random(0.1*scene.width, 0.3*scene.width)
-		let cx = scene.random(0.2*scene.width, 0.8*scene.width)
-		let cy = scene.random(0.2*scene.height, 0.8*scene.height)
-		for(let j=0;j<freq;j++){
-	    	for (let th = base; th < 2*PI; th += 2*PI/(800/freq)) {
-    	  		let x = cx+r*Math.cos(th)
-	  			let y = cy+r*Math.sin(th)
+    const base = scene.random(freq) << 0
+    //const basey = scene.random(freq) << 0
+    const ul = {x: 0, y: 0}
+    const lr = {x: scene.width, y: scene.height}
+    const span = scene.height+scene.width
+    /*
+    for (let x = basex; x < scene.width; x += freq) {
+      for(let y = basey; y < scene.height; y+= freq) {
+    	  		//let x = ul.x + th/span*(ul.x-lr.x)
+    	  		//let y = ul.y + th/span*(ul.y-lr.y)        
+            const xx = lx + x*(rx-lx)/scene.width 
+            const yy = uy + y*(by-uy)/scene.height // This is probably reflexed
+    
       			let stroke = lineStroke;
-      			let c = (scene.noise(x * squiggly, y*squiggly) * palette.colors.length) << 0
+      			let c = (scene.noise(xx, yy) * palette.colors.length) << 0
       			let color = scene.color(palette.colors[c])
       			particles.push(new Particle(particleSeed, x, y, stroke, color));
       		//particles.push(new Particle(particleSeed, _x, scene.height, stroke, color));
-    		}
-		}
-	}
+    }
+  }*/
+  const na = -0.0001 + 0.0002*scene.noise(whatever)
+  const nb = -0.0001 + 0.0002*scene.noise(whatever)  
+  const nha = ha + na
+  const nhb = hb + nb
+  
+  for(let p = base; p < scene.width+scene.height; p+=freq){
+    let x = ul.x + p/span*(-ul.x+lr.x)
+    let y = ul.y + p/span*(-ul.y+lr.y)        
+    const xx = lx + x*(rx-lx)/scene.width 
+    const yy = uy + y*(by-uy)/scene.height // This is probably reflexed
+    
+    let stroke = lineStroke;
+    let c = (scene.noise(xx, yy) * palette.colors.length) << 0
+    let color = scene.color(palette.colors[c])
+    particles.push(new Particle(nha, nhb, x, y, stroke, color));
+    x = scene.width - x
+    y = y    
+    particles.push(new Particle(nha, nhb, x, y, stroke, color));
+  }
 	/*
     for (let y = base; y < scene.height; y += freq) {
       let _y = y;
@@ -212,9 +264,9 @@ const sketch = (s) => {
         if (p.stopped) {
           continue
         }
-        p.draw(scene);
         p.move(scene);
         p.stop(scene);
+        p.draw(scene);        
       }
     }
   }

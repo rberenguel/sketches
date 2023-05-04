@@ -55,7 +55,7 @@ const sketch = (s) => {
     let previousLoad = []    
     let maxCap = 0
     for(let i=0;i<width;i+=2){
-      load[i] = 1.5*length*scene.noise(i/8)
+      load[i] = 1*length*Math.sqrt(scene.noise(i/8))*scene.noise(i/16)
       if(load[i]>maxCap){
         maxCap = load[i]
       }
@@ -74,11 +74,22 @@ const sketch = (s) => {
         const pigment = load[j]
         const op = smoothStep(0, maxCap, maxCap-pigment)        
         const previous = previousLoad[j]
-        const drop = previous*scene.noise(i/50)+2*scene.random()
+//        const drop = previous*scene.noise(i/50)+2*scene.random()
+        const drop = Math.abs(0.5*previous+0.5*previous*scene.noise(i/50)+(-2+4*scene.random()))
         if(pigment > drop){
           load[j]-=drop
-          previousLoad[j] = drop          
+          previousLoad[j] = drop
+          c.setAlpha(255)  
         } else {
+          if(previous<0.01){
+            if(op<0.0000005){
+              continue
+            }
+            const e = copyColor(s, c)
+            e.setAlpha(50*(1-op))
+            scene.stroke(e)
+            wobble(scene, x+j, y+i, drop/2)
+          }
           continue
         }
         if(drop<1){
