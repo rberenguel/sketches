@@ -179,28 +179,44 @@ const sketch = (s) => {
     slice(scene)
 
     const identifier = `${seeder.get()}@${hd.toPrecision(2)}`
-    addText(scene, scene.width - marginOuter - gapOuter / 2, scene.height - marginOuter - 24 * hd, identifier)
-    addText(scene, scene.width - marginOuter - gapOuter / 2, scene.height - marginOuter - 11 * hd, "rb'23")
-
+	const sigCfg = {
+		s: s,
+		scene: scene,
+		color: "#d0be47",
+		shadow: "darkgrey",
+		fontsize: 12,
+		right: scene.width - marginOuter - gapOuter / 2,
+		bottom: scene.height - marginOuter,
+		identifier: identifier,
+		sig: "rb'23",
+		hd: hd
+	}
+	signature(sigCfg)
+	
     largeCanvas = scene
     let c = scene.get()
     c.resize(s.width, 0)
     s.image(c, 0, 0)
   }
 
-  function addText(scene, x, y, content) {
-    scene.push()
-    scene.noStroke()
-    scene.fill("#d0be47")
-    scene.textAlign(s.RIGHT)
-    scene.textFont(monoid, hd * 12)
-    let ctx = scene.drawingContext
+  function signature(cfg){
+    addText(cfg, cfg.right, cfg.bottom - 2 * cfg.fontsize * hd, cfg.identifier)
+    addText(cfg, cfg.right, cfg.bottom - cfg.fontsize * hd + hd, cfg.sig)	
+  }
+  
+  function addText(cfg, x, y, content) {
+    cfg.scene.push()
+    cfg.scene.noStroke()
+    cfg.scene.fill(cfg.color)
+    cfg.scene.textAlign(s.RIGHT)
+    cfg.scene.textFont(monoid, hd * cfg.fontsize)
+    let ctx = cfg.scene.drawingContext
     ctx.shadowOffsetX = 2
     ctx.shadowOffsetY = 2
     ctx.shadowBlur = 1
-    ctx.shadowColor = "darkgrey"
-    scene.text(content, x, y)
-    scene.pop()
+    ctx.shadowColor = cfg.shadow
+    cfg.scene.text(content, x, y)
+    cfg.scene.pop()
   }
 
   function createGUI() {

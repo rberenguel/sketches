@@ -40,7 +40,7 @@ class FluentGUI {
 
   }
   withCommands(cmds) {
-    this.cmds = cmds
+    this.cmds = cmds || []
     for (let cmd of this.cmds) {
       cmd.key.gui = this
     }
@@ -48,7 +48,7 @@ class FluentGUI {
 
   }
   withControls(states) {
-    this.states = states
+    this.states = states || []
     for (let state of this.states) {
       let keys = state.keys
       if (keys) {
@@ -224,11 +224,15 @@ class FluentGUI {
   }
 
   mark() {
+	// Mark GUI as needing a redraw
     this.triangle.classList.add("dirty")
+	this.update()
   }
 
   unmark() {
+	// Remove mark
     this.triangle.classList.remove("dirty")
+	this.update()
   }
 
   dispatch(key) {
