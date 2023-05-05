@@ -4,7 +4,19 @@ Generative art sketches. Newest first
 
 ---
 
-## Flows [#p5js](https://p5js.org)
+## 202305 - Underwater [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/underwater/"><img src="samples/underwater.png" width="360"/></a>
+
+---
+
+- A "simple" piece of random triangles where I wanted to explore a dotted effect and what I could do "smartly" with masking. It is also the first piece that is fully resolution independent and reproducible at any scale with only very minor variations
+- [code](underwater/underwater.js) Fully resolution independent, with signature (this time as an hex identifier for the seed).
+- Explore it [here](https://rberenguel.github.io/sketches/underwater/index.html)
+
+---
+
+## 202304 - Flows [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/flows/"><img src="samples/flows.png" width="360"/></a>
 
@@ -16,7 +28,7 @@ Generative art sketches. Newest first
 
 ---
 
-## Modern Art [#p5js](https://p5js.org)
+## 202304 - Modern Art [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/modern-art/"><img src="samples/modern-art.png" width="360"/></a>
 
@@ -28,7 +40,7 @@ Generative art sketches. Newest first
 
 ---
 
-## La Truche [#p5js](https://p5js.org)
+## 202304 - La Truche [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/la-truche/"><img src="samples/la-truche.png" width="360"/></a>
 
@@ -41,7 +53,7 @@ Generative art sketches. Newest first
 
 ---
 
-## Stained [#p5js](https://p5js.org)
+## 202304 - Stained [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/stained/"><img src="samples/stained.png" width="360"/></a>
 
@@ -54,7 +66,7 @@ Generative art sketches. Newest first
 
 ---
 
-## Synthwave [#p5js](https://p5js.org)
+## 202304 - Synthwave [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/synthwave/"><img src="samples/synthwave.png" width="360"/></a>
 
@@ -67,7 +79,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 70s Patch [#p5js](https://p5js.org)
+## 202303 - 70s Patch [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/70s-patch/"><img src="samples/70s-patch.png" width="360"/></a>
 
@@ -80,7 +92,7 @@ Generative art sketches. Newest first
 
 ---
 
-## Pencils [#p5js](https://p5js.org)
+## 202303 - Pencils [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/pencils/"><img src="samples/pencils.png" width="360"/></a>
 
@@ -93,7 +105,7 @@ Generative art sketches. Newest first
 
 ---
 
-## Fakembroidery [#p5js](https://p5js.org)
+## 2021?? - Fakembroidery [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/embroided/"><img src="samples/embroided.png" width="360"/></a>
 
@@ -105,7 +117,7 @@ Generative art sketches. Newest first
 
 ---
 
-## DoF [#p5js](https://p5js.org)
+## 202101 - DoF [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/dof/"><img src="samples/dof.png" width="360"/></a>
 
@@ -117,7 +129,7 @@ Generative art sketches. Newest first
 
 ---
 
-## Chord diagram [#d3js/v6](https://d3js.org)
+## 202008 - Chord diagram [#d3js/v6](https://d3js.org)
 
 <a href="https://rberenguel.github.io/sketches/chord/"><img src="samples/chord.png" width="360"/></a> 
 
@@ -130,7 +142,7 @@ Generative art sketches. Newest first
 
 ---
 
-## Iris [#p5js](https://p5js.org)
+## 202006 - Iris [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/iris/"><img src="samples/iris.png" width="360"/></a> 
 
@@ -142,7 +154,7 @@ Generative art sketches. Newest first
 
 ---
 
-## Crazy nights [#p5js](https://p5js.org)
+## 202005 - Crazy nights [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/nights/"><img src="samples/nights.png" width="360"/></a> 
 
@@ -153,7 +165,7 @@ Generative art sketches. Newest first
 
 ---
 
-## Divide et impera [#p5js](https://p5js.org)
+## 202005 - Divide et impera [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/divide/"><img src="samples/divide.png" width="360"/></a> 
 
@@ -165,7 +177,7 @@ Generative art sketches. Newest first
 
 ---
 
-## Palette [#p5js](https://p5js.org)
+## 202005 - Palette [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/palette/"><img src="samples/palette.png" width="360"/></a> 
 
@@ -177,7 +189,7 @@ Generative art sketches. Newest first
 
 ---
 
-## Blot/Painting [#p5js](https://p5js.org)
+## 202005 - Blot/Painting [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/blot-painting/"><img src="samples/blot.jpg" width="360"/></a> <a href="https://rberenguel.github.io/sketches/blot-painting/"><img src="samples/painting.jpg" width="360"/></a>
 
@@ -189,7 +201,7 @@ Generative art sketches. Newest first
 
 ---
 
-## Watercolour [#p5js](https://p5js.org)
+## 202005 - Watercolour [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/watercolour/"><img src="samples/watercolour.jpg" width="360"/></a>
 
@@ -201,7 +213,7 @@ Generative art sketches. Newest first
 
 ---
 
-## Going crazy [#p5js](https://p5js.org)
+## 202005 - Going crazy [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/crazy/"><img src="samples/crazy.jpg" width="360"/></a>
 
@@ -212,13 +224,13 @@ Generative art sketches. Newest first
 
 ---
 
-## Conway's Game of Life [#p5js](https://p5js.org)
+## 202005 - Conway's Game of Life [#p5js](https://p5js.org)
 - [code](life/life.js)
 - See it here [here](https://rberenguel.github.io/sketches/life/index.html)
 
 ---
 
-## Sorting myself out [#p5js](https://p5js.org)
+## 202005 - Sorting myself out [#p5js](https://p5js.org)
 
 <a href="https://mostlymaths.net/2020/05/sorting-myself-out.html/"><img src="samples/sorting.gif" width="360"/></a>
 
@@ -229,7 +241,7 @@ Generative art sketches. Newest first
 
 ---
 
-## Hailstorm [#p5js](https://p5js.org)
+## 202005 - Hailstorm [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/hailstorm/"><img src="samples/hailstorm.jpg" width="360"/></a>
 

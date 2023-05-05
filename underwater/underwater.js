@@ -88,11 +88,11 @@ const sketch = (s) => {
     }
     mask.rectMode(s.CORNERS)
     mask.translate(0, -s.random(0.5, 1) * scene.height / 5)
-    mask.rect(-scene.width, 0.45 * scene.height, 2.0 * scene.width, 0.48 * scene.height)
+    mask.rect(-scene.width, 0.45 * scene.height, 2.0 * scene.width, 0.5 * scene.height)
     mask.pop()
   }
 
-  function slice(scene) {
+  function slice(scene, seed) {
     let barsMask = s.createGraphics(scene.width, scene.height)
     let diagonalMask = s.createGraphics(scene.width, scene.height)
     const margin = scene.width / 50.0 << 0
@@ -107,7 +107,6 @@ const sketch = (s) => {
       barsMask.translate(width + gap, 0)
     }
     barsMask.pop()
-    const seed = 1000000 * scene.random() << 0
     diagonal(scene, diagonalMask, false, seed)
     scene.strokeWeight(2 * 4 * hd)
     scene.stroke("black")
@@ -140,12 +139,11 @@ const sketch = (s) => {
 
   function thingy(scene, level, x, y) {
     scene.push()
-    scene.scale(hd)
     scene.translate(x, y)
     scene.rotate(scene.random(2 * PI))
     scene.scale(scene.random(0.5, 1.0))
-    const t = [105, 300, 450, 200, 300, 400]
-    let wiggled = t.map(z => z + scene.random(-50, 50))
+    const t = [105*hd, 300*hd, 450*hd, 200*hd, 300*hd, 400*hd]
+    let wiggled = t.map(z => z + scene.random(-50*hd, 50*hd))
     const c0 = wernerBasePalette[scene.random(wernerBasePalette.length) << 0]
     const c1 = darken(s, darken(s, gaussColor(scene, c0, 50), level), 0.8)
     const c2 = s.color(level)
@@ -165,42 +163,58 @@ const sketch = (s) => {
 
   s.draw = () => {
     const numPixels = hd * s.width * hd * s.height
-    let scene = s.createGraphics(hd * 1800, hd * 1200) // fixed 3:2 aspect ratio
+    let scene = s.createGraphics(hd * 1800, hd * 1200)
     scene.randomSeed(seeder.get())
     scene.noiseSeed(seeder.get())
     scene.background(background)
-    const MAX = 100 * hd * hd
+    const MAX = scene.random(100, 500)
     for (let i = 0; i < MAX; i++) {
       const x = scene.random(0.1 * scene.width, 0.9 * scene.width)
       const y = scene.random(0.1 * scene.height, 0.9 * scene.height)
       thingy(scene, (i + 1) / MAX, x, y)
     }
     monoTone(scene)
-    slice(scene)
+    slice(scene, seed)
 
-    const identifier = `${seeder.get()}@${hd.toPrecision(2)}`
-    addText(scene, scene.width - marginOuter - gapOuter / 2, scene.height - marginOuter - 24 * hd, identifier)
-    addText(scene, scene.width - marginOuter - gapOuter / 2, scene.height - marginOuter - 11 * hd, "rb'23")
-
+    const identifier = `#${seeder.hex()}@${hd.toPrecision(2)}`
+  	const sigCfg = {
+	  	s: s,
+		  scene: scene,
+	  	color: "#d0be47",
+		  shadow: "darkgrey",
+		  fontsize: 12,
+		  right: scene.width - marginOuter - gapOuter / 2,
+	  	bottom: scene.height - marginOuter,
+		  identifier: identifier,
+		  sig: "rb'23",
+		  hd: hd
+	  }
+	  signature(sigCfg)
+	
     largeCanvas = scene
     let c = scene.get()
     c.resize(s.width, 0)
     s.image(c, 0, 0)
   }
 
-  function addText(scene, x, y, content) {
-    scene.push()
-    scene.noStroke()
-    scene.fill("#d0be47")
-    scene.textAlign(s.RIGHT)
-    scene.textFont(monoid, hd * 12)
-    let ctx = scene.drawingContext
+  function signature(cfg){
+    addText(cfg, cfg.right, cfg.bottom - 2 * cfg.fontsize * hd, cfg.identifier)
+    addText(cfg, cfg.right, cfg.bottom - cfg.fontsize * hd + hd, cfg.sig)	
+  }
+  
+  function addText(cfg, x, y, content) {
+    cfg.scene.push()
+    cfg.scene.noStroke()
+    cfg.scene.fill(cfg.color)
+    cfg.scene.textAlign(s.RIGHT)
+    cfg.scene.textFont(monoid, hd * cfg.fontsize)
+    let ctx = cfg.scene.drawingContext
     ctx.shadowOffsetX = 2
     ctx.shadowOffsetY = 2
     ctx.shadowBlur = 1
-    ctx.shadowColor = "darkgrey"
-    scene.text(content, x, y)
-    scene.pop()
+    ctx.shadowColor = cfg.shadow
+    cfg.scene.text(content, x, y)
+    cfg.scene.pop()
   }
 
   function createGUI() {

@@ -1,14 +1,36 @@
 // Ruben Berenguel, 2020/05
+import {
+    Command
+} from './command.js'
+import {
+    Control
+} from './control.js'
+import {
+    Variable,
+    Boolean,
+    Integer,
+    Float,
+    String
+} from './variable.js'
+import {
+    Key
+} from './key.js'
+import {
+    Input
+} from './input.js'
+import {
+    FluentGUI
+} from './fluentgui.js'
 
-import { Command } from './command.js'
-import { Control } from './control.js'
-import { Variable, Boolean, Integer, Float, String } from './variable.js'
-import { Key } from './key.js'
-import { Input } from './input.js'
-import { FluentGUI } from './fluentgui.js'
-import { $ } from './dom.js'
+import {
+    Seeder
+} from './seeder.js'
+import {
+    $
+} from './dom.js'
 
 export {
+    createBaseGUI,
     FluentGUI,
     GUI,
     Command,
@@ -18,6 +40,7 @@ export {
     Integer,
     Float,
     Boolean,
+    Seeder,
     String,
     Variable
 }
@@ -39,3 +62,55 @@ class GUI {
     }
 }
 
+function createBaseGUI(config) {
+    let gui = new GUI(config.title, config.info, config.subinfo)
+    let S = new Key("s", () => {
+        config.largeCanvas.save("img.png")
+    })
+    let saveCmd = new Command(S, "save the canvas")
+    let R = new Key("r", () => {
+        gui.spin(() => {
+            config.s.clear()
+            config.s.draw()
+            gui.spin()
+            gui.unmark()
+            gui.update()
+        })
+    })
+
+    let resetCanvas = new Command(R, "reset")
+
+    let decH = new Key(",", () => {
+        if (config.hd > 0) {
+            config.hd -= 0.1
+            gui.mark()
+            gui.update()
+        }
+    })
+    let incH = new Key(".", () => {
+        if (config.hd < 10) {
+            config.hd += 0.1
+            gui.mark()
+            gui.update()
+        }
+    })
+    let hdInfo = new Float(() => config.hd)
+    let hdControl = new Control([decH, incH],
+        "+/- resolution export factor", hdInfo)
+
+    const commands = config.commands || []
+    const controls = config.controls || []
+    console.log(commands)
+    gui = gui.withCommands([saveCmd,
+        resetCanvas, ...commands
+    ])
+    gui = gui.withControls([hdControl, ...controls])
+
+    let QM = new Key("?", () => gui.toggle())
+    let hide = new Command(QM, "hide this")
+
+    gui.addCmd(hide)
+    config.seeder.setup(gui)
+    gui.update()
+    return gui
+	}

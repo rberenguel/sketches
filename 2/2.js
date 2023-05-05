@@ -36,17 +36,31 @@ const sketch = (s) => {
   // From Piter Pasma
   const smoothStep = (a,b,x)=>(x-=a,x/=b-a,x<0?0:x>1?1:x*x*(3-2*x));
 
-  function wobble(scene, cx, cy, r){
-    scene.beginShape()
+  function wobble(scene, cx, cy, r, c, seed){
+	const d = copyColor(s, c)
+	const da = s.alpha(d)
+	if(seed){
+		scene.randomSeed(seed)
+		scene.noiseSeed(seed)	
+	}
     const wx = cx + (2*r-scene.random(r)) << 0
     const wy = cy + (2*r-scene.random(r)) << 0    
-    for(let i=0;i<=15;i++){
-      const w = 0.2*r+0.8*r*scene.noise(cx, cy, i)
-      const x = wx + w*Math.cos(i*2*PI/15)
-      const y = wy + 2*w*Math.sin(i*2*PI/15)      
-      scene.vertex(x, y)
-    }
-    scene.endShape(s.CLOSE)
+	const maxJ = 3
+	for(let j=0;j<maxJ;j++){
+		const smj = smoothStep(0, maxJ, j)
+		const rr = (5-5*smj)*r+0.5*scene.noise(cx, cy)*r
+		d.setAlpha(da*smj)
+		scene.fill(d)
+		scene.stroke(d)
+		scene.beginShape()
+    	for(let i=0;i<=15;i++){
+      		const w = 0.2*rr+0.8*rr*scene.noise(cx, cy, i)
+      		const x = wx + w*Math.cos(i*2*PI/15)
+      		const y = wy + 2*w*Math.sin(i*2*PI/15)      
+      		scene.vertex(x, y)
+    	}
+    	scene.endShape(s.CLOSE)
+	}
   }
   
   
@@ -87,7 +101,7 @@ const sketch = (s) => {
             e.setAlpha(140*(0.5-nop))
             scene.stroke(e)
             scene.fill(e)
-            wobble(scene, x+j, y+i, drop/2)
+            wobble(scene, x+j, y+i, 0.4*drop, e)
           }
           continue
         }
@@ -99,13 +113,10 @@ const sketch = (s) => {
         if(scene.random()<0.2){continue}//{c.setAlpha(255-op*255)}
         scene.fill(c)
         scene.strokeWeight(0.5)
-        scene.stroke(d)
-        //scene.circle(x+j, y+i, 5)
-        let ctx = scene.drawingContext
-        
-        wobble(scene, x+j, y+i, drop/2)
-        scene.stroke(c)
-        wobble(scene, x+j, y+i, drop/2)
+		const internalSeed = 10000*scene.random() << 0
+        wobble(scene, x+j, y+i, 0.35*drop, d, internalSeed)
+        //scene.stroke(c)
+        wobble(scene, x+j, y+i, 0.3*drop, c, internalSeed)
       }
     }
   }
@@ -147,8 +158,9 @@ const sketch = (s) => {
     updown(scene,  x1, y1, w1, 1.5*l1, red)
     scene.noiseSeed(window.performance.now())
     updown(scene,  x1+50, y1, w1, 1.5*l1, white)    
-    scene.noiseSeed(window.performance.now())
+    scene.noiseSeed(window.performance.now()+1000*scene.random())
     updown(scene,  x1+100, y1, w1, 1.5*l1, black)    
+	
     largeCanvas = scene
     let c = scene.get()
     c.resize(s.width, 0)

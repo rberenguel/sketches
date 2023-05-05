@@ -1,96 +1,113 @@
 import {
-  Command,
-  GUI,
-  Integer,
-  Float,
-  Key,
-  Control
+    createBaseGUI,
+    Command,
+    GUI,
+    Integer,
+    Float,
+    Key,
+    Control,
+    Seeder
 } from '../libraries/gui/gui.js'
 
 import {
-  getLargeCanvas
+    getLargeCanvas,
+    signature
 } from '../libraries/misc.js'
 
 
-// Base to avoid writing always the same
-
 const sketch = (s) => {
 
-  let gui
-  let largeCanvas
-  let hd = 1
-  s.setup = () => {
-    let {
-      w,
-      h
-    } = getLargeCanvas(s, 1600)
-    let canvas = s.createCanvas(w, h)
-    s.pixelDensity(1)
-    canvas.mousePressed(() => {})
-    s.frameRate(20)
-    gui = createGUI()
-    gui.toggle()
-  }
+    let gui
+    let seed = 42
+    let debug = true
+    let dly // Base debug layer, if used
+    let largeCanvas
 
-  s.draw = () => {
-    const numPixels = hd * s.width * hd * s.height
-    let scene = s.createGraphics(hd * s.width, hd * s.height)
-    // Here your code against scene
-    largeCanvas = scene
-    let c = scene.get()
-    c.resize(s.width, 0)
-    s.image(c, 0, 0)
-  }
+    // Globals needed in controls, commands or deep arguments
+    let cfg = {
+        hd: 1,
+        seeder: undefined,
+        largeCanvas: undefined
+    }
 
-  function createGUI() {
-    let info =
-      "Info"
-    let subinfo = "Subinfo<br/>Very high resolutions can fail depending on the browser"
-    let S = new Key("s", () => {
-      largeCanvas.save("img.png")
-    })
-    let saveCmd = new Command(S, "save the canvas")
-    let R = new Key("r", () => {
-      gui.spin(() => {
-        s.clear();
-        s.draw()
-        gui.spin();
-      });
-    });
+    let W, H // Helpful globals to avoid typing scene.width so much
 
-    let resetCanvas = new Command(R, "reset")
+    const PI = s.PI
 
-    let decH = new Key(",", () => {
-      if (hd > 0) {
-        hd -= 0.1
-      }
-    })
-    let incH = new Key(".", () => {
-      if (hd < 10) {
-        hd += 0.1
-      }
-    })
-    let hdInfo = new Float(() => hd)
-    let hdControl = new Control([decH, incH],
-      "+/- resolution export factor", hdInfo)
+    s.preload = () => {
+        cfg.font = s.loadFont("../libraries/fonts/Monoid-Retina.ttf")
+    }
+
+    s.setup = () => {
+        let {
+            w,
+            h
+        } = getLargeCanvas(s, 1600)
+        let canvas = s.createCanvas(w, h)
+        s.pixelDensity(1)
+        canvas.mousePressed(() => {})
+        s.frameRate(20)
+        s.noLoop()
+        cfg.seeder = new Seeder()
+        gui = createGUI()
+        gui.toggle()
+    }
+
+    s.draw = () => {
+        let scene = s.createGraphics(cfg.hd * s.width, cfg.hd * s.height)
+        W = scene.width, H = scene.height
+        let dly = s.createGraphics(W, H)
+        scene.randomSeed(cfg.seeder.get())
+        scene.noiseSeed(cfg.seeder.get())
+        dly.randomSeed(cfg.seeder.get())
+        dly.noiseSeed(cfg.seeder.get())
+
+        // Here your code against scene and possibly dly
+        if (debug && dly) {
+            let c = dly.get()
+            scene.image(dly, 0, 0)
+        }
+
+        const identifier = `${cfg.seeder.get()}@${cfg.hd.toPrecision(2)}`
+        const sigCfg = {
+            s: s,
+            scene: scene,
+            color: "#101020",
+            shadow: "darkgrey",
+            fontsize: 9,
+            right: scene.width,
+            bottom: scene.height,
+            identifier: identifier,
+            sig: "rb'23",
+            hd: cfg.hd,
+            font: cfg.font
+        }
+        signature(sigCfg)
+
+        largeCanvas = scene
+        let c = scene.get()
+        c.resize(s.width, 0)
+        s.image(c, 0, 0)
+    }
 
 
-    let gui = new GUI("Something, RB 2020/", info, subinfo, [saveCmd,
-        resetCanvas
-      ],
-      [hdControl])
+    const createGUI = (gui) => {
+        cfg.title = "Something, RB 2020/"
+        cfg.info = "Info"
+        cfg.subinfo = "Subinfo<br/>Very high resolutions can fail depending on the browser"
+        cfg.s = s
+        cfg.commands = [cfg.seeder.command]
+        cfg.controls = [cfg.seeder.control]
 
-    let QM = new Key("?", () => gui.toggle())
-    let hide = new Command(QM, "hide this")
+        gui = createBaseGUI(cfg)
+        return gui
+    }
 
-    gui.addCmd(hide)
-    gui.update()
-    return gui
-  }
 
-  s.keyReleased = () => {
-    gui.dispatch(s.key)
-  }
+
+    s.keyReleased = () => {
+        gui.dispatch(s.key)
+    }
 }
 
 p5.disableFriendlyErrors = true

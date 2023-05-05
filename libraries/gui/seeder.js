@@ -10,7 +10,7 @@ import {
   Control
 } from './control.js'
 import {
-  Integer
+  String
 } from './variable.js'
 import {
   Key
@@ -26,7 +26,8 @@ class Seeder {
     lab.for = "seedInput"
     lab.innerHTML = "Enter a custom seed (integer)<br/>"
     let inp = $.cel("input")
-    inp.type = "number"
+    inp.type = "string"
+    inp.pattern = "#[0-9a-fA-F]+"
     inp.id = "seedInput"
     let span = $.cel("span")
     span.innerHTML = "<br/>Dismiss by pressing <code>enter</code>"
@@ -35,15 +36,15 @@ class Seeder {
 
     /* -------------- */
 
-    let E = new Key("e", () => {
+    let Z = new Key("z", () => {
       $.byId("seedInput").value = ""
       $.byId("seed").style.visibility = "visible"
       $.byId("seedInput").focus()
     })
     inp.onkeydown = (t) => this.inputSeed(t, this.gui)
-    let enterSeedCommand = new Command(E,
-      "manually enter seed")
-    let seedShow = new Integer(() => this.seed)
+    let enterSeedCommand = new Command(Z,
+      "manually enter seed (hex)")
+    let seedShow = new String(() => this.hex())
     let X = new Key("x", () => {
       this.seed = (window.performance.now() << 0) % 1000000
       this.gui.mark()
@@ -57,9 +58,13 @@ class Seeder {
 
   inputSeed(t, gui) {
     if (t.key.toLowerCase() === 'enter') {
-      let num = $.byId("seedInput").valueAsNumber
-      if (!isNaN(num)) {
-        this.seed = num
+      let num = $.byId("seedInput").value
+      if(num.startsWith("#")){
+        num = num.slice(1, num.length)
+      }
+      const hexed = parseInt(num, 16)
+      if (!isNaN(hexed)) {
+        this.seed = hexed
         this.gui.mark()
       }
       $.byId("seed").style.visibility = "hidden"
@@ -77,6 +82,10 @@ class Seeder {
     return this.seed
   }
 
+  hex() {
+    return this.seed.toString(16).toUpperCase()
+  }
+  
   set(val) {
     this.seed = val
     return this.seed
