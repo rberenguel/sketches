@@ -128,10 +128,29 @@ function shuffle(array) {
     return array;
 }
 
-function bezierB(scene, x, y, c1x, c1y, c2x, c2y, ex, ey) {
+function bezierB(scene, x, y, c1x, c1y, c2x, c2y, ex, ey, lineStrok, pointStrok) {
+    let lineStroke=4, pointStroke=6
+    if(lineStrok){
+      lineStroke = lineStrok
+    }
+    if(pointStrok){
+      pointStroke = pointStrok
+    }
+    scene.strokeWeight(lineStroke)
     scene.line(x, y, c1x, c1y)
+    scene.strokeWeight(pointStroke)
+    scene.point(x, y)
+    scene.point(c1x, c1y)
+    scene.strokeWeight(lineStroke)    
     scene.line(c1x, c1y, c2x, c2y)
+    scene.strokeWeight(2*pointStroke)    
+    scene.point(c1x, c1y)
+    scene.point(c2x, c2y)    
+    scene.strokeWeight(lineStroke)    
     scene.line(c2x, c2y, ex, ey)
+    scene.strokeWeight(pointStroke)    
+    scene.point(c2x, c2y)    
+    scene.point(ex, ey)    
 }
 
 function arrow(scene, sx, sy, ex, ey) {

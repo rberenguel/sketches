@@ -68,18 +68,7 @@ function createBaseGUI(config) {
         config.largeCanvas.save("img.png")
     })
     let saveCmd = new Command(S, "save the canvas")
-    let R = new Key("r", () => {
-        gui.spin(() => {
-            config.s.clear()
-            config.s.draw()
-            gui.spin()
-            gui.unmark()
-            gui.update()
-        })
-    })
-
-    let resetCanvas = new Command(R, "reset")
-
+    
     let decH = new Key(",", () => {
         if (config.hd > 0) {
             config.hd -= 0.1
@@ -100,9 +89,8 @@ function createBaseGUI(config) {
 
     const commands = config.commands || []
     const controls = config.controls || []
-    console.log(commands)
     gui = gui.withCommands([saveCmd,
-        resetCanvas, ...commands
+        ...commands
     ])
     gui = gui.withControls([hdControl, ...controls])
 

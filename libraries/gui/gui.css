@@ -18,6 +18,10 @@
     content: "\25be";
 }
 
+#gui #triangle.dirty {
+  color: indianred;
+}
+
 #gui #triangle.dirty:after{
     content: "\2762";
 }
