@@ -18,7 +18,6 @@ import {
 const sketch = (s) => {
 
     let gui
-    let seed = 42
     let debug = true
     let dly // Base debug layer, if used
 

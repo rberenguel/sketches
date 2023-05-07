@@ -10,7 +10,9 @@ export {
     bezierB,
     arrow,
     cl,
-    signature
+    signature,
+    addText,
+    smoothStep
 }
 
 function getLargeCanvas(s, maxSide) {
@@ -35,6 +37,10 @@ function getLargeCanvas(s, maxSide) {
         }
     }
 }
+
+// A very compact smoothStep function by Piter Pasma (https://piterpasma.nl)
+
+const smoothStep = (a, b, x) => (x -= a, x /= b - a, x < 0 ? 0 : x > 1 ? 1 : x * x * (3 - 2 * x))
 
 function signature(cfg) {
     addText(cfg, cfg.right, cfg.bottom - 2 * cfg.fontsize * cfg.hd, cfg.identifier)

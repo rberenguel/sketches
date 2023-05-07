@@ -169,7 +169,7 @@ const sketch = (s) => {
     lab.for = "seedInput"
     lab.innerHTML = "Enter a custom seed (integer)<br/>"
     let inp = $.cel("input")
-    inp.type = "number"
+    inp.type = "string"
     inp.id = "seedInput"
     inp.onkeydown = inputSeed
     let span = $.cel("span")
@@ -250,10 +250,16 @@ const sketch = (s) => {
   }
 
   function inputSeed(t) {
+    
     if (t.key.toLowerCase() === 'enter') {
-      let num = $.byId("seedInput").valueAsNumber
-      if (!isNaN(num)) {
-        seed = num
+      let num = $.byId("seedInput").value
+      if(num.startsWith("#")){
+        num = num.slice(1, num.length)
+      }
+      const hexed = parseInt(num, 16)
+      if (!isNaN(hexed)) {
+        seed = hexed
+        gui.mark()
       }
       $.byId("seed").style.visibility = "hidden"
       gui.update()
@@ -272,7 +278,7 @@ const sketch = (s) => {
       particles = particleDistribution.fun(scene, (0.4 * i) / layers)
       stepThrough(scene, particles)
     }
-    const identifier = `${particleDistribution.short}.${palette.short}.${seed}.${layers}@${hd.toPrecision(2)}`
+    const identifier = `${particleDistribution.short}.${palette.short}.${seed.toString(16).toUpperCase()}.${layers}@${hd.toPrecision(2)}`
     addText(scene, scene.width - 10 * hd, scene.height - 15 * hd, identifier)
     addText(scene, scene.width - 10 * hd, scene.height - 7 * hd, "rb'23")
     largeCanvas = scene
@@ -310,15 +316,16 @@ const sketch = (s) => {
         s.clear()
         plot()
         gui.spin()
+        gui.unmark()
       })
     })
 
-    let pals = new Key("p", cyclePalettes)
+    let pals = new Key("q", cyclePalettes)
     let paletteShow = new String(() => palette.name)
     let paletteControl = new Control([pals],
       "Cycle palettes", paletteShow)
 
-    let pDists = new Key("d", cycleParticleDistributions)
+    let pDists = new Key("w", cycleParticleDistributions)
     let pDistsCmd = new Command(pDists, "cycle through palette distributions")
     let pDistsShow = new String(() => particleDistribution.name)
     let pDistsControl = new Control([pDists],
@@ -326,8 +333,10 @@ const sketch = (s) => {
     let M = new Key("m", () => {
       if (mode == "fine") {
         mode = "rough"
+        gui.mark()
       } else {
         mode = "fine"
+        gui.mark()
       }
       setMode()
     })
@@ -337,19 +346,21 @@ const sketch = (s) => {
     let resetCanvas = new Command(R, "reset")
     let X = new Key("x", () => {
       seed = (window.performance.now() << 0) % 1000000
+      gui.mark()
+      gui.update()
     })
-    let seedShow = new Integer(() => seed)
+    let seedShow = new String(() => seed.toString(16).toUpperCase())
     let seedControl = new Control([X],
       "Random seed", seedShow)
     let incR = new Key(")", () => {
       layers += 10
     })
-    let E = new Key("e", () => {
+    let Z = new Key("z", () => {
       $.byId("seedInput").value = ""
       $.byId("seed").style.visibility = "visible"
       $.byId("seedInput").focus()
     })
-    let enterSeedCommand = new Command(E,
+    let enterSeedCommand = new Command(Z,
       "manually enter seed")
 
     let decR = new Key("(", () => {
