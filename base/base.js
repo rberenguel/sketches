@@ -18,10 +18,8 @@ import {
 const sketch = (s) => {
 
     let gui
-    let seed = 42
     let debug = true
     let dly // Base debug layer, if used
-    let largeCanvas
 
     // Globals needed in controls, commands or deep arguments
     let cfg = {
@@ -84,7 +82,7 @@ const sketch = (s) => {
         }
         signature(sigCfg)
 
-        largeCanvas = scene
+        cfg.largeCanvas = scene
         let c = scene.get()
         c.resize(s.width, 0)
         s.image(c, 0, 0)
@@ -96,7 +94,19 @@ const sketch = (s) => {
         cfg.info = "Info"
         cfg.subinfo = "Subinfo<br/>Very high resolutions can fail depending on the browser"
         cfg.s = s
-        cfg.commands = [cfg.seeder.command]
+        let R = new Key("r", () => {
+          gui.spin(() => {
+            cfg.s.clear()
+            cfg.s.draw()
+            gui.spin()
+            gui.unmark()
+            gui.update()
+          })
+        })
+
+        let resetCanvas = new Command(R, "reset")        
+        
+        cfg.commands = [resetCanvas, cfg.seeder.command]
         cfg.controls = [cfg.seeder.control]
 
         gui = createBaseGUI(cfg)
