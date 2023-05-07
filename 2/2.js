@@ -25,6 +25,9 @@ import {
   darken
 } from '../libraries/misc.js'
 
+import {
+  dateTo19Encoding
+} from '../libraries/compactTime.js'
 
 const sketch = (s) => {
 
@@ -325,8 +328,9 @@ const sketch = (s) => {
       let c = dly.get()
       scene.image(dly, 0, 0)
     }
-
-    const identifier = `${cfg.seeder.get()}@${cfg.hd.toPrecision(2)}`
+    const now = new Date()
+    const timeSignature = dateTo19Encoding(now).toUpperCase()
+    const identifier = `${cfg.seeder.get()}@${cfg.hd.toPrecision(2)}(${timeSignature})`
     const sigCfg = {
       s: s,
       scene: scene,
@@ -335,7 +339,7 @@ const sketch = (s) => {
       fontsize: 9,
       right: scene.width,
       bottom: scene.height,
-      identifier: "", //identifier,
+      identifier: identifier,
       sig: "rb'23",
       hd: cfg.hd,
       font: cfg.font
