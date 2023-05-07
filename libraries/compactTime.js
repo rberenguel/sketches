@@ -5,8 +5,8 @@ import {
 // Compact date-time format, with years modulo 20
 // Format is YDDTT where:
 //     Y: Year, modulo 20
-//     DD: Day of year in base 19
-//     TT: Time of day in seconds, modulo 19
+//     DD: Day of year in base 19-ish (has 20 symbols, sue me)
+//     TT: Time of day in seconds, modulo 19*19
 // Example: 
 // fjstm decodes as Sun, 07 May 2023 18:16:00 GMT
 // Error is within 6 minutes of exact time (day divided in blocks of 6 minutes)

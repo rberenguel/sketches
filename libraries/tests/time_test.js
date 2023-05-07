@@ -13,6 +13,7 @@ describe('to19 and from19 should work', function() {
     it('to19 should divide properly', function() {
       for(let doy=0;doy<366;doy++){
         const v = intTo19Encoding(doy)
+        console.log(doy, v.nums)
         const multd = v.nums[0]*19+v.nums[1]
         chai.expect(doy).to.eql(multd)
       }
