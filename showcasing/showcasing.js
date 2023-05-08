@@ -1,175 +1,254 @@
 import {
-    createBaseGUI,
-    Command,
-    GUI,
-    Integer,
-    Float,
-    Key,
-    Control,
-    Seeder
+  createBaseGUI,
+  Command,
+  GUI,
+  Integer,
+  Float,
+  Key,
+  Control,
+  Seeder
 } from '../libraries/gui/gui.js'
 
-//import { Perspective } from '../libraries/3rdparty/perspective.js'
-
 import {
-    getLargeCanvas,
-    signature
+  getLargeCanvas,
+  signature,
+  mod
 } from '../libraries/misc.js'
 
 const sketch = (s) => {
 
-    let gui
-    let debug = true
-    let dly // Base debug layer, if used
+  let gui
+  let debug = true
+  let dly // Base debug layer, if used
 
-    // Globals needed in controls, commands or deep arguments
-    let cfg = {
-        hd: 1,
-        seeder: undefined,
-        largeCanvas: undefined,
-        backgrounds: []
+  let cfg = {
+    hd: 1,
+    seeder: undefined,
+    largeCanvas: undefined,
+    backgrounds: [],
+    samples: []
+  }
+
+  let backgroundIndex = 0
+  let imageIndex = 0
+
+  let W, H // Helpful globals to avoid typing scene.width so much
+
+  const PI = s.PI
+
+  s.preload = () => {
+    cfg.font = s.loadFont("../libraries/fonts/Monoid-Retina.ttf")
+
+    let bg = {
+      img: s.loadImage("living_room_3.jpg"),
+      ul: [720, 278],
+      ur: [1091, 279],
+      bl: [720, 525],
+      br: [1092, 525],
+      w: 500,
+      h: 300,
+      ratio: -1
+    }
+    cfg.backgrounds.push(bg)
+    bg = {
+      img: s.loadImage("living_room_1.jpg"),
+      ul: [616, 106],
+      ur: [1168, 107],
+      bl: [619, 488],
+      br: [1168, 490],
+      w: 428,
+      h: 296,
+      ratio: 1.4459
+    }
+    cfg.backgrounds.push(bg)
+    bg = {
+      img: s.loadImage("living_room_2.jpg"),
+      ul: [421, 274],
+      ur: [882, 274],
+      bl: [427, 566],
+      br: [882, 567],
+      w: 358,
+      h: 224,
+      ratio: 1.5982
+    }
+    cfg.backgrounds.push(bg)
+    bg = {
+      img: s.loadImage("living_room_4.jpg"),
+      ul: [173, 129],
+      ur: [621, 269],
+      bl: [170, 545],
+      br: [621, 584],
+      w: 500,
+      h: 300,
+      ratio: -1
     }
 
-    let W, H // Helpful globals to avoid typing scene.width so much
+    cfg.backgrounds.push(bg)
 
-    const PI = s.PI
-
-    s.preload = () => {
-        cfg.font = s.loadFont("../libraries/fonts/Monoid-Retina.ttf")
-        cfg.backgrounds.push(s.loadImage("living_room_1.jpg"))
-        //cfg.flows = s.loadImage("../samples/flows.png") // ../samples/flows.png
-        //cfg.flows.src = cfg.flows_.canvas.toDataURL()
-        const img = new Image(903-475, 378-82)
-        img.src = "./synthwave-s.png"
-        cfg.flows = img
-        //document.body.appendChild(cfg.flows);
+    const images = [{
+      src: "./synthwave-s.png"
+    }, {
+      src: "./flows-s.png"
+    }, {
+      src: "./iris-s.png",
+      color: "#55555510",
+      blendMode: "multiply"
+    }, {
+      src: "underwater-s.png",
+      color: "#55555510",
+      blendMode: "multiply"
+    }, {
+      src: "./pencils-s.png"
+    }, {
+      src: "./patch-s.png",
+      color: "#55555510",
+      blendMode: "multiply"
+    }, {
+      src: "./modern-art-s.png"
+    }]
+    for (let imageData of images) {
+      let img = new Image(500, 500)
+      img.src = imageData.src
+      cfg.samples.push({
+        img: img,
+        blendMode: imageData.blendMode,
+        color: imageData.color
+      })
     }
+  }
 
-    s.setup = () => {
-        let {
-            w,
-            h
-        } = getLargeCanvas(s, 1600)
-        let canvas = s.createCanvas(w, h)
-        s.pixelDensity(1)
-        canvas.mousePressed(() => {})
-        s.frameRate(20)
-        s.noLoop()
-        cfg.seeder = new Seeder()
-        gui = createGUI()
-        gui.toggle()
-    }
+  s.setup = () => {
+    let {
+      w,
+      h
+    } = getLargeCanvas(s, 1600)
+    let canvas = s.createCanvas(w, h)
+    s.pixelDensity(1)
+    canvas.mousePressed(() => {})
+    s.frameRate(20)
+    s.noLoop()
+    cfg.seeder = new Seeder()
+    gui = createGUI()
+    gui.toggle()
+  }
 
-    s.draw = () => {
-        let scene = s.createGraphics(cfg.hd * s.width, cfg.hd * s.height)
+  s.draw = () => {
+    let scene = s.createGraphics(1800, 1200)
 
-        W = scene.width, H = scene.height
-        let dly = s.createGraphics(W, H)
-        scene.randomSeed(cfg.seeder.get())
-        scene.noiseSeed(cfg.seeder.get())
-        dly.randomSeed(cfg.seeder.get())
-        dly.noiseSeed(cfg.seeder.get())
+    W = scene.width, H = scene.height
+    let dly = s.createGraphics(W, H)
+    scene.randomSeed(cfg.seeder.get())
+    scene.noiseSeed(cfg.seeder.get())
+    dly.randomSeed(cfg.seeder.get())
+    dly.noiseSeed(cfg.seeder.get())
 
-        // Here your code against scene and possibly dly
-        if (debug && dly) {
-            let c = dly.get()
-            scene.image(dly, 0, 0)
-        }
-        const ul = [475, 82]
-        const ur = [903, 82]
-        const bl = [475, 378]
-        const br = [903, 378]
-        
-        /*cfg.flows.resize(903-475,0)
-        let foo = s.createGraphics(cfg.flows.width, cfg.flows.height)                
-        foo.image(cfg.flows, 0, 0)
-        const durl = foo.canvas.toDataURL("image/png")
-        //console.log(durl)
-        let img = s.createImg(durl).hide()
-        img.elt.width = cfg.flows.width
-        img.elt.height = cfg.flows.height*/
-        
-        cfg.backgrounds[0].resize(scene.width, 0)
-        scene.image(cfg.backgrounds[0], 0, 0)
-        //cfg.flows_.resize(50, 0)
-        //console.log(scene.canvas.toDataURL())
-        //scene.translate(ul)
-        scene.noStroke()
-        scene.rectMode(s.CORNERS)
-        //scene.shearY(0.5)        
-        //scene.rect(...ul, ...br)
-        
-        let ctx = scene.drawingContext
-        let p = new Perspective(ctx, cfg.flows)
-        const cul = [476, 82]
-        const cur = [902, 82]
-        const cbl = [479, 378]
-        const cbr = [899, 378]
-        p.draw([
-          cul,                               // Top-left [x, y]
-          cur,                 // Top-right [x, y]
-          cbr,  // bottom-right [x, y]
-          cbl                   // bottom-left [x, y]
-        ])
-        
-        scene.strokeWeight(2)
-        scene.stroke("#10101099")
-        scene.line(...cul, ...cbl)
-        scene.line(...cbl, ...cbr)
-        scene.line(...cbr, ...cur)
-        scene.line(...cur, ...cul)
-        /*const identifier = `${cfg.seeder.get()}@${cfg.hd.toPrecision(2)}`
-        const sigCfg = {
-            s: s,
-            scene: scene,
-            color: "#101020",
-            shadow: "darkgrey",
-            fontsize: 9,
-            right: scene.width,
-            bottom: scene.height,
-            identifier: identifier,
-            sig: "rb'23",
-            hd: cfg.hd,
-            font: cfg.font
-        }
-        signature(sigCfg)*/
-
-        cfg.largeCanvas = scene
-        let c = scene.get()
-        c.resize(s.width, 0)
-        s.image(c, 0, 0)
-    }
+    let bg = cfg.backgrounds[backgroundIndex]
+    bg.img.resize(scene.width, 0)
+    scene.image(bg.img, 0, 0)
+    scene.noStroke()
+    scene.rectMode(s.CORNERS)
 
 
-    const createGUI = (gui) => {
-        cfg.title = "Something, RB 2020/"
-        cfg.info = "Info"
-        cfg.subinfo = "Subinfo<br/>Very high resolutions can fail depending on the browser"
-        cfg.s = s
-        let R = new Key("r", () => {
-          gui.spin(() => {
-            cfg.s.clear()
-            cfg.s.draw()
-            gui.spin()
-            gui.unmark()
-            gui.update()
-          })
-        })
-
-        let resetCanvas = new Command(R, "reset")        
-        
-        cfg.commands = [resetCanvas, cfg.seeder.command]
-        cfg.controls = [cfg.seeder.control]
-
-        gui = createBaseGUI(cfg)
-        return gui
-    }
+    /*        
+    //const ul = [616, 106]
+    //const ur = [1168, 107]
+    //const bl = [619, 488]
+    //const br = [1168, 490]
+    
+    scene.strokeWeight(5)
+    scene.stroke("red")
+    scene.point(...ul)
+    scene.point(...ur)
+    scene.point(...bl)
+    scene.point(...br)
+    */
 
 
+    let ctx = scene.drawingContext
+    let img = cfg.samples[imageIndex]
+    let p = new Perspective(ctx, img.img, img.blendMode, img.color)
 
-    s.keyReleased = () => {
-        gui.dispatch(s.key)
-    }
+    p.draw([
+      bg.ul,
+      bg.ur,
+      bg.br,
+      bg.bl
+    ])
+
+    scene.strokeWeight(2)
+    scene.stroke("#10101099")
+    scene.line(...bg.ul, ...bg.bl)
+    scene.line(...bg.bl, ...bg.br)
+    scene.line(...bg.br, ...bg.ur)
+    scene.line(...bg.ur, ...bg.ul)
+
+
+    cfg.largeCanvas = scene
+    let c = scene.get()
+    c.resize(s.width, 0)
+    s.image(c, 0, 0)
+  }
+
+
+  function createGUI() {
+    let info =
+      "Info"
+    let subinfo = "Subinfo<br/>Very high resolutions can fail depending on the browser"
+    let S = new Key("s", () => {
+      largeCanvas.save("img.png")
+    })
+    let saveCmd = new Command(S, "save the canvas")
+
+
+    let decB = new Key(",", () => {
+      backgroundIndex = mod(backgroundIndex - 1, cfg.backgrounds.length)
+      gui.update()
+      s.clear()
+      s.draw()
+    })
+    let incB = new Key(".", () => {
+      backgroundIndex = mod(backgroundIndex + 1, cfg.backgrounds.length)
+      gui.update()
+      s.clear()
+      s.draw()
+    })
+    let backInfo = new Integer(() => backgroundIndex)
+    let backControl = new Control([decB, incB],
+      "+/- background", backInfo)
+
+    let decI = new Key("(", () => {
+      imageIndex = mod(imageIndex - 1, cfg.samples.length)
+      gui.update()
+      s.clear()
+      s.draw()
+    })
+    let incI = new Key(")", () => {
+      imageIndex = mod(imageIndex + 1, cfg.samples.length)
+      gui.update()
+      s.clear()
+      s.draw()
+    })
+    let imgInfo = new Integer(() => imageIndex)
+    let imgControl = new Control([decI, incI],
+      "+/- image", imgInfo)
+
+
+    let gui = new GUI("Something, RB 2020/", info, subinfo, [saveCmd],
+      [backControl, imgControl])
+
+    let QM = new Key("?", () => gui.toggle())
+    let hide = new Command(QM, "hide this")
+
+    gui.addCmd(hide)
+    gui.update()
+    return gui
+  }
+
+
+
+  s.keyReleased = () => {
+    gui.dispatch(s.key)
+  }
 }
 
 p5.disableFriendlyErrors = true

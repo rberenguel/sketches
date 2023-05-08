@@ -30,15 +30,20 @@ var html5jp = window.html5jp || {};
     /* -------------------------------------------------------------------
      * constructor
      * ----------------------------------------------------------------- */
-    html5jp.perspective = function(ctxd, image) {
+    html5jp.perspective = function(ctxd, image, mode_, color_) {
         // check the arguments
         if( ! ctxd || ! ctxd.strokeStyle ) { return; }
         if( ! image || ! image.width || ! image.height ) { return; }
+        const mode = mode_ ? mode_ : "multiply"
+        const color = color_ ? color_ : "#90909090"
         // prepare a <canvas> for the image
         var cvso = document.createElement('canvas');
         cvso.width = parseInt(image.width);
         cvso.height = parseInt(image.height);
         var ctxo = cvso.getContext('2d');
+        ctxo.fillStyle = color;
+        ctxo.fillRect(0,0,cvso.width,cvso.height);
+        ctxo.globalCompositeOperation=mode
         ctxo.drawImage(image, 0, 0, cvso.width, cvso.height);
         // prepare a <canvas> for the transformed image
         var cvst = document.createElement('canvas');
@@ -115,8 +120,7 @@ var html5jp = window.html5jp || {};
             ctxl.globalCompositeOperation = "copy";
             var cvsl = ctxl.canvas;
             for( var y=0; y<oh; y+=step ) {
-              console.log(y)
-                var r = y / oh;
+              var r = y / oh;
                 var sx = d0x + (d3x-d0x) * r;
                 var sy = d0y + (d3y-d0y) * r;
                 var ex = d1x + (d2x-d1x) * r;
