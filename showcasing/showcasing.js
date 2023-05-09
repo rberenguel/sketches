@@ -3,7 +3,7 @@ import {
   Command,
   GUI,
   Integer,
-  Float,
+  String,
   Key,
   Control,
   Seeder
@@ -212,8 +212,8 @@ const sketch = (s) => {
 
   function createGUI() {
     let info =
-      "See in place"
-    let subinfo = "Using a tweaked version of perspective.js<br/>Doesn't have all my pieces (yet)"
+      "See in place. Not all pieces will look good due to wrong size of the wall canvas"
+    let subinfo = "Using a tweaked version of <a style='color: inherit;' href='https://github.com/wanadev/perspective.js'>perspective.js</a><br/>Doesn't have all my pieces (yet)"
     let S = new Key("s", () => {
       largeCanvas.save("img.png")
     })
@@ -234,7 +234,7 @@ const sketch = (s) => {
     })
     let backInfo = new Integer(() => backgroundIndex)
     let backControl = new Control([decB, incB],
-      "+/- background", backInfo)
+      "Cycle backgrounds", backInfo)
 
     let decI = new Key("(", () => {
       imageIndex = mod(imageIndex - 1, cfg.samples.length)
@@ -248,9 +248,9 @@ const sketch = (s) => {
       s.clear()
       s.draw()
     })
-    let imgInfo = new Integer(() => imageIndex)
+    let imgInfo = new String(() => cfg.samples[imageIndex].src.replace("-s.png", "").replace("-s.jpg"))
     let imgControl = new Control([decI, incI],
-      "+/- image", imgInfo)
+      "Cycle pieces", imgInfo)
 
 
     let gui = new GUI("Showcase, RB 2023/5", info, subinfo, [saveCmd],
