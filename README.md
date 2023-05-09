@@ -13,6 +13,7 @@ Generative art sketches. Newest first
 - A "simple" piece of random triangles where I wanted to explore a dotted effect and what I could do "smartly" with masking. It is also the first piece that is fully resolution independent and reproducible at any scale with only very minor variations
 - [code](underwater/underwater.js) Fully resolution independent, with signature (this time as an hex identifier for the seed).
 - Explore it [here](https://rberenguel.github.io/sketches/underwater/index.html)
+- NEW [See in place](https://rberenguel.github.io/sketches/showcasing/index.html?img=underwater)
 
 ---
 

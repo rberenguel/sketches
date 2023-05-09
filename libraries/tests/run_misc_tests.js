@@ -1,4 +1,4 @@
-import './test.js';
+import './misc_test.js';
 
 mocha.checkLeaks();
 mocha.run();
