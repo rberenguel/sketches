@@ -29,18 +29,19 @@ const sketch = (s) => {
     samples: []
   }
 
-  let backgroundIndex = 0
+  let backgroundIndex = 1
   let imageIndex = 0
 
-  let W, H // Helpful globals to avoid typing scene.width so much
+  let W, H
 
   const PI = s.PI
 
   s.preload = () => {
     cfg.font = s.loadFont("../libraries/fonts/Monoid-Retina.ttf")
-
+    // Add signature with background image sources, pexels & unsplash
     let bg = {
       img: s.loadImage("living_room_3.jpg"),
+      src: "living_room_3.jpg",      
       ul: [720, 278],
       ur: [1091, 279],
       bl: [720, 525],
@@ -52,6 +53,7 @@ const sketch = (s) => {
     cfg.backgrounds.push(bg)
     bg = {
       img: s.loadImage("living_room_1.jpg"),
+      src: "living_room_1.jpg",      
       ul: [616, 106],
       ur: [1168, 107],
       bl: [619, 488],
@@ -63,6 +65,7 @@ const sketch = (s) => {
     cfg.backgrounds.push(bg)
     bg = {
       img: s.loadImage("living_room_2.jpg"),
+      src: "living_room_2.jpg",
       ul: [421, 274],
       ur: [882, 274],
       bl: [427, 566],
@@ -74,6 +77,7 @@ const sketch = (s) => {
     cfg.backgrounds.push(bg)
     bg = {
       img: s.loadImage("living_room_4.jpg"),
+      src: "living_room_4.jpg",      
       ul: [173, 129],
       ur: [621, 269],
       bl: [170, 545],
@@ -86,25 +90,25 @@ const sketch = (s) => {
     cfg.backgrounds.push(bg)
 
     const images = [{
-      src: "./synthwave-s.png"
+      src: "synthwave-s.png",
     }, {
-      src: "./flows-s.png"
+      src: "flows-s.png"
     }, {
-      src: "./iris-s.png",
+      src: "iris-s.png",
       color: "#55555510",
       blendMode: "multiply"
     }, {
       src: "underwater-s.png",
+      color: "#55555530",
+      blendMode: "multiply"
+    }, {
+      src: "pencils-s.png"
+    }, {
+      src: "70s-patch-s.png",
       color: "#55555510",
       blendMode: "multiply"
     }, {
-      src: "./pencils-s.png"
-    }, {
-      src: "./patch-s.png",
-      color: "#55555510",
-      blendMode: "multiply"
-    }, {
-      src: "./modern-art-s.png"
+      src: "modern-art-s.png"
     }]
     for (let imageData of images) {
       let img = new Image(500, 500)
@@ -112,7 +116,8 @@ const sketch = (s) => {
       cfg.samples.push({
         img: img,
         blendMode: imageData.blendMode,
-        color: imageData.color
+        color: imageData.color,
+        src: imageData.src
       })
     }
   }
@@ -130,9 +135,24 @@ const sketch = (s) => {
     cfg.seeder = new Seeder()
     gui = createGUI()
     gui.toggle()
+    
+    const queryString = window.location.search 
+    const urlParams = new URLSearchParams(queryString)
+    const imgReq = urlParams.get('img')
+    const bgReq = urlParams.get('bg')
+    let idx = cfg.samples.findIndex(
+      img => img.src.startsWith(imgReq)
+    )
+    imageIndex = idx >=0 ? idx : imageIndex
+    idx = cfg.backgrounds.findIndex(
+      img => img.src.endsWith(bgReq+".jpg")
+      )
+    backgroundIndex = idx >=0 ? idx : backgroundIndex      
+    gui.update()
+    
   }
 
-  s.draw = () => {
+  s.draw = () => {    
     let scene = s.createGraphics(1800, 1200)
 
     W = scene.width, H = scene.height
@@ -192,8 +212,8 @@ const sketch = (s) => {
 
   function createGUI() {
     let info =
-      "Info"
-    let subinfo = "Subinfo<br/>Very high resolutions can fail depending on the browser"
+      "See in place"
+    let subinfo = "Using a tweaked version of perspective.js<br/>Doesn't have all my pieces (yet)"
     let S = new Key("s", () => {
       largeCanvas.save("img.png")
     })
@@ -233,7 +253,7 @@ const sketch = (s) => {
       "+/- image", imgInfo)
 
 
-    let gui = new GUI("Something, RB 2020/", info, subinfo, [saveCmd],
+    let gui = new GUI("Showcase, RB 2023/5", info, subinfo, [saveCmd],
       [backControl, imgControl])
 
     let QM = new Key("?", () => gui.toggle())
