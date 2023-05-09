@@ -48,7 +48,8 @@ const sketch = (s) => {
       br: [1092, 525],
       w: 500,
       h: 300,
-      ratio: -1
+      ratio: -1,
+	  attr: "N.Hébert(Unsphash)"
     }
     cfg.backgrounds.push(bg)
     bg = {
@@ -60,7 +61,8 @@ const sketch = (s) => {
       br: [1168, 490],
       w: 428,
       h: 296,
-      ratio: 1.4459
+      ratio: 1.4459,
+	  attr: "R.Claire(Pexels)"
     }
     cfg.backgrounds.push(bg)
     bg = {
@@ -72,7 +74,8 @@ const sketch = (s) => {
       br: [882, 567],
       w: 358,
       h: 224,
-      ratio: 1.5982
+      ratio: 1.5982,
+	  attr: "R.Claire(Pexels)"
     }
     cfg.backgrounds.push(bg)
     bg = {
@@ -84,31 +87,38 @@ const sketch = (s) => {
       br: [621, 584],
       w: 500,
       h: 300,
-      ratio: -1
+      ratio: -1,
+	  attr: "M.Rahubovskiy(Pexels)"
     }
 
     cfg.backgrounds.push(bg)
 
     const images = [{
       src: "synthwave-s.png",
+	  name: "Synthwave"
     }, {
-      src: "flows-s.png"
+      src: "flows-s.png",
+	  name: "Flows"
     }, {
       src: "iris-s.png",
       color: "#55555510",
-      blendMode: "multiply"
+      blendMode: "multiply",
+	  name: "Iris"
     }, {
       src: "underwater-s.png",
       color: "#55555530",
-      blendMode: "multiply"
+      blendMode: "multiply",
+	  name: "Underwater"
     }, {
       src: "pencils-s.png"
     }, {
       src: "70s-patch-s.png",
       color: "#55555510",
-      blendMode: "multiply"
+      blendMode: "multiply",
+	  name: "70s Patch"
     }, {
-      src: "modern-art-s.png"
+      src: "modern-art-s.png",
+	  name: "Modern Art"
     }]
     for (let imageData of images) {
       let img = new Image(500, 500)
@@ -117,7 +127,8 @@ const sketch = (s) => {
         img: img,
         blendMode: imageData.blendMode,
         color: imageData.color,
-        src: imageData.src
+        src: imageData.src,
+		name: imageData.name
       })
     }
   }
@@ -201,11 +212,32 @@ const sketch = (s) => {
     scene.line(...bg.bl, ...bg.br)
     scene.line(...bg.br, ...bg.ur)
     scene.line(...bg.ur, ...bg.ul)
-
+	const name = cfg.samples[imageIndex].name
+	const identifier = `${cfg.seeder.get()}@${cfg.hd.toPrecision(2)}`
+        const sigCfg = {
+            s: s,
+            scene: scene,
+            color: "#101010",
+            shadow: "#909090",
+            fontsize: 12,
+            right: scene.width,
+            bottom: scene.height,
+            identifier: `${name} by Ruben Berenguel  `,
+            sig: `Background: ${bg.attr}  `,
+            hd: cfg.hd,
+            font: cfg.font
+        }
+        signature(sigCfg)
 
     cfg.largeCanvas = scene
     let c = scene.get()
-    c.resize(s.width, 0)
+	
+    c.resize(0, s.height)
+	const gap = s.width - c.width
+	if(gap>0){
+		s.translate(gap/2, 0)
+		//s.image(c, 0, 0)
+	} 
     s.image(c, 0, 0)
   }
 
@@ -215,7 +247,7 @@ const sketch = (s) => {
       "See in place. Not all pieces will look good due to wrong size of the wall canvas"
     let subinfo = "Using a tweaked version of <a style='color: inherit;' href='https://github.com/wanadev/perspective.js'>perspective.js</a><br/>Doesn't have all my pieces (yet)"
     let S = new Key("s", () => {
-      largeCanvas.save("img.png")
+      cfg.largeCanvas.save("img.png")
     })
     let saveCmd = new Command(S, "save the canvas")
 
@@ -248,13 +280,16 @@ const sketch = (s) => {
       s.clear()
       s.draw()
     })
-    let imgInfo = new String(() => cfg.samples[imageIndex].src.replace("-s.png", "").replace("-s.jpg"))
+    let imgInfo = new String(() => cfg.samples[imageIndex].name)
     let imgControl = new Control([decI, incI],
       "Cycle pieces", imgInfo)
 
-
+	let attrInfo = new String(() => cfg.backgrounds[backgroundIndex].attr)
+	let attrControl = new Control([],
+		"Background", attrInfo)
+	  
     let gui = new GUI("Showcase, RB 2023/5", info, subinfo, [saveCmd],
-      [backControl, imgControl])
+      [backControl, imgControl, attrControl])
 
     let QM = new Key("?", () => gui.toggle())
     let hide = new Command(QM, "hide this")
