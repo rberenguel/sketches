@@ -16,6 +16,7 @@ import {
     smoothStep
 } from '../libraries/misc.js'
 
+import { easeInSqr, easeInSq } from '../libraries/eases.js'
 
 const sketch = (s) => {
 
@@ -106,9 +107,10 @@ const sketch = (s) => {
         const v = [x, y]
         const n = nrm(v)
         const nv = [v[0]/n, v[1]/n]
-        const nn = scene.random(n-(W+H)/300, n+(W+H)/100.0)
-        const xx = (nn*nv[0]+cfg.hd*(4-8*ns)) << 0
-        const yy = (nn*nv[1]+cfg.hd*(4-8*ns)) << 0
+		// TODO: This deformation needs to be intrinsic, can't depend on centroid distance. Otherwise larger blobs are more altered, which looks artificial
+        const nn = scene.random(n-5*cfg.hd, n+5*cfg.hd)
+        const xx = (nn*nv[0]+cfg.hd*(2-4*ns)) << 0
+        const yy = (nn*nv[1]+cfg.hd*(2-4*ns)) << 0
         acc.push([xx, yy])
       }
       return acc
@@ -125,10 +127,10 @@ const sketch = (s) => {
       const deformation1 = deformation(scene, corrected)
       let deformation2 = deformation(scene, deformation1)
       let color = copyColor(scene, _color)
-      color.setAlpha(scene.random(10, 12))
+      color.setAlpha(scene.random(10, 13))
       scene.fill(color)
       scene.noStroke()
-      for(let i=0;i<100;i++){
+      for(let i=0;i<150;i++){
         let deformed
         if(scene.random > 0.5){
           deformed=deformation(scene, deformation2)
@@ -136,12 +138,37 @@ const sketch = (s) => {
           deformed=deformation(scene, deformation1)
         }
         scene.push()
+		//scene.blendMode(scene.REPLACE)
+		scene.noStroke()
         scene.translate(...centroid)
-        scene.beginShape()
+		for(let p of deformed){
+          const [x, y] = p
+          const v = [x, y]
+          const n = nrm(v)
+          const dv = [v[0]/n, v[1]/n]
+		  for(let j=0;j<15;j++){
+			const nn = n*easeInSqr(1-scene.random())
+			const ss = smoothStep(0, n, nn)
+			// Flow should be a property of canvas size, not of figure size
+			const flow = easeInSqr(1-ss)*180
+			
+			const r = flow * Math.sqrt(scene.random())
+    	    const theta = scene.random(2*PI)
+    		const dx = Math.cos(theta) * r
+    		const dy = Math.sin(theta) * r
+			
+			//const np = [nn*dv[0]+cfg.hd*(flow-2*flow*scene.random()), nn*dv[1]+cfg.hd*(flow-2*flow*scene.random())]
+			const np = [nn*dv[0]+dx, nn*dv[1]+dy]
+			//const np = v
+			scene.circle(...np, 20+scene.random()*50+(1-ss)*50)
+		  }
+		}
+        /*scene.beginShape()
         for(let p of deformed){
           scene.curveVertex(...p)
         }        
         scene.endShape(s.CLOSE)
+		*/
         scene.pop()
         deformation2 = deformed
       }
@@ -225,8 +252,8 @@ const sketch = (s) => {
         const COUNT = 20
         for(let j=0;j<=COUNT;j++){
           const a = j*2*PI/COUNT
-          const x = cx + r*Math.cos(a)
-          const y = cy - r*Math.sin(a)
+          const x = cx + r*0.7*Math.cos(a)
+          const y = cy - r*0.7*Math.sin(a)
           circlePoints.push([x, y])
         }
         watercolor(scene, circlePoints, reddish)
@@ -236,14 +263,26 @@ const sketch = (s) => {
         let c2y = -0.2*scene.height
         let c2r = 0.1*scene.height
         let circle2Points = []        
-        for(let j=0;j<=COUNT;j++){
+        for(let j=0;j<=COUNT/3;j++){
           const a = j*2*PI/COUNT
-          const x = c2x + r*Math.cos(a)
-          const y = c2y - r*Math.sin(a)
+          const x = c2x + c2r*0.7*Math.cos(a)
+          const y = c2y - c2r*0.7*Math.sin(a)
           circle2Points.push([x, y])
         }        
         watercolor(scene, circle2Points, greenish)
         
+		const yellowish = s.color(60, 80, 50, 1)
+        let c3x = -0.05*scene.width
+        let c3y = -0.05*scene.height
+        let c3r = 0.4*scene.height
+        let circle3Points = []        
+        for(let j=0;j<=COUNT*2;j++){
+          const a = j*2*PI/COUNT
+          const x = c3x + c3r*0.7*Math.cos(a)
+          const y = c3y - c3r*0.7*Math.sin(a)
+          circle3Points.push([x, y])
+        }        
+        watercolor(scene, circle3Points, yellowish)
 
         sketchedCircle(scene, cx, cy, r, color)        
         
