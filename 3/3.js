@@ -25,7 +25,7 @@ const sketch = (s) => {
 
     // Globals needed in controls, commands or deep arguments
     let cfg = {
-        hd: 1,
+        hd: 2,
         seeder: undefined,
         largeCanvas: undefined
     }
@@ -67,10 +67,84 @@ const sketch = (s) => {
           const np1 = [p1[0]+halfDiff*nv[0], p1[1]+halfDiff*nv[1]]
           const np2 = [p2[0]-halfDiff*nv[0], p2[1]-halfDiff*nv[1]]
           scene.strokeWeight(scene.random(cfg.hd*3, cfg.hd*4) << 0)
-          color.setAlpha(scene.random(0.05, 0.1))
+          color.setAlpha(scene.random(50, 100))
           scene.stroke(color)
           scene.line(...np1, ...np2)
         }      
+    }
+    
+    function calculateCentroid(points){
+      let nx = 0, ny = 0
+      for(let p of points){
+        const [x, y] = p 
+        nx += x
+        ny += y
+      }
+      return [nx/points.length, ny/points.length]
+    }
+        
+    function deformation(scene, points){
+      let acc = []
+    
+      let tweaked = [points[0]]
+      for(let i=1;i<points.length;i++){
+        const point = points[i]
+        if(scene.random()<0.2){
+          const prev = tweaked[tweaked.length-1]
+          const [px, py] = prev
+          const [x, y] = point
+          const mid = [(px+x)/2, (py+y)/2]
+          tweaked.push(mid)
+        }
+        tweaked.push(point)
+      }
+      
+      for(let i=0;i<tweaked.length;i++){
+        const ns = scene.noise(i/100)
+        const p = tweaked[i]
+        const [x, y] = p
+        const v = [x, y]
+        const n = nrm(v)
+        const nv = [v[0]/n, v[1]/n]
+        const nn = scene.random(n-(W+H)/300, n+(W+H)/100.0)
+        const xx = (nn*nv[0]+cfg.hd*(4-8*ns)) << 0
+        const yy = (nn*nv[1]+cfg.hd*(4-8*ns)) << 0
+        acc.push([xx, yy])
+      }
+      return acc
+    }
+    
+    function watercolor(scene, points, _color){
+      const centroid = calculateCentroid(points)
+      const [cx, cy] = centroid
+      let corrected = []
+      for(let point of points){
+        let [x, y] = point
+        corrected.push([x-cx, y-cy])
+      }
+      const deformation1 = deformation(scene, corrected)
+      let deformation2 = deformation(scene, deformation1)
+      let color = copyColor(scene, _color)
+      color.setAlpha(scene.random(10, 12))
+      scene.fill(color)
+      scene.noStroke()
+      for(let i=0;i<100;i++){
+        let deformed
+        if(scene.random > 0.5){
+          deformed=deformation(scene, deformation2)
+        } else {
+          deformed=deformation(scene, deformation1)
+        }
+        scene.push()
+        scene.translate(...centroid)
+        scene.beginShape()
+        for(let p of deformed){
+          scene.curveVertex(...p)
+        }        
+        scene.endShape(s.CLOSE)
+        scene.pop()
+        deformation2 = deformed
+      }
     }
     
     function sketchedCircle(scene, cx, cy, r, _color){
@@ -87,7 +161,7 @@ const sketch = (s) => {
         const nh = scene.randomGaussian(r, sqrtr)
         const nw = scene.randomGaussian(r, sqrtr)        
         scene.strokeWeight(scene.random(3, 4) << 0)
-        color.setAlpha(scene.random(0.05, 0.1))
+        color.setAlpha(scene.random(50, 100))
         scene.stroke(color)
         //scene.ellipse(0, 0, nw, nh)        
         scene.beginShape()
@@ -106,8 +180,17 @@ const sketch = (s) => {
     }
 
     s.draw = () => {
-        let scene = s.createGraphics(cfg.hd * s.width, cfg.hd * s.height)
+        let scene = s.createGraphics(cfg.hd * s.width, cfg.hd * s.height, s.WEBGL)
         W = scene.width, H = scene.height
+        scene.setAttributes('premultipliedAlpha', false)
+        scene.setAttributes('alpha', false)
+        
+        //let gl=scene.GL
+        //gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+        //gl.enable(gl.BLEND)
+        scene.blendMode(s.BLEND)
+        //gl.blendFuncSeparate(gl.ONE_MINUS_CONSTANT_ALPHA, gl.CONSTANT_ALPHA, gl.ONE, gl.ONE);
+        //gl.blendEquationSeparate(gl.FUNC_ADD, gl.FUNC_REVERSE_SUBTRACT);
         let dly = s.createGraphics(W, H)
         scene.randomSeed(cfg.seeder.get())
         scene.noiseSeed(cfg.seeder.get())
@@ -120,27 +203,56 @@ const sketch = (s) => {
             scene.image(dly, 0, 0)
         }
 
-        let x1 = scene.random(0.3*scene.width, 0.4*scene.width)
-        let x2 = scene.random(0.4*scene.width, 0.6*scene.width)
-        let y1 = scene.random(0.2*scene.height, 0.3*scene.height)
-        let y2 = scene.random(0.2*scene.height, 0.3*scene.height)        
+        let x1 = scene.random(-0.1*scene.width, -0.2*scene.width)
+        let x2 = scene.random(0.2*scene.width, 0.2*scene.width)
+        let y1 = scene.random(-0.2*scene.height, -0.3*scene.height)
+        let y2 = scene.random(-0.2*scene.height, -0.3*scene.height)        
         
         scene.strokeWeight(1)
         scene.stroke("red")
-        scene.colorMode(s.HSB)
+        scene.colorMode(s.HSB, 360, 100, 100, 1000)
         scene.background("white")
         let color = scene.color(0, 0, 0)
-        sketchedLine(scene, x1, y1, x2, y2, color)
+
         const dx = scene.random(0.1*scene.width, 0.2*scene.width)
         const dy = scene.random(0.1*scene.height, 0.2*scene.height)        
+        
+        const reddish = s.color(0, 100, 70, 1)
+        let cx = 0.1*scene.width
+        let cy = 0.2*scene.height
+        let r = 0.3*scene.height
+        let circlePoints = []
+        const COUNT = 20
+        for(let j=0;j<=COUNT;j++){
+          const a = j*2*PI/COUNT
+          const x = cx + r*Math.cos(a)
+          const y = cy - r*Math.sin(a)
+          circlePoints.push([x, y])
+        }
+        watercolor(scene, circlePoints, reddish)
+
+        const greenish = s.color(120, 80, 50, 1)
+        let c2x = -0.2*scene.width
+        let c2y = -0.2*scene.height
+        let c2r = 0.1*scene.height
+        let circle2Points = []        
+        for(let j=0;j<=COUNT;j++){
+          const a = j*2*PI/COUNT
+          const x = c2x + r*Math.cos(a)
+          const y = c2y - r*Math.sin(a)
+          circle2Points.push([x, y])
+        }        
+        watercolor(scene, circle2Points, greenish)
+        
+
+        sketchedCircle(scene, cx, cy, r, color)        
+        
+        sketchedLine(scene, x1, y1, x2, y2, color)        
+        
         sketchedLine(scene, x2, y2, x2+dx, y2+dy, color)
         sketchedLine(scene, x1, y1, x1+dx, y1+dy, color)        
-        sketchedLine(scene, x1+dx, y1+dy, x2+dx, y2+dy, color)
-        
-        sketchedCircle(scene, 0.2*scene.width, 0.7*scene.height, 0.1*scene.height, color)
-
-        const reddish = s.color(0, 100, 70, 1)
-        sketchedCircle(scene, 0.7*scene.width, 0.6*scene.height, 0.3*scene.height, reddish)
+        sketchedLine(scene, x1+dx, y1+dy, x2+dx, y2+dy, color)        
+        sketchedCircle(scene, -0.2*scene.width, -0.1*scene.height, 0.1*scene.height, color)
         
         const identifier = `${cfg.seeder.get()}@${cfg.hd.toPrecision(2)}`
         const sigCfg = {
@@ -149,14 +261,14 @@ const sketch = (s) => {
             color: "#101020",
             shadow: "darkgrey",
             fontsize: 9,
-            right: scene.width,
-            bottom: scene.height,
+            right: scene.width/2,
+            bottom: scene.height/2,
             identifier: identifier,
             sig: "rb'23",
             hd: cfg.hd,
             font: cfg.font
         }
-        signature(sigCfg)
+        signature(sigCfg, s.WEBGL)
 
         cfg.largeCanvas = scene
         let c = scene.get()
