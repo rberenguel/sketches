@@ -53,7 +53,7 @@ class Seeder {
       "Random seed", seedShow)
     this.command = enterSeedCommand
     this.control = seedControl
-    this.seed = seed = (window.performance.now() << 0) % 1000000
+    this.seed = (window.performance.now() << 0) % 1000000
   }
 
   inputSeed(t, gui) {
