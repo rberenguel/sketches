@@ -433,9 +433,8 @@ const sketch = (s) => {
   }
 
   function scenery() {
-    const numPixels = cfg.hd * s.width * cfg.hd * s.height
-    let scene = s.createGraphics(Math.floor(cfg.hd * s.width), Math.floor(cfg.hd * s.height))
-    let backdrop = s.createGraphics(cfg.hd * s.width, cfg.hd * s.height)
+    let scene = s.createGraphics(cfg.hd * 1800, cfg.hd * 1200)
+    let backdrop = s.createGraphics(scene.width, scene.height)
     scene.randomSeed(cfg.seeder.get())
     backdrop.randomSeed(cfg.seeder.get())
     let ctx = scene.drawingContext
