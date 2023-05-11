@@ -124,18 +124,18 @@ const sketch = (s) => {
     ctx.shadowBlur = 1
     ctx.shadowColor = neonGreen
     scene.noStroke()
-    for (let i = 0; i < scene.width; i++) {
-      for (let j = 0; j < params.bottom; j++) {
+    for (let i = 0; i < scene.width/cfg.hd; i++) {
+      for (let j = 0; j < params.bottom/cfg.hd; j++) {
         const n = scene.random()
         const f = Math.floor(n * 15000)
-        if (f == 1 || f == 42) {
+        if (f == 1 || f == 42 || (f > 90 && f < 100)) {
           const rr = 10 * cfg.hd * easeInSq(scene.random())
           for (let k = 0; k < 10; k++) {
             const a = smoothStep(0, 10, k)
             const r = smoothStep(0, 10, k)
             c.setAlpha(a * 255)
             scene.fill(c)
-            scene.circle(i, j, (1 - r) * rr)
+            scene.circle(i*cfg.hd, j*cfg.hd, (1 - r) * rr)
           }
         }
       }
