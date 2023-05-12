@@ -10,9 +10,11 @@ export { Key }
     proper closure for it to work.
 */
 class Key {
-    constructor(key, action) {
+    constructor(key, action, set, extended) {
         this.key = key.toLowerCase()
         this.action = action
+		this.extended = extended || key
+		this.set = set
     }
 
     _act() {
@@ -22,6 +24,20 @@ class Key {
         }
     }
 
+	fetch(){
+		if(!this.set){
+			//console.log("Value setter not defined")
+			return
+		}
+		const queryString = window.location.search
+		const urlParams = new URLSearchParams(queryString)
+		const value = urlParams.get(this.extended)
+		if(value){
+		this.set(value)
+		this.gui.update()		
+		}
+	}
+	
     format() {
         let code = $.cel("code")
         let text = $.ctn(this.key.toUpperCase())

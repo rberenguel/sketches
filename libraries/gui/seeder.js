@@ -40,7 +40,7 @@ class Seeder {
       $.byId("seedInput").value = ""
       $.byId("seed").style.visibility = "visible"
       $.byId("seedInput").focus()
-    })
+    }, this.parseSeed)
     inp.onkeydown = (t) => this.inputSeed(t, this.gui)
     let enterSeedCommand = new Command(Z,
       "manually enter seed (hex)")
@@ -56,17 +56,22 @@ class Seeder {
     this.seed = (window.performance.now() << 0) % 1000000
   }
 
+  parseSeed(num){
+        const hexed = parseInt(num, 16)
+      if (!isNaN(hexed)) {
+        this.seed = hexed
+        this.gui.mark()
+      }
+	  
+  }
+  
   inputSeed(t, gui) {
     if (t.key.toLowerCase() === 'enter') {
       let num = $.byId("seedInput").value
       if(num.startsWith("#")){
         num = num.slice(1, num.length)
       }
-      const hexed = parseInt(num, 16)
-      if (!isNaN(hexed)) {
-        this.seed = hexed
-        this.gui.mark()
-      }
+	  parseSeed(num)
       $.byId("seed").style.visibility = "hidden"
       gui.update()
       $.byId("seedInput").value = ""
