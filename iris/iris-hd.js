@@ -2,6 +2,7 @@ import {
   Command,
   GUI,
   Float,
+  Boolean,
   Key,
   Control
 } from '../libraries/gui/gui.js'
@@ -12,11 +13,12 @@ import {
 } from '../libraries/misc.js'
 
 
-// Base to avoid writing always the same
+// TODO: Incorporate seeding with seeder.js
 
 const sketch = (s) => {
 
   let gui, canvas, pcanvas, hd = 1
+  let black = false
 
   // Scourged the internet finding colours that are suitable for irises. I kept 
   // out the occasional shiny yellows that can appear, since it would make 
@@ -54,7 +56,11 @@ const sketch = (s) => {
 
   function centeredIris(irisRadius, irisBlur, pupilRadius) {
     canvas = s.createGraphics(pcanvas.width * hd, pcanvas.height * hd)
-    canvas.background("white")
+    if(black){
+      canvas.background("black")
+    } else {
+      canvas.background("white")      
+    }  
     let centerX = canvas.width / 2
     let centerY = canvas.height / 2
     let [baseColors, otherColors] = irisColors()
@@ -301,6 +307,12 @@ const sketch = (s) => {
     })
     let resetCanvas = new Command(R, "reset")
 
+    let B = new Key("b", () => {
+      black = !black
+    })
+    let blackInfo = new Boolean(() => black)
+    let blackControl = new Control([B], "black background", blackInfo)
+    
     let decH = new Key(",", () => {
       if (hd > 0) {
         hd -= 0.5
@@ -318,7 +330,7 @@ const sketch = (s) => {
 
     let gui = new GUI("Iris, RB 2020/06", info, subinfo, [saveCmd,
       resetCanvas
-    ], [hdControl])
+    ], [hdControl, blackControl])
 
     let QM = new Key("?", () => gui.toggle())
     let hide = new Command(QM, "hide this")

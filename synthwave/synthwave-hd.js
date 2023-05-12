@@ -64,8 +64,8 @@ const sketch = (s) => {
     s.noLoop()
     cfg.seeder = new Seeder()
     gui = createGUI()
-	gui.fetch()
     gui.toggle()
+    gui.fetch()
   }
 
   s.draw = () => {
@@ -125,8 +125,8 @@ const sketch = (s) => {
     ctx.shadowBlur = 1
     ctx.shadowColor = neonGreen
     scene.noStroke()
-    for (let i = 0; i < scene.width/cfg.hd; i++) {
-      for (let j = 0; j < params.bottom/cfg.hd; j++) {
+    for (let i = 0; i < scene.width / cfg.hd; i++) {
+      for (let j = 0; j < params.bottom / cfg.hd; j++) {
         const n = scene.random()
         const f = Math.floor(n * 15000)
         if (f == 1 || f == 42 || (f > 90 && f < 100)) {
@@ -136,7 +136,7 @@ const sketch = (s) => {
             const r = smoothStep(0, 10, k)
             c.setAlpha(a * 255)
             scene.fill(c)
-            scene.circle(i*cfg.hd, j*cfg.hd, (1 - r) * rr)
+            scene.circle(i * cfg.hd, j * cfg.hd, (1 - r) * rr)
           }
         }
       }
@@ -538,8 +538,19 @@ const sketch = (s) => {
     }
     c = backdrop.get()
     cfg.largeCanvas = backdrop
-    c.resize(s.width, 0)
+
+
+    c.resize(0, s.height)
+    if (c.width > s.width) {
+      c.resize(s.width, 0)
+    }
+    const gap = s.width - c.width
+    s.push()
+    if (gap > 0) {
+      s.translate(gap / 2, 0)
+    }
     s.image(c, 0, 0)
+    s.pop()
   }
 
   function addTextCircle(scene, params, content) {
@@ -611,7 +622,10 @@ const sketch = (s) => {
     let M = new Key("m", () => {
       maskIt = !maskIt;
       R.action()
-    })
+    }, (x) => {
+      maskIt = x == 'true'
+      gui.update()
+    }, "mask")
 
     let maskItBool = new Boolean(() => maskIt)
     let maskItBoolControl = new Control([M], "masking?",

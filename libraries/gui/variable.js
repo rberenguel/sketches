@@ -56,6 +56,6 @@ class String extends Variable {}
 
 class Float extends Variable {
     format() {
-        return `${this.variable().toPrecision(2)}`
+      return `${this.variable().toPrecision(2)}`
     }
 }
