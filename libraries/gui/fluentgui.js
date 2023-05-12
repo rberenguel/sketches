@@ -235,6 +235,23 @@ class FluentGUI {
 	this.update()
   }
 
+  fetch(){
+    if (this.cmds) {
+      for (let cmd of this.cmds) {
+		 cmd.key.fetch()
+      }
+    }
+    if (this.states) {
+      for (let state of this.states) {
+        if (state.keys) {
+          for (let sub of state.keys) {
+			 sub.fetch()
+          }
+        }
+      }	  
+	}
+  }
+  
   dispatch(key) {
     if (this.cmds) {
       for (let cmd of this.cmds) {

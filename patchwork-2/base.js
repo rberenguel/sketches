@@ -9,7 +9,8 @@ import {
 
 import {
     getLargeCanvas,
-    releaseCanvas
+    releaseCanvas,
+	bezierB
 } from '../libraries/misc.js'
 
 import {
@@ -47,7 +48,7 @@ const sketch = (s) => {
 	//let canvas, mask, shadow
 	
     function applique(s, scene, cloth, drawer, w, h, transf, x, y) {
-        // Generates a canvas texture running cloth(canvas, w, h) translated to the center
+        // Generates a canvas texture running cloth(canvas, w, h) translated to x, y
         // Generates a clipping mask running drawer(mask, 1) translated to the center
         // Drawer can't set up any coloring or stroke
         // Will sew the cloth to scene.
@@ -171,7 +172,7 @@ const sketch = (s) => {
         scene.scale(scale)
         //scene.rotate(angle)
         // No cloth caching: 3.2 seconds, caching: 0.6 sec
-		if(!cachedRedCloth | cachedRedCloth.length < 5){
+		if(!cachedRedCloth || cachedRedCloth.length < 5){
 			//console.log("Generating red cloth")
         	cachedRedCloth.push(s.createGraphics(600*hd, 600*hd))
 			const l = cachedRedCloth.length
@@ -191,7 +192,7 @@ const sketch = (s) => {
                 e.image(cachedRedCloth[e.random(l-1) << 0], 0, 0)
             }
             const d = (e, scale) => petal(e, angle+shift, scale)
-            applique(s, scene, c, d, 600*hd, 600*hd, transf, x, y)
+            applique(s, scene, c, d, 600*hd, 600*hd, transf, x/scale, y/scale)
         }
 		if(!cachedBlueCloth){
 						//console.log("Generating blue cloth")
@@ -210,7 +211,7 @@ const sketch = (s) => {
                 e.image(cachedBlueCloth, 0, 0)
             }
             const d = (e, scale) => petal(e, angle, 0.5 * scale)
-            applique(s, scene, c, d, 300*hd, 300*hd, transf, x, y)
+            applique(s, scene, c, d, 300*hd, 300*hd, transf, x/scale, y/scale)
         }
         transf.canvas = (e) => {
             e.translate(-50*hd, -50*hd)
@@ -233,10 +234,56 @@ const sketch = (s) => {
             e.circle(0, 0, 25*Math.sqrt(hd))
             e.pop()
         }
-        applique(s, scene, greenClother, drawer, 100, 100, transf, x, y)
+        applique(s, scene, greenClother, drawer, 100, 100, transf, x/scale, y/scale)
         scene.pop()
     }
 
+	function stalk(scene){
+		scene.push()
+		scene.translate(0,-150)
+		const W = scene.width
+		const H = scene.height
+		{
+		let anc1 = [0,400]
+		let ctl1 = [10, 350]
+		let ctl2 = [10, 250]		
+		let anc2 = [0, 200]
+		//scene.stroke("red")
+		//scene.fill("green")
+		scene.beginShape()
+		scene.vertex(...anc1)
+		scene.bezierVertex(...ctl1, ...ctl2, ...anc2)
+		ctl1 = [-10, 150]
+		ctl2 = [-10, 50]		
+		anc2 = [0, 0]
+		scene.bezierVertex(...ctl1, ...ctl2, ...anc2)
+		anc1 = [-5, 0]
+		ctl1 = [-15, 50]
+		ctl2 = [-15,150]		
+		anc2 = [-5, 200]		
+		scene.vertex(...anc1)
+		scene.bezierVertex(...ctl1, ...ctl2, ...anc2)		
+		ctl1 = [5, 250]
+		ctl2 = [5, 350]		
+		anc2 = [-5, 400]				
+		scene.bezierVertex(...ctl1, ...ctl2, ...anc2)		
+		scene.endShape(s.CLOSE)
+		}
+		
+		{
+		let anc1 = [0,220]
+		let ctl1 = [10, 240]
+		let ctl2 = [10, 240]		
+		let anc2 = [30, 150]
+		scene.beginShape()
+		scene.vertex(...anc1)
+		scene.bezierVertex(...ctl1, ...ctl2, ...anc2)				
+		scene.endShape(s.CLOSE)
+	}	
+	scene.pop()
+	}
+	
+	
     s.draw = () => {
         const numPixels = hd * s.width * hd * s.height
         let scene = s.createGraphics(hd * s.width, hd * s.height)
@@ -246,7 +293,7 @@ const sketch = (s) => {
 
         textile(scene, 0, 0, scene.width, scene.height, 1, 8)
 //FOO Up to 60 or so
-        for (let i = 0; i < 150; i++) {
+        for (let i = 0; i < 0; i++) {
             const x = scene.random(0.2 * scene.width, 0.8 * scene.width)
             const y = scene.random(0.2 * scene.height, 0.8 * scene.height)
             const scale = scene.random(0.5, 1.8)
@@ -266,8 +313,73 @@ const sketch = (s) => {
 			}*/
 			//fakeFlower(scene, x, y, scale, shift)
         }
-
-
+		
+		let transf = {}
+		transf.canvas = (e) => {
+                e.translate(-300*hd, -300*hd)
+            }
+		const d = (e, scale) => petal(e, angle+shift, scale)
+		
+		if(!cachedGreenCloth){
+						//console.log("Generating green cloth")
+	        cachedGreenCloth = s.createGraphics(scene.width, scene.height)
+    	    textile(cachedGreenCloth, 0, 0, 400, scene.height*hd, 1, 8, ["#075239", "#13541d", "#127A58"])
+		}
+		
+		
+        const greenClother = (e, w, h) => {
+                //let d = cachedGreenCloth.get()
+                e.image(cachedGreenCloth, 0, 0)
+            }
+			//(e, w, h) => textile(e, 0, 0, w, h, 1, 8, ["#075239", "#13541d", "#127A58"])
+        const drawer = (e, scale) => {
+            e.push()
+            //e.scale(scale)
+            //e.circle(0, 0, 25*Math.sqrt(hd))
+			stalk(e)
+            e.pop()
+        }
+        applique(s, scene, greenClother, drawer, scene.width*hd, scene.height*hd, transf, scene.width/2, scene.height/2)	
+	
+		flower(scene, scene.width/2, 0.3*scene.height, 0.5, 0) // WRONG: scale is affecting positioning, tried to correct x to applique
+	
+	
+		/*
+		let anc1 = [0.5*scene.width, 0.5*scene.height]
+		let ctl1 = [0.51*scene.width, 0.45*scene.height]
+		let ctl2 = [0.51*scene.width, 0.35*scene.height]		
+		let anc2 = [0.5*scene.width, 0.3*scene.height]
+		scene.noFill()
+		scene.stroke("green")
+		bezierB(scene, ...anc1, ...ctl1, ...ctl2, ...anc2, 2, 3)
+		scene.stroke("red")
+		scene.bezier(...anc1, ...ctl1, ...ctl2, ...anc2)
+		anc1 = [0.5*scene.width, 0.3*scene.height+0.01*scene.height]
+		ctl1 = [0.5*scene.width, 0.28*scene.height+0.01*scene.height]
+		ctl2 = [0.5*scene.width, 0.24*scene.height+0.01*scene.height]		
+		anc2 = [0.51*scene.width, 0.25*scene.height+0.01*scene.height]		
+		scene.stroke("green")
+		bezierB(scene, ...anc1, ...ctl1, ...ctl2, ...anc2, 2, 3)
+		scene.stroke("blue")
+		scene.bezier(...anc1, ...ctl1, ...ctl2, ...anc2)
+		anc1 = [0.51*scene.width, 0.25*scene.height+0.01*scene.height]
+		ctl1 = [0.498*scene.width, 0.24*scene.height+0.01*scene.height]
+		ctl2 = [0.498*scene.width, 0.26*scene.height+0.01*scene.height]		
+		anc2 = [0.495*scene.width, 0.30*scene.height+0.01*scene.height]		
+		scene.stroke("green")
+		bezierB(scene, ...anc1, ...ctl1, ...ctl2, ...anc2, 2, 3)
+		scene.stroke("blue")
+		scene.bezier(...anc1, ...ctl1, ...ctl2, ...anc2)
+		
+		anc1 = [0.5*scene.width, 0.3*scene.height-0.01*scene.height]
+		ctl1 = [0.49*scene.width, 0.25*scene.height-0.01*scene.height]
+		ctl2 = [0.49*scene.width, 0.15*scene.height-0.01*scene.height]		
+		anc2 = [0.5*scene.width, 0.1*scene.height-0.01*scene.height]
+		scene.stroke("green")
+		bezierB(scene, ...anc1, ...ctl1, ...ctl2, ...anc2, 2, 3)
+		scene.stroke("purple")
+		scene.bezier(...anc1, ...ctl1, ...ctl2, ...anc2)		
+		*/
         largeCanvas = scene
         let c = scene.get()
         c.resize(s.width, 0)
