@@ -4,6 +4,19 @@ Generative art sketches. Newest first
 
 ---
 
+## 202305 - Out of Fabric [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/out-of-fabric/"><img src="samples/out-of-fabric.png" width="360"/></a>
+
+---
+
+- Taking the applique effect in Modern Art to the next (and very memory intensive) level.
+- [code](out-of-fabric/out-of-fabric.js) Resolution independent, but controls are disabled: placement of stalks and flowers is not well calibrated for other resolutions than 1x. Also, can't go higher than 1.5 on iPad due to canvas memory constraints. Did I say it is memory intensive?
+- Explore it [here](https://rberenguel.github.io/sketches/out-of-fabric/index.html)
+- NEW [See in place](https://rberenguel.github.io/sketches/showcasing/index.html?img=out-of-fabric)
+
+---
+
 ## 202305 - Underwater [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/underwater/"><img src="samples/underwater.png" width="360"/></a>
