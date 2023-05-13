@@ -330,7 +330,7 @@ const sketch = (s) => {
     }
     const now = new Date()
     const timeSignature = dateTo19Encoding(now).toUpperCase()
-    const identifier = `${cfg.seeder.get()}@${cfg.hd.toPrecision(2)}(${timeSignature})`
+    const identifier = `${cfg.seeder.hex()}@${cfg.hd.toPrecision(2)}(${timeSignature})`
     const sigCfg = {
       s: s,
       scene: scene,

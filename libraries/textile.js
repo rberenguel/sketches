@@ -10,7 +10,7 @@ import {
 } from '../libraries/misc.js'
 
 import {
-  shimmeringColorHex
+  shimmeringColorHex, shimmeringColor
 } from '../libraries/palettes.js'
 
 import '../libraries/3rdparty/spectral.js'
@@ -42,6 +42,7 @@ function textile(scene, x, y, w, h, width, height, colors, lerp_steps, dly) {
     straightThread(scene, xx, yy, width, height, cs[scene.random() * (cs.length - 1) << 0], h, dly)
   }
 }
+
 
 function straightThread(scene, x, y, width, height, color, length, dly) {
   // Vertical chain of braids. Does not use the braid function for _reasons_
