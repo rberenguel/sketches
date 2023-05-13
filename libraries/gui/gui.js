@@ -95,7 +95,12 @@ function createBaseGUI(config) {
   gui = gui.withCommands([saveCmd,
     ...commands
   ])
-  gui = gui.withControls([hdControl, ...controls])
+  if(config.skipHD){
+    gui = gui.withControls([...controls])    
+  } else {
+    gui = gui.withControls([hdControl, ...controls])
+  }
+
 
   let QM = new Key("?", () => gui.toggle())
   let hide = new Command(QM, "hide this")

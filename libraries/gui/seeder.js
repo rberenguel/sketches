@@ -50,7 +50,7 @@ class Seeder {
       this.gui.mark()
     })
     let seedControl = new Control([X],
-      "Random seed", seedShow)
+      "get new random seed, current", seedShow)
     this.command = enterSeedCommand
     this.control = seedControl
     this.seed = (window.performance.now() << 0) % 1000000
@@ -70,7 +70,7 @@ class Seeder {
       if (num.startsWith("#")) {
         num = num.slice(1, num.length)
       }
-      parseSeed(num)
+      this.parseSeed(num)
       $.byId("seed").style.visibility = "hidden"
       gui.update()
       $.byId("seedInput").value = ""
