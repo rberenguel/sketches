@@ -21,7 +21,7 @@ import {
 import {
   getLargeCanvas,
   signature,
-  copyColor,
+  copyColorHSB, copyColor,
   darken
 } from '../libraries/misc.js'
 
@@ -57,6 +57,7 @@ const sketch = (s) => {
       h
     } = getLargeCanvas(s, 1600)
     let canvas = s.createCanvas(w, h)
+    s.colorMode(s.HSB, 360, 100, 100, 1)
     s.pixelDensity(1)
     canvas.mousePressed(() => {})
     s.frameRate(20)
@@ -98,19 +99,40 @@ const sketch = (s) => {
   // Suggestion (Jeff Palmer) vary the color per bristle!
 
   function downStroke(scene, x, y, width, length, color) {
+    console.log(color)
     scene.push()
     let load = []
     let previousLoad = []
     let maxCap = 0
+    let bristleColor = []
+    const hue = scene.hue(color)
+    const sat = scene.saturation(color)
+    const bri = scene.brightness(color)
+    const alp = scene.alpha(color)
+    console.log(alp)   
+    scene.colorMode(s.HSB, 360, 100, 100, 1) 
+    let nh, ns, nb
     for (let i = 0; i < width; i += 2) {
-      load[i] = 1 * length * Math.sqrt(scene.noise(i / 8)) * scene.noise(i / 16)
+      load[i] = 1 * length * Math.sqrt(scene.noise(i*1000)) * scene.noise(i*1000) 
+      const _nh = scene.random(hue-5, hue+5)
+      nh = _nh < 0 ? _nh + 360 : _nh
+      ns = scene.random(sat-5, sat+5) % 100
+      nb = scene.random(bri-3, bri+3) % 100
+      console.log(nh << 0, ns << 0, nb << 0, alp)
+      let foo = scene.color(0)
+      foo.setRed(nh << 0, )
+      foo.setGreen(ns << 0)
+      foo.setBlue(nb << 0)
+      foo.setAlpha(alp)
+      bristleColor[i] = foo
+      console.log(bristleColor[i])
       if (load[i] > maxCap) {
         maxCap = load[i]
       }
       previousLoad[i] = 1
     }
-    let c = copyColor(s, color)
-    let d = darken(s, c, 0.95)
+    //let c = copyColor(s, color)
+    //let d = darken(s, c, 0.95)
     for (let i = 0; i < length; i += 1) {
       for (let j = 0; j < width; j += 2) {
         if (i < length / 8.0) {
@@ -126,11 +148,12 @@ const sketch = (s) => {
         if (pigment > drop) {
           load[j] -= drop
           previousLoad[j] = drop
-          c.setAlpha(255)
+          bristleColor[j].setAlpha(1)
         } else {
-          if (previous < 0.01) {
-            let e = copyColor(s, c)
-            e.setAlpha(140 * (0.5 - nop))
+          if (previous < 0.01 && previous > 0) {
+            let e = copyColorHSB(scene, bristleColor[j])
+            //console.log(e)
+            e.setAlpha(1.0 * (0.5 - nop))
             if(i>0.7*length){
               e.setAlpha(0)
             }
@@ -138,22 +161,32 @@ const sketch = (s) => {
             scene.fill(e)
             wobble(scene, x + j, y + i, 0.4 * drop, e)
           }
+          previousLoad[j] = 0
           continue
         }
         if (scene.random() < 0.2) {
+          previousLoad[j] = 0          
           continue
         }
+        let paintColor
+        if(previous < 0.0001){
+          const veryAlpha = copyColorHSB(scene, bristleColor[j])
+          veryAlpha.setAlpha(0.1)
+          paintColor = veryAlpha
+        } else {
+          paintColor = bristleColor[j]
+        }
         //scene.fill(c)
-        let b
-        if(pigment < 1){
+        /*if(pigment < 1){
           b = darken(s, c, 1.5*pigment)
         } else {
           b = c
-        }
+        }*/
+        scene.fill(paintColor)
         scene.strokeWeight(0.5)
         const internalSeed = 10000 * scene.random() << 0
-        wobble(scene, x + j, y + i, 0.35 * drop, d, internalSeed)
-        wobble(scene, x + j, y + i, 0.3 * drop, b, internalSeed)
+        wobble(scene, x + j, y + i, 0.35 * drop, paintColor, internalSeed) // was d
+        //wobble(scene, x + j, y + i, 0.3 * drop, b, internalSeed)
       }
     }
     scene.pop()
@@ -280,15 +313,18 @@ const sketch = (s) => {
     const w1 = scene.random(0.02 * scene.width, 0.08 * scene.width)
     const x1 = 0.12 * scene.width //scene.random(0.1*scene.width, 0.3*scene.width)
     const y1 = 0.08 * scene.height //scene.random(0.2*scene.height, 0.4*scene.height)
+    scene.colorMode(s.HSB, 360, 100, 100, 1)
     const l1 = scene.random(0.6 * scene.height, 0.6 * scene.height)
-    const black = s.color(10, 10, 10, 240)
-    const white = s.color(240, 240, 240, 240)
-    const red = s.color(200, 10, 10, 240)
-    const blood = s.color("#880808")
+    const black = scene.color(240, 10, 10, 0.95)
+    const white = scene.color(120, 10, 90, 0.95)
+    const red = scene.color(0, 60, 70, 0.95)
+    const foo = scene.color(120, 60, 70, 0.95)    
+    const blood = scene.color("#880808")
     let x = x1
     let y = y1
-    downStroke(scene, x, y, w1, 1.5 * l1, black)
-    downStroke(scene, x + 0.2 * w1, y + w1, 0.5 * w1, 0.8 * l1, white)
+    console.log(scene.hue(red), scene.red(red), red)
+    downStroke(scene, x, y, w1, 1.5 * l1, foo)
+    /*downStroke(scene, x + 0.2 * w1, y + w1, 0.5 * w1, 0.8 * l1, white)
     sideStroke(scene, x + 0.8 * w1, y + 0.5 * w1, w1, 1.5 * l1, black)
     sideStroke(scene, x + w1, y + 0.8 * w1, 0.5 * w1, 1.5 * l1, white)
     x = x + 0.1 * scene.width
@@ -307,8 +343,8 @@ const sketch = (s) => {
     y = 0.05 * scene.height
     downStroke(scene, x, y, 1.5 * w1, 2.5 * l1, black)
     downStroke(scene, x + 0.2 * w1, y + 1.5 * w1, 0.8 * w1, 0.8 * l1, white)
-    
-    drawBlot({
+    */
+    /*drawBlot({
       s: s,
       canvas: scene,
       background: scene,
@@ -322,7 +358,7 @@ const sketch = (s) => {
       blotStrength: 200,
       blotSpread: 50,
       vectors: false,
-    })
+    })*/
     
     if (debug && dly) {
       let c = dly.get()
