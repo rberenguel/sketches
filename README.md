@@ -4,6 +4,19 @@ Generative art sketches. Newest first
 
 ---
 
+## 202305 - Bubbles [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/bubbles/"><img src="samples/bubbles.png" width="360"/></a>
+
+---
+
+- Based on [these random random distributions on a circle](https://openprocessing.org/sketch/1575230/).
+- [code](bubbles/bubbles.js) Resolution independent, but only reproducible at the exact same resolution factor.
+- Explore it [here](https://rberenguel.github.io/sketches/bubbles/index.html)
+- NEW [See in place](https://rberenguel.github.io/sketches/showcasing/index.html?img=bubbles)
+
+---
+
 ## 202305 - Out of Fabric [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/out-of-fabric/"><img src="samples/out-of-fabric.png" width="360"/></a>

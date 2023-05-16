@@ -5,6 +5,7 @@ export {
     releaseCanvas,
     gaussColor,
     copyColor,
+    copyColorHSB,    
     darken,
     shuffle,
     bezierB,
@@ -97,6 +98,15 @@ function copyColor(s, color) {
     const a = s.alpha(color)
     return s.color(r, g, b, a)
 }
+
+function copyColorHSB(sc, color) {
+    //console.log("arriving color", color)
+    const hue = sc.hue(color)
+    const sat = sc.saturation(color)
+    const bri = sc.brightness(color)
+    const alp = sc.alpha(color)
+    return sc.color(hue, sat, bri, alp)
+  }
 
 function darken(s, color, amount) {
     const r = amount * s.red(color)
