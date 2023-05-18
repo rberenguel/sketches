@@ -4,6 +4,19 @@ Generative art sketches. Newest first
 
 ---
 
+## 202305 - (Through)&sup2; the trees &#127464&#127469 [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/through2/"><img src="samples/through2.png" width="360"/></a>
+
+---
+
+- Uses several of the tricks in Bubbles below (stacked blurs, stacked randoms)
+- [code](through2/through2.js) Resolution independent, but only reproducible at the exact same resolution factor.
+- Explore it [here](https://rberenguel.github.io/sketches/through2/index.html)
+- NEW [See in place](https://rberenguel.github.io/sketches/showcasing/index.html?img=through2)
+
+---
+
 ## 202305 - Bubbles [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/bubbles/"><img src="samples/bubbles.png" width="360"/></a>

@@ -9,7 +9,7 @@ import {
 } from '../libraries/gui/gui.js'
 
 import {
-  getLargeCanvas
+  getLargeCanvas, smoothStep, darken
 } from '../libraries/misc.js'
 
 import {
@@ -22,6 +22,11 @@ import {
 } from '../libraries/palettes.js'
 
 import {
+  canvasRGBA
+} from '../libraries/3rdparty/stackblur.js'
+
+
+import {
   $
 } from '../libraries/gui/dom.js'
 
@@ -31,11 +36,11 @@ const sketch = (s) => {
   let gui
   let largeCanvas
   let hd = 1
-  let freq = 3
+  let freq = 50
   let squiggly
   let lineStroke = 0.8 * hd
   let dist
-  let layers = 10
+  let layers = 1
   let R
   let palette = {}
   let mode = "fine"
@@ -44,6 +49,8 @@ const sketch = (s) => {
   let monoid
   const MAX_STEPS = 1500
   const ESCAPE = 500
+  //const BLUR = 10
+  //let counter = 0
   
   function setMode() {
     if (mode == "fine") {
@@ -107,56 +114,130 @@ const sketch = (s) => {
   // with added stop conditions
 
   class Particle {
-    constructor(nha, nhb, x, y, size, color, alpha, _dist) {
-      this.x = x;
-      this.y = y;
-      this.size = size;
-      this.color = color;
+constructor(rand, x, y, size, color, alpha, _dist) {
+      this.x = x
+      this.y = y
+      this.size = size
+      this.color = color
 
-      this.alpha = alpha ? _alpha : 10;
-      this.dist = _dist ? _dist : dist;
+      this.alpha = alpha ? _alpha : 10
+      this.dist = 150//_dist ? _dist : dist
       this.stopped = false
-      //this.rand = rand
-      this.steps = 0
-      this.xx = 0
-      this.yy = 0
-      this.ha = nha
-      this.hb = nhb
+      this.rand = rand
     }
     move(scene) {
-      let [px, py, xx, yy] = henon(scene, this.x, this.y, this.ha, this.hb)
-    this.x = px
-    this.y = py
-    this.xx = xx
-    this.yy = yy
-    this.steps+=1
+      //let [px, py, xx, yy] = henon(scene, this.x, this.y, this.ha, this.hb)
+    //this.x = px
+    //this.y = py
+    //this.xx = xx
+    //this.yy = yy
+    //this.steps+=1
+    let theta = scene.noise(this.x * squiggly + this.rand, this.y * squiggly + this.rand) * PI * 2
+      let v = p5.Vector.fromAngle(theta, scene.random(0.1*this.dist, 1.5*this.dist))
+      this.x += v.x
+      this.y += v.y
     }
-    draw(scene) {
-      if(this.stopped){
-      const na = this.steps * this.alpha
-      this.color.setAlpha(na)
-      scene.fill(this.color)
-      const ns = scene.random(0.4 * this.size, 2 * this.size)
-      drawer(scene, this.x, this.y, ns)      
-      }
+    draw(scene, mask) {
       if(this.x < scene.width && this.x >= 0 && this.y < scene.height && this.y >= 0){
-        const na = scene.random(this.alpha)
-        this.color.setAlpha(na)
-        scene.fill(this.color)
-        const ns = scene.random(0.4 * this.size, 2 * this.size)
-        drawer(scene, this.x, this.y, ns)      
+        //const ns = scene.random(1.5 * this.size, 3 * this.size)
+        const ns = scene.random(0.9*this.size, 1.1*this.size)
+        bubble(scene, this.x, this.y, ns, mask)         
+        //scene.stroke("red")
+        //scene.fill("red")
+        //scene.circle(this.x, this.y, scene.random(5, 10))
       }
     }
-    stop(scene) {
+    /*stop(scene) {
       if(this.steps > MAX_STEPS){
         this.stopped = true
       }
       if(this.xx*this.xx+this.yy*this.yy>ESCAPE){
           this.stopped = true
       }
+    }*/
+    stop(scene) {
+      if (this.x > scene.width || this.x < 0) {
+        this.dist = 0
+        this.stopped = true
+      }
+      if (this.y > scene.height || this.y < 0) {
+        this.dist = 0
+        this.stopped = true
+      }
+      if(this.stopped && scene.random() < 0.3){
+        canvasRGBA(scene.canvas, 0, 0, scene.width, scene.height, Math.max(1, (0.5 + hd) << 0))
+        //counter++
+      }
     }
+    
   }
 
+  function bubble(scene, x, y, d, mask) {
+    // A strange correction to avoid superdense bubbles at high res      
+    const NR = 1.2 / hd
+    mask.push()
+    mask.fill("black")
+    mask.circle(x, y, 1.001 * 2 * d)
+    mask.pop()
+    scene.push()
+    scene.translate(x, y)
+    const random = scene.random
+    const ITER = d * d
+    for (let i = 0; i < ITER; i++) {
+      const a = random(PI * 2)
+      const r = d * (1.0 - random(random(random(random(random())))))
+      const rr = d - r
+      const foo = a / (2 * PI)
+      let col = scene.color(360 * foo, 90, 90)
+      col.setAlpha(0.05)
+      scene.stroke(col)
+      const x = Math.cos(a) * r
+      const y = Math.sin(a) * r
+      scene.circle(x, y, NR)
+    }
+    scene.pop()
+    scene.push()
+    scene.translate(x, y)
+    scene.rotate(-0.3)
+    const nd = 0.8 * d
+    const L = 2 * PI - PI / 4
+    for (let i = 0; i < ITER; i++) {
+      const a = random(PI * 2)
+      if (L - a > 0.3) {
+        continue
+      }
+      const r = nd * (1.0 - random(random(random(random(random())))))
+      let col = scene.color(250)
+      col.setAlpha(0.1 * (1.5 - smoothStep(0, nd, r)))
+      scene.stroke(col)
+      const x = Math.cos(a) * r
+      const y = Math.sin(a) * r
+      scene.circle(x, y, NR)
+    }
+
+    scene.pop()
+    scene.push()
+    scene.translate(x, y)
+    scene.rotate(0.85 * PI)
+    const nnd = 0.78 * d
+    const nL = 2 * PI - PI / 4
+    for (let i = 0; i < ITER; i++) {
+      const a = random(PI * 2)
+      if (nL - a > -0.3) {
+        continue
+      }
+      const r = nnd * (1.0 - random(random(random(random(random())))))
+      let col = scene.color(250)
+      col.setAlpha(0.1 * (1.5 - smoothStep(0, nnd, r)))
+      scene.stroke(col)
+      const x = Math.cos(a) * r
+      const y = Math.sin(a) * r
+      scene.circle(x, y, NR)
+    }
+
+    scene.pop()
+  }  
+  
   s.preload = () => {
     monoid = s.loadFont("../libraries/fonts/Monoid-Retina.ttf")
   }
@@ -204,13 +285,35 @@ const sketch = (s) => {
   }
 
   function createParticles(scene, whatever) {
-    let particles = [];
+    /*let particles = [];
     const particleSeed = scene.noise(whatever)
     const base = scene.random(freq) << 0
     //const basey = scene.random(freq) << 0
     const ul = {x: 0, y: 0}
     const lr = {x: scene.width, y: scene.height}
     const span = scene.height+scene.width
+    for(let i=0;i<10;i++){
+      particles.push(new Particle(particleSeed, scene.random(scene.width) << 0, scene.random(scene.height) << 0, 0, 0))
+    }*/
+    let particles = []
+    const particleSeed = scene.noise(whatever)
+    const base = scene.random(freq)
+    for (let x = base; x < scene.width; x += freq) {
+      let stroke = scene.random(10, 50)
+      let c = (scene.noise(x * squiggly) * palette.colors.length) << 0
+      let color = scene.color(palette.colors[c])
+      particles.push(new Particle(particleSeed, x, 0, stroke, color))
+      particles.push(new Particle(particleSeed, x, scene.height, stroke, color))
+    }
+    for (let y = base; y < scene.height; y += freq) {
+      let stroke = scene.random(10, 50)
+      let c = (scene.noise(y * squiggly) * palette.colors.length) << 0
+      let color = scene.color(palette.colors[c])
+      particles.push(new Particle(particleSeed, 0, y, stroke, color))
+      particles.push(new Particle(particleSeed, scene.width, y, stroke, color))
+    }
+    return particles
+    
     /*
     for (let x = basex; x < scene.width; x += freq) {
       for(let y = basey; y < scene.height; y+= freq) {
@@ -226,7 +329,7 @@ const sketch = (s) => {
       		//particles.push(new Particle(particleSeed, _x, scene.height, stroke, color));
     }
   }*/
-  const na = -0.0001 + 0.0002*scene.noise(whatever)
+  /*const na = -0.0001 + 0.0002*scene.noise(whatever)
   const nb = -0.0001 + 0.0002*scene.noise(whatever)  
   const nha = ha + na
   const nhb = hb + nb
@@ -244,7 +347,7 @@ const sketch = (s) => {
     x = scene.width - x
     y = y    
     particles.push(new Particle(nha, nhb, x, y, stroke, color));
-  }
+  }*/
 	/*
     for (let y = base; y < scene.height; y += freq) {
       let _y = y;
@@ -258,15 +361,21 @@ const sketch = (s) => {
     return particles
   }
 
-  function stepThrough(scene, particles) {
+  function stepThrough(scene, particles, mask) {
+    let i = 0
     while (!allStop(particles)) {
+      //console.log("Stepping")
       for (let p of particles) {
         if (p.stopped) {
           continue
         }
         p.move(scene);
         p.stop(scene);
-        p.draw(scene);        
+        p.draw(scene, mask)
+        //if (i % 15 == 0) {
+        
+        //}
+      i++
       }
     }
   }
@@ -285,15 +394,27 @@ const sketch = (s) => {
 
   function plot() {
     let scene = s.createGraphics(hd * 1800, hd * 1200) // fixed 3:2 aspect ratio
-    scene.background(palette.background)
-    scene.noStroke()
-    scene.randomSeed(seed)
-    scene.noiseSeed(seed)
+    let mask = s.createGraphics(scene.width, scene.height)
+    let bubbly = s.createGraphics(scene.width, scene.height)    
+    bubbly.colorMode(s.HSB)
+    s.colorMode(s.HSB)
+    const foo = darken(scene, palette.background, 1.)
+    bubbly.background(foo)
+    bubbly.randomSeed(seed)
+    bubbly.noiseSeed(seed)
     let particles
+    bubbly.noFill()
+    bubbly.strokeWeight(hd)    
     for (let i = 0; i < layers; i++) {
       particles = createParticles(scene, (0.4 * i) / layers)
-      stepThrough(scene, particles)
+      stepThrough(bubbly, particles, mask)
     }
+    
+    let d = bubbly.get()
+    d.mask(mask)
+    scene.background(solarizedDark.base01)
+    scene.image(d, 0, 0)    
+    
     const identifier = `${palette.short}.${seed}.${layers}×${hd.toPrecision(2)}`
     addText(scene, scene.width - 10 * hd, scene.height - 15 * hd, identifier)
     addText(scene, scene.width - 10 * hd, scene.height - 7 * hd, "rb'23")
