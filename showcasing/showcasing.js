@@ -90,6 +90,11 @@ const sketch = (s) => {
     cfg.backgrounds.push(bg)
 
     const images = [{
+        src: "through2-s.png",
+        color: "#55555530",
+        blendMode: "multiply",
+        name: "(Through)² the trees"
+      },{
         src: "bubbles-s.png",
         color: "#55555530",
         blendMode: "multiply",

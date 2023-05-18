@@ -52,7 +52,7 @@ const sketch = (s) => {
     }
 
     s.draw = () => {
-        let scene = s.createGraphics(cfg.hd * s.width, cfg.hd * s.height)
+        let scene = s.createGraphics(cfg.hd * s.width << 0, cfg.hd * s.height << 0)
         W = scene.width, H = scene.height
         let dly = s.createGraphics(W, H)
         scene.randomSeed(cfg.seeder.get())
@@ -66,7 +66,7 @@ const sketch = (s) => {
             scene.image(dly, 0, 0)
         }
 
-        const identifier = `${cfg.seeder.get()}@${cfg.hd.toPrecision(2)}`
+        const identifier = `${cfg.seeder.hex()}@${cfg.hd.toPrecision(2)}`
         const sigCfg = {
             s: s,
             scene: scene,

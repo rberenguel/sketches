@@ -511,7 +511,7 @@ const sketch = (s) => {
   }
 
   const createGUI = (gui) => {
-    cfg.title = "70s patch, RB 2023/03"
+    cfg.title = "70s patch, RB 2023/03 \u{1F1E8}\u{1F1ED}"
     cfg.info = "Inspired by the <i><a href=\"https://www.reddit.com/r/generative/comments/p0tvfu/generated_panorama_drawings_p5js/\">Panoramas</a></i> by <a href=\"https://twitter.com/estienne_ca?s=21&t=8Ko3mXJTcDWYao4IgQoBBg\">estienne_ca</a>"
     cfg.subinfo = "Applying the final texture takes a while.<br/>Very high resolutions can fail depending on the browser"
     cfg.s = s
