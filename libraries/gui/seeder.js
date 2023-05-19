@@ -50,7 +50,7 @@ class Seeder {
       this.gui.mark()
     })
     let seedControl = new Control([X],
-      "get new random seed, current", seedShow)
+      "new random seed, current", seedShow)
     this.command = enterSeedCommand
     this.control = seedControl
     this.seed = (window.performance.now() << 0) % 1000000
