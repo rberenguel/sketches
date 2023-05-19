@@ -4,6 +4,7 @@ import {
   GUI,
   Integer,
   Float,
+  Boolean,
   Key,
   Control,
   Seeder
@@ -24,6 +25,10 @@ const sketch = (s) => {
   let gui
   let debug = true
   let dly // Base debug layer, if used
+
+  let R
+
+  let maskIt = true
 
   // Globals needed in controls, commands or deep arguments
   let cfg = {
@@ -53,6 +58,7 @@ const sketch = (s) => {
     cfg.seeder = new Seeder()
     gui = createGUI()
     gui.toggle()
+    R.action()
   }
 
 
@@ -104,7 +110,7 @@ const sketch = (s) => {
     scene.pop()
   }
 
-  s.draw = () => {
+  function plot() {
     let scene = s.createGraphics(cfg.hd * s.width << 0, cfg.hd * s.height << 0)
     W = scene.width, H = scene.height
     let dly = s.createGraphics(W, H)
@@ -205,26 +211,28 @@ const sketch = (s) => {
       canvasRGBA(scene.canvas, 0, 0, W, H, Math.max(1, (0.5 + cfg.hd) << 0))
     }
 
-    let mask = s.createGraphics(scene.width, scene.height)
-    mask.strokeWeight(cfg.hd)
-    mask.stroke("black")
-    mask.rectMode(s.CORNERS)
-    let counter = 0
-    for (let i = 0; i < scene.width; i += 8 * cfg.hd) {
-      if (counter % 2 == 0) {
-        mask.rect(i + 1 * cfg.hd, H * (1 - scene.noise(2 * counter / 100)), i + 7 * cfg.hd, H * scene.noise(counter / 100))
-      } else {
-        mask.rect(i + 1 * cfg.hd, 0, i + 7 * cfg.hd, H * (1 - scene.noise(2 * counter / 100)))
-        mask.rect(i + 1 * cfg.hd, H * scene.noise(counter / 100), i + 7 * cfg.hd, H)
+    if (maskIt) {
+      let mask = s.createGraphics(scene.width, scene.height)
+      mask.strokeWeight(cfg.hd)
+      mask.stroke("black")
+      mask.rectMode(s.CORNERS)
+      let counter = 0
+      for (let i = 0; i < scene.width; i += 8 * cfg.hd) {
+        if (counter % 2 == 0) {
+          mask.rect(i + 1 * cfg.hd, H * (1 - scene.noise(2 * counter / 100)), i + 7 * cfg.hd, H * scene.noise(counter / 100))
+        } else {
+          mask.rect(i + 1 * cfg.hd, 0, i + 7 * cfg.hd, H * (1 - scene.noise(2 * counter / 100)))
+          mask.rect(i + 1 * cfg.hd, H * scene.noise(counter / 100), i + 7 * cfg.hd, H)
+        }
+        counter++
       }
-      counter++
-    }
 
-    let d = scene.get()
-    d.mask(mask)
-    scene.clear()
-    scene.background("black")
-    scene.image(d, 0, 0)
+      let d = scene.get()
+      d.mask(mask)
+      scene.clear()
+      scene.background("black")
+      scene.image(d, 0, 0)
+    }
 
     const identifier = `${cfg.seeder.get()}@${cfg.hd.toPrecision(2)}`
     const sigCfg = {
@@ -254,10 +262,10 @@ const sketch = (s) => {
     cfg.info = "Inspired by a walk through the forest behind our home"
     cfg.subinfo = "Stacked blurs and many circles.<br/>Very high resolutions can fail depending on the browser"
     cfg.s = s
-    let R = new Key("r", () => {
+    R = new Key("r", () => {
       gui.spin(() => {
         cfg.s.clear()
-        cfg.s.draw()
+        plot()
         gui.spin()
         gui.unmark()
         gui.update()
@@ -266,8 +274,21 @@ const sketch = (s) => {
 
     let resetCanvas = new Command(R, "reset")
 
+    let M = new Key("m", () => {
+      maskIt = !maskIt;
+      R.action()
+    }, (x) => {
+      maskIt = x == 'true'
+      gui.update()
+    }, "mask")
+
+    let maskItBool = new Boolean(() => maskIt)
+    let maskItBoolControl = new Control([M], "masking?",
+      maskItBool)
+
+
     cfg.commands = [resetCanvas, cfg.seeder.command]
-    cfg.controls = [cfg.seeder.control]
+    cfg.controls = [cfg.seeder.control, maskItBoolControl]
 
     gui = createBaseGUI(cfg)
     return gui
