@@ -4,6 +4,19 @@ Generative art sketches. Newest first
 
 ---
 
+## 202305 - Temple &#127464&#127469 [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/temple/"><img src="samples/temple.png" width="360"/></a>
+
+---
+
+- Inspired by what became 'Impossible Distance' by <a href='https://twitter.com/ippsketch/status/1645884276158636040?s=61&t=8Ko3mXJTcDWYao4IgQoBBg'>Ippsketch</a>
+- [code](through2/temple.js) Resolution independent-ish.
+- Explore it [here](https://rberenguel.github.io/sketches/temple/index.html)
+- NEW [See in place](https://rberenguel.github.io/sketches/showcasing/index.html?img=temple)
+
+---
+
 ## 202305 - (Through)&sup2; the trees &#127464&#127469 [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/through2/"><img src="samples/through2.png" width="360"/></a>
