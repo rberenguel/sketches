@@ -35,7 +35,7 @@ const sketch = (s) => {
     largeCanvas: undefined
   }
 
-  
+  let R
   
   let W, H // Helpful globals to avoid typing scene.width so much
 
@@ -58,6 +58,7 @@ const sketch = (s) => {
     cfg.seeder = new Seeder()
     gui = createGUI()
     gui.toggle()
+    R.action()
   }
 
   const dist = (p, q) => {
@@ -141,7 +142,7 @@ const sketch = (s) => {
   }
 
 
-  s.draw = () => {
+  function plot() {
     let scene = s.createGraphics(cfg.hd * s.width << 0, cfg.hd * s.height << 0)
     W = scene.width, H = scene.height
     let dly = s.createGraphics(W, H)
@@ -279,10 +280,10 @@ const sketch = (s) => {
     cfg.info = "Not a lot going on in here"
     cfg.subinfo = "Inspired by what became 'Impossible Distance' by <a href='https://twitter.com/ippsketch/status/1645884276158636040?s=61&t=8Ko3mXJTcDWYao4IgQoBBg'>Ippsketch</a>.<br/>I liked a lot the shadow concept, but here just wanted a quick shot, so the shadows are not even properly computed. Just convincingly enough so. <br/>Very high resolutions can fail depending on the browser"
     cfg.s = s
-    let R = new Key("r", () => {
+    R = new Key("r", () => {
       gui.spin(() => {
         cfg.s.clear()
-        cfg.s.draw()
+        plot()
         gui.spin()
         gui.unmark()
         gui.update()
