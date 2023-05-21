@@ -44,6 +44,8 @@ const sketch = (s) => {
   let monoid
 
   let W, H
+  const WFACTOR = 5400
+  const HFACTOR = 3600
   function setMode() {
     if (mode == "fine") {
       dist = 1.2 * lineStroke
@@ -124,7 +126,7 @@ const sketch = (s) => {
       this.rand = rand
     }
     move(scene) {
-      let theta = scene.noise(3600*this.x/W * squiggly + this.rand, 2400*this.y/H * squiggly + this.rand) * PI * 2
+      let theta = scene.noise(WFACTOR*this.x/W * squiggly + this.rand, HFACTOR*this.y/H * squiggly + this.rand) * PI * 2
       let v = p5.Vector.fromAngle(theta, this.dist)
       this.x += v.x
       this.y += v.y
@@ -200,14 +202,14 @@ const sketch = (s) => {
     const base = scene.random(freq)
     for (let x = base; x < scene.width; x += freq) {
       let stroke = lineStroke
-      let c = (scene.noise(3600 * x * squiggly/W) * palette.colors.length) << 0
+      let c = (scene.noise(WFACTOR * x * squiggly/W) * palette.colors.length) << 0
       let color = scene.color(palette.colors[c])
       particles.push(new Particle(particleSeed, x, 0, stroke, color))
       particles.push(new Particle(particleSeed, x, scene.height, stroke, color))
     }
     for (let y = base; y < scene.height; y += freq) {
       let stroke = lineStroke
-      let c = (scene.noise(2400 * y * squiggly/H) * palette.colors.length) << 0
+      let c = (scene.noise(HFACTOR * y * squiggly/H) * palette.colors.length) << 0
       let color = scene.color(palette.colors[c])
       particles.push(new Particle(particleSeed, 0, y, stroke, color))
       particles.push(new Particle(particleSeed, scene.width, y, stroke, color))
