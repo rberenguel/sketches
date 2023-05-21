@@ -228,20 +228,24 @@ const sketch = (s) => {
       }
 
       let d = scene.get()
+      let e = scene.get()
       d.mask(mask)
       scene.clear()
-      scene.background("black")
+      scene.image(e, 0, 0)
+      scene.blendMode(s.OVERLAY)
       scene.image(d, 0, 0)
     }
 
-    const identifier = `${cfg.seeder.get()}@${cfg.hd.toPrecision(2)}`
+    scene.colorMode(s.RGB)
+    scene.blendMode(s.BLEND)
+    const identifier = `${cfg.seeder.hex()}@${cfg.hd.toPrecision(2)}`
     const sigCfg = {
       s: s,
       scene: scene,
-      color: "#101020",
-      shadow: "darkgrey",
+      color: "#AAAA20",
+      shadow: "#999970",
       fontsize: 9,
-      right: scene.width,
+      right: scene.width+4*cfg.hd,
       bottom: scene.height,
       identifier: identifier,
       sig: "rb'23",

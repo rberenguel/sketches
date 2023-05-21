@@ -43,6 +43,7 @@ const sketch = (s) => {
   let seed = 42
   let monoid
 
+  let W, H
   function setMode() {
     if (mode == "fine") {
       dist = 1.2 * lineStroke
@@ -123,7 +124,7 @@ const sketch = (s) => {
       this.rand = rand
     }
     move(scene) {
-      let theta = scene.noise(this.x * squiggly + this.rand, this.y * squiggly + this.rand) * PI * 2
+      let theta = scene.noise(3600*this.x/W * squiggly + this.rand, 2400*this.y/H * squiggly + this.rand) * PI * 2
       let v = p5.Vector.fromAngle(theta, this.dist)
       this.x += v.x
       this.y += v.y
@@ -199,14 +200,14 @@ const sketch = (s) => {
     const base = scene.random(freq)
     for (let x = base; x < scene.width; x += freq) {
       let stroke = lineStroke
-      let c = (scene.noise(x * squiggly) * palette.colors.length) << 0
+      let c = (scene.noise(3600 * x * squiggly/W) * palette.colors.length) << 0
       let color = scene.color(palette.colors[c])
       particles.push(new Particle(particleSeed, x, 0, stroke, color))
       particles.push(new Particle(particleSeed, x, scene.height, stroke, color))
     }
     for (let y = base; y < scene.height; y += freq) {
       let stroke = lineStroke
-      let c = (scene.noise(y * squiggly) * palette.colors.length) << 0
+      let c = (scene.noise(2400 * y * squiggly/H) * palette.colors.length) << 0
       let color = scene.color(palette.colors[c])
       particles.push(new Particle(particleSeed, 0, y, stroke, color))
       particles.push(new Particle(particleSeed, scene.width, y, stroke, color))
@@ -269,6 +270,8 @@ const sketch = (s) => {
 
   function plot() {
     let scene = s.createGraphics(hd * 1800, hd * 1200) // fixed 3:2 aspect ratio
+    W = scene.width
+    H = scene.height
     scene.background(palette.background)
     scene.noStroke()
     scene.randomSeed(seed)
@@ -305,7 +308,7 @@ const sketch = (s) => {
 
   function createGUI() {
     let info =
-      "Layered particle flow in noise field. Saving uses at least 1600&times;1200 resolution on export.<ul><li>Use the e<b>X</b>plore function</li><li>while in rough <b>M</b>ode to figure out what shape you like,</li><li>then switch to fine <b>M</b>ode</li><li>and set layering to 100 with <b>)</b>.</li></ul>Optionally increase export resolution with <b>.</b>, but this needs to be done <i>first</i>, before exploration."
+      "Layered particle flow in noise field. Saving uses at least 1600&times;1200 resolution on export.<ul><li>Use the e<b>X</b>plore function</li><li>while in rough <b>M</b>ode to figure out what shape you like,</li><li>then switch to fine <b>M</b>ode</li><li>and set layering to 100 with <b>)</b>.</li></ul>Optionally increase export resolution with <b>.</b>."
     let subinfo = "<hr/>Very high resolutions can fail depending on the browser"
     let S = new Key("s", () => {
       largeCanvas.save("img-" + seed + ".png")
