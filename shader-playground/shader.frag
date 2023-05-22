@@ -1,59 +1,73 @@
 precision highp float;
 
 varying vec2 vTexCoord;
+uniform vec2 u_resolution;
 
-vec2 view = vec2(-0.75, 0.0);
-
-vec2 squareImaginary(vec2 number){
-	return vec2(
-		number.x*number.x-number.y*number.y,
-		2.0*number.x*number.y
-	);
+vec3 hsb2rgb(vec3 c)
+{
+    vec3 rgb = clamp(abs(mod(c.x * 6. + vec3(0. , 4., 2.), 6.) - 3.) - 1., 0., 1. );
+    rgb = rgb * rgb * (3. - 2. * rgb);
+    return c.z * mix(vec3(1.), rgb, c.y);
 }
 
-vec2 cMul(vec2 a, vec2 b){
-  return vec2(a.x*b.x-a.y*b.y, a.x*b.y+a.y*b.x);
+vec2 trf(){
+  float factor = u_resolution.x/u_resolution.y;
+  vec2 trans = vec2(factor, 1.0);
+  return trans;
 }
 
-float tanh(float x){
-  return (exp(2.0*x)-1.0)/(exp(2.0*x)+1.0);
+
+float sdfCircle( in vec2 p, in float r ) 
+{
+    return length(trf()*p)-r;
 }
 
-vec3 mandelbrot(vec2 coord){
-	vec2 z = vec2(0.0,0.0);
-  vec2 dz = vec2(0.0,0.0);
-  float de = 0.0;
-  int iterates = 0;
-	for(int i=0;i<10000;i++){
-    dz = 2.0*cMul(z, dz) + vec2(1.0, 0);    
-		z = squareImaginary(z) + coord;
-    de = 2.0 * length(z) * log(length(z))/length(dz);
-		if(length(z)>1000.0) {
-      iterates = i;
-      break;
-    }
-	}
-  float me = clamp( pow(90.0*de,0.15), 0.0, 1.0 );
-  float ee = clamp(25.0*float(iterates)*de, 0.0, 1.0 );
-	return vec3(ee, ee, ee);
-}
+float sdfRoundedBox( in vec2 pp, in vec2 bb, in vec4 r )
+{
+  vec2 p = trf()*pp;
+  vec2 b = trf()*bb;
+    r.xy = (p.x>0.0)?r.xy : r.zw;
+    r.x  = (p.y>0.0)?r.x  : r.y;
+    vec2 q = abs(p)-b+r.x;
+    return min(max(q.x,q.y),0.0) + length(max(q,0.0)) - r.x;
+  }
 
-float centersMandelbrot(vec2 c){
-	vec2 z = vec2(0.0,0.0);
-  vec2 dz = vec2(0.0,0.0);
-  float de = 0.0;
-	for(int i=0;i<50;i++){
-    dz = 2.0*cMul(z, dz) + vec2(1.0, 0);        
-		z = squareImaginary(z) + c;    
-    if(length(z) > 4.0) return 255.0;
-		if(length(z/dz)<0.001) return 0.0;//tanh(de);
-	}
-	return 255.0;  
+float sdf(vec2 uv){
+  vec2 p = vec2(0.5, 0.5);
+  float c = sdfCircle(uv - p, 0.1);
+  float r = sdfRoundedBox(uv - p, vec2(0.2,0.1), vec4(0.0,1.0,2.0,3.0));
+  return r;
 }
 
 void main() {
-  vec2 UV = vTexCoord;
-  vec2 uv = ((UV - vec2(0.5)) * vec2(1.0, 1.0)) / exp(- 1.1) + view;
-  vec3 s = mandelbrot(uv);
-  gl_FragColor = vec4(s, 1.0);
+  vec2 uv = gl_FragCoord.xy/u_resolution;
+  float s = sdf(uv);
+  vec3 c1 = hsb2rgb(vec3(0, 0.1, 0.1));
+  vec3 c2 = hsb2rgb(vec3(0.9, 0.7, 0.5));
+  vec3 col = (s>0.0) ? c1 : c2;
+  gl_FragColor = vec4(mix( col, vec3(1.0), 1.0-smoothstep(0.0,0.001,abs(s)) ), 1.0);
 }
+
+/*void foo( out vec4 fragColor, in vec2 fragCoord )
+{
+	vec2 p = (2.0*fragCoord-u_resolution.xy)/u_resolution.y;
+    //vec2 m = (2.0*iMouse.xy-u_resolution.xy)/u_resolution.y;
+
+	float d = sdCircle(p,0.5);
+    
+	// coloring
+    vec3 col = (d>0.0) ? vec3(0.9,0.6,0.3) : vec3(0.65,0.85,1.0);
+    col *= 1.0 - exp(-6.0*abs(d));
+	col *= 0.8 + 0.2*cos(150.0*d);
+	col = mix( col, vec3(1.0), 1.0-smoothstep(0.0,0.01,abs(d)) );
+
+    if( iMouse.z>0.001 )
+    {
+    d = sdCircle(m,0.5);
+    col = mix(col, vec3(1.0,1.0,0.0), 1.0-smoothstep(0.0, 0.005, abs(length(p-m)-abs(d))-0.0025));
+    col = mix(col, vec3(1.0,1.0,0.0), 1.0-smoothstep(0.0, 0.005, length(p-m)-0.015));
+    }
+
+	fragColor = vec4(col,1.0);
+}
+*/

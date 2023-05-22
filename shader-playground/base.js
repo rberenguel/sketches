@@ -18,8 +18,9 @@ const sketch = (s) => {
 
   let gui
   let largeCanvas
-  let hd = 3
+  let hd = 1
   let shader
+  let W, H
   s.setup = () => {
     let {
       w,
@@ -40,9 +41,12 @@ const sketch = (s) => {
 
   
   s.draw = () => {
-    const numPixels = hd * s.width * hd * s.height
-    let scene = s.createGraphics(hd * s.width, hd * s.height, s.WEBGL)
+    let scene = s.createGraphics(1800, 1200, s.WEBGL)
+    W = scene.width
+    H = scene.height
+    console.log(H/W)
     scene.shader(shader)
+    shader.setUniform("u_resolution",[W,H])
     scene.noStroke()
     scene.rect(-scene.width,0,scene.width, scene.height)
     largeCanvas = scene
