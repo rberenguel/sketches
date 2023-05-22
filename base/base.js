@@ -90,7 +90,7 @@ const sketch = (s) => {
 
 
     const createGUI = (gui) => {
-        cfg.title = "Something, RB 2020/"
+        cfg.title = "Something, RB 2023/ \u{1F1E8}\u{1F1ED}"
         cfg.info = "Info"
         cfg.subinfo = "Subinfo<br/>Very high resolutions can fail depending on the browser"
         cfg.s = s
