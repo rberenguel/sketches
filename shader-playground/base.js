@@ -19,7 +19,8 @@ const sketch = (s) => {
   let gui
   let largeCanvas
   let hd = 1
-  let shader
+  let shader, vert, frag, includesGLSL = {}
+  let includes = []
   let W, H
   s.setup = () => {
     let {
@@ -36,7 +37,16 @@ const sketch = (s) => {
   }
 
   s.preload = () => {
-    shader = s.loadShader('shader.vert', 'shader.frag');
+    includes = [
+      "noise2d.glsl",
+      "cnoise2d.glsl",
+      "cellular2d.glsl"
+    ]
+    frag = s.loadStrings('shader.frag')
+    vert = s.loadStrings('shader.vert')
+    for(let include of includes){
+      includesGLSL[include] = s.loadStrings(include)
+    }
   }
 
   
@@ -44,9 +54,20 @@ const sketch = (s) => {
     let scene = s.createGraphics(1800, 1200, s.WEBGL)
     W = scene.width
     H = scene.height
-    console.log(1.0*W)
-    scene.shader(shader)
-    shader.setUniform("u_resolution",[1.0*W,1.0*H])
+    let fragment = ""
+    for(let i=0;i<frag.length;i++){
+      let line = frag[i]
+      if(line.startsWith("#include")){
+        const lib = line.replace("#include", "").replaceAll("\"", "").trim()
+        const glsl = includesGLSL[lib].join("\n") 
+        fragment += glsl + "\n"
+      } else {
+        fragment += line + "\n"
+      }
+    }
+    const sh = scene.createShader(vert.join("\n"), fragment)
+    scene.shader(sh)    
+    sh.setUniform("u_resolution",[1.0*W,1.0*H])
     scene.noStroke()
     scene.rect(0,0,scene.width, scene.height)
     largeCanvas = scene
@@ -122,5 +143,6 @@ const sketch = (s) => {
   }
 }
 
-p5.disableFriendlyErrors = true
+p5.disableFriendlyErrors = false
+
 let p5sketch = new p5(sketch)

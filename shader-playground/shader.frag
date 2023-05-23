@@ -1,9 +1,31 @@
+#ifdef GL_ES
 precision highp float;
+#endif
+
+vec3 mod7(vec3 x) {
+  return x - floor(x * (1.0 / 7.0)) * 7.0;
+}
+
+vec3 mod289(vec3 x) {
+  return x - floor(x * (1.0 / 289.0)) * 289.0;
+}
+
+vec2 mod289(vec2 x) {
+  return x - floor(x * (1.0 / 289.0)) * 289.0;
+}
+
+vec3 permute(vec3 x) {
+  return mod289((34.0 * x + 10.0) * x);
+}
+
+//#include "cnoise2d.glsl"
+//#include "cellular2d.glsl"
 
 varying vec2 vTexCoord;
 uniform vec2 u_resolution;
 
 #define PI 3.14159265359
+
 
 vec3 hsb2rgb(vec3 c)
 {
@@ -49,6 +71,7 @@ float frame(vec2 uv) {
   return max(-inner, outer);  
 }
 
+
 void main() {
   vec2 uv = gl_FragCoord.xy/u_resolution.xy;
   uv -= 0.5;
@@ -64,6 +87,8 @@ void main() {
   vec3 c1 = hsb2rgb(vec3(0, 0.1, 0.1));
   vec3 c2 = hsb2rgb(vec3(0.9, 0.7, 0.5));
   vec3 c3 = hsb2rgb(vec3(0.0, 0.7, 0.5));  
-  vec3 col = frm < 0.0 ? c3 : ((s>0.0) ? c1 : c2);
+  //vec3 col = frm < 0.0 ? c3 : ((s>0.0) ? c1 : c2);
+  float g = ???(uv);
+  vec3 col = g > 0.0 ? c1 : c2;
   gl_FragColor = vec4(mix( col, vec3(1.0), 1.0-smoothstep(0.0,0.001,abs(1.0)) ), 1.0);
 }

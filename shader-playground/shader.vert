@@ -16,4 +16,3 @@ void main() {
   gl_Position = positionVec4;
   
 }
-
