@@ -44,16 +44,26 @@ const sketch = (s) => {
     let scene = s.createGraphics(1800, 1200, s.WEBGL)
     W = scene.width
     H = scene.height
-    console.log(H/W)
+    console.log(1.0*W)
     scene.shader(shader)
-    shader.setUniform("u_resolution",[W,H])
+    shader.setUniform("u_resolution",[1.0*W,1.0*H])
     scene.noStroke()
-    scene.rect(-scene.width,0,scene.width, scene.height)
+    scene.rect(0,0,scene.width, scene.height)
     largeCanvas = scene
     let c = scene.get()
-    c.resize(s.width, 0)
+
+    c.resize(0, s.height)
+    if (c.width > s.width) {
+      c.resize(s.width, 0)
+    }
+    const gap = s.width - c.width
+    s.push()
+    if (gap > 0) {
+      s.translate(gap / 2, 0)
+    }
     s.image(c, 0, 0)
-  }
+    s.pop()
+}
 
   function createGUI() {
     let info =
