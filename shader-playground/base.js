@@ -18,8 +18,10 @@ const sketch = (s) => {
 
   let gui
   let largeCanvas
-  let hd = 3
-  let shader
+  let hd = 1
+  let shader, vert, frag, includesGLSL = {}
+  let includes = []
+  let W, H
   s.setup = () => {
     let {
       w,
@@ -35,21 +37,54 @@ const sketch = (s) => {
   }
 
   s.preload = () => {
-    shader = s.loadShader('shader.vert', 'shader.frag');
+    includes = [
+      "noise2d.glsl",
+      "cnoise2d.glsl",
+      "cellular2d.glsl"
+    ]
+    frag = s.loadStrings('shader.frag')
+    vert = s.loadStrings('shader.vert')
+    for(let include of includes){
+      includesGLSL[include] = s.loadStrings(include)
+    }
   }
 
   
   s.draw = () => {
-    const numPixels = hd * s.width * hd * s.height
-    let scene = s.createGraphics(hd * s.width, hd * s.height, s.WEBGL)
-    scene.shader(shader)
+    let scene = s.createGraphics(1800, 1200, s.WEBGL)
+    W = scene.width
+    H = scene.height
+    let fragment = ""
+    for(let i=0;i<frag.length;i++){
+      let line = frag[i]
+      if(line.startsWith("#include")){
+        const lib = line.replace("#include", "").replaceAll("\"", "").trim()
+        const glsl = includesGLSL[lib].join("\n") 
+        fragment += glsl + "\n"
+      } else {
+        fragment += line + "\n"
+      }
+    }
+    const sh = scene.createShader(vert.join("\n"), fragment)
+    scene.shader(sh)    
+    sh.setUniform("u_resolution",[1.0*W,1.0*H])
     scene.noStroke()
-    scene.rect(-scene.width,0,scene.width, scene.height)
+    scene.rect(0,0,scene.width, scene.height)
     largeCanvas = scene
     let c = scene.get()
-    c.resize(s.width, 0)
+
+    c.resize(0, s.height)
+    if (c.width > s.width) {
+      c.resize(s.width, 0)
+    }
+    const gap = s.width - c.width
+    s.push()
+    if (gap > 0) {
+      s.translate(gap / 2, 0)
+    }
     s.image(c, 0, 0)
-  }
+    s.pop()
+}
 
   function createGUI() {
     let info =
@@ -108,5 +143,6 @@ const sketch = (s) => {
   }
 }
 
-p5.disableFriendlyErrors = true
+p5.disableFriendlyErrors = false
+
 let p5sketch = new p5(sketch)
