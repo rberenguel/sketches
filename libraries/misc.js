@@ -43,17 +43,40 @@ function getLargeCanvas(s, maxSide) {
 
 const smoothStep = (a, b, x) => (x -= a, x /= b - a, x < 0 ? 0 : x > 1 ? 1 : x * x * (3 - 2 * x))
 
+function adjustedTextFont(cfg){
+  if(cfg.hd<1){
+    return {size: cfg.fontsize, gap: cfg.fontsize}
+  } else {
+    return {size: cfg.fontsize * cfg.hd, gap: cfg.fontsize*cfg.hd}
+  }
+}
+
+// All this seems unnecessary?
+
 function signature(cfg) {
-    addText(cfg, cfg.right, cfg.bottom - 2 * cfg.fontsize * cfg.hd, cfg.identifier)
-    addText(cfg, cfg.right, cfg.bottom - cfg.fontsize * cfg.hd + cfg.hd, cfg.sig)
+  let gap
+  if(cfg.adjustFont){
+    gap = adjustedTextFont(cfg).gap
+  } else {
+    gap = cfg.fontsize * cfg.hd
+  }
+    addText(cfg, cfg.right-(gap/2<<0), cfg.bottom - 2 * gap, cfg.identifier)
+    addText(cfg, cfg.right-(gap/2<<0), cfg.bottom - gap + cfg.hd, cfg.sig)
 }
 
 function addText(cfg, x, y, content) {
+  let size
+  if(cfg.adjustFont){
+    size = adjustedTextFont(cfg).size
+  } else {
+    size = cfg.fontsize * cfg.hd
+  }
+ 
     cfg.scene.push()
     cfg.scene.noStroke()
     cfg.scene.fill(cfg.color)
     cfg.scene.textAlign(cfg.s.RIGHT)
-    cfg.scene.textFont(cfg.font, cfg.hd * cfg.fontsize)
+    cfg.scene.textFont(cfg.font, size)
     let ctx = cfg.scene.drawingContext
     ctx.shadowOffsetX = 2
     ctx.shadowOffsetY = 2

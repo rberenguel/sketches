@@ -4,6 +4,20 @@ Generative art sketches. Newest first
 
 ---
 
+## 202305 - Lif &#127464&#127469 [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/lif/"><img src="samples/lif.png" width="360"/></a>
+
+---
+
+- Conway's game of life in a shader. The code has comments to remember how I did this because it took me a while
+- [code](lif/lif.js) Not resolution independent
+- Explore it [here](https://rberenguel.github.io/sketches/lif/index.html)
+- NEW [See in place](https://rberenguel.github.io/sketches/showcasing/index.html?img=lif)
+
+---
+
+
 ## 202305 - Creation &#127464&#127469 [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/creation/"><img src="samples/creation.png" width="360"/></a>
@@ -11,7 +25,7 @@ Generative art sketches. Newest first
 ---
 
 - Just random curves on random circle radii
-- [code](through2/creation.js) Resolution independent-ish.
+- [code](creation/creation.js) Resolution independent-ish.
 - Explore it [here](https://rberenguel.github.io/sketches/creation/index.html)
 - NEW [See in place](https://rberenguel.github.io/sketches/showcasing/index.html?img=creation)
 
@@ -24,7 +38,7 @@ Generative art sketches. Newest first
 ---
 
 - Inspired by what became 'Impossible Distance' by <a href='https://twitter.com/ippsketch/status/1645884276158636040?s=61&t=8Ko3mXJTcDWYao4IgQoBBg'>Ippsketch</a>
-- [code](through2/temple.js) Resolution independent-ish.
+- [code](temple/temple.js) Resolution independent-ish.
 - Explore it [here](https://rberenguel.github.io/sketches/temple/index.html)
 - NEW [See in place](https://rberenguel.github.io/sketches/showcasing/index.html?img=temple)
 
