@@ -4,7 +4,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 202305 - Lif &#127464&#127469 [#p5js](https://p5js.org)
+## 202306 - Lif &#127464&#127469 [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/lif/"><img src="samples/lif.png" width="360"/></a>
 
