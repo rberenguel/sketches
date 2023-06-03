@@ -5,6 +5,7 @@ import {
   Integer,
   Float,
   String,
+  Boolean,
   Key,
   Control,
   Seeder
@@ -27,7 +28,7 @@ import {
 const sketch = (s) => {
 
   let gui
-  let i = 0, looping = false
+  let i = 0, looping = false, blend = false
 
   let R, T
 
@@ -84,12 +85,11 @@ const sketch = (s) => {
     cfg.seeder = new Seeder()
     gui = createGUI()
     gui.toggle()
+    create()
     R.action()
-    s.noLoop()
   }
 
-
-  function initialize() {
+  function create(){
     cfg.s1 = s.createGraphics(cfg.hd * 1800 << 0, cfg.hd * 1200 << 0, s.WEBGL)
     W = cfg.s1.width
     H = cfg.s1.height
@@ -104,6 +104,7 @@ const sketch = (s) => {
     cfg.s1.shader(cfg.sh1)
     cfg.s2.shader(cfg.sh2)
     cfg.aa.shader(cfg.shaa)
+    // Without capping colors passing canvases as textures had strange behaviour when comparing
     cfg.s1.colorMode(s.RGB, 1.0)
     cfg.s2.colorMode(s.RGB, 1.0)
     cfg.aa.colorMode(s.RGB, 1.0)
@@ -134,15 +135,15 @@ const sketch = (s) => {
       "alive": c2v(cfg.s2, cfg.s2.color(c82GeoPrimesPalette[7])), 
       "dead": c2v(cfg.s2, cfg.s2.color(c82GeoPrimesPalette[5] ))}
 
-
-
-
-
     paletteNames = Object.keys(palettes)
+  }
 
-
+  function initializeShaders() {
     cfg.sh1.setUniform("u_canvas", cfg.s2)
     cfg.sh2.setUniform("u_canvas", cfg.s1)
+    // Each canvas will receive the other one as texture
+    // The pixel-level increments below are calculated here
+    // to avoid computing them in each fragment
     cfg.sh1.setUniform("dx", 1.0 / W)
     cfg.sh1.setUniform("dy", 1.0 / H)
     cfg.sh2.setUniform("dx", 1.0 / W)
@@ -154,24 +155,31 @@ const sketch = (s) => {
     cfg.sh2.setUniform("u_lcol",color("alive"))
     cfg.sh2.setUniform("u_dcol",color("dead"))
 
-
     s.clear()
     cfg.s1.clear()
     cfg.s2.clear()
+    cfg.aa.clear()
     cfg.s2.fill(v2c(cfg.s2, color("alive")))
     cfg.s2.stroke(v2c(cfg.s2, color("alive")))
     cfg.s1.background(v2c(cfg.s2, color("dead")))
     cfg.s2.background(v2c(cfg.s2, color("dead")))
+    cfg.aa.background(v2c(cfg.s2, color("dead")))
     cfg.s2.strokeWeight(1)
     cfg.s1.randomSeed(cfg.seeder.get())
     cfg.s1.noiseSeed(cfg.seeder.get())
     cfg.s2.randomSeed(cfg.seeder.get())
     cfg.s2.noiseSeed(cfg.seeder.get())
-    for (let i = 0; i < 50000 * cfg.hd << 0; i++) {
+    // Random initialization of alive cells
+    for (let i = 0; i < 100000 * cfg.hd << 0; i++) {
       cfg.s2.point(cfg.s2.random(-W, W), cfg.s2.random(-H, H))
     }
     cfg.s1.rect(-W / 2, -H / 2, W, H)
+    // The aa shader does a weighted blur (wanted to antialias
+    // but that would be too much work) and also optionally
+    // "blends" dead and alive cells
     cfg.shaa.setUniform("u_canvas", cfg.s1)
+    cfg.shaa.setUniform("u_this", cfg.aa)
+    cfg.shaa.setUniform("blend", false)
     cfg.aa.rect(-W / 2, -H / 2, W, H)
     cfg.largeCanvas = cfg.aa
     let c = cfg.aa.get()
@@ -191,11 +199,17 @@ const sketch = (s) => {
     s.loop()
   }
 
-
   s.draw = () => {
     let c
     cfg.sh1.setUniform("u_canvas", cfg.s2)
     cfg.sh2.setUniform("u_canvas", cfg.s1)
+    // In each cycle, make sure the other canvas is the input,
+    // otherwise the shaders seem to lose the update from the canvas
+    // This can be relatively expensive to pass since they are real
+    // canvases, should be framebuffers.
+    cfg.shaa.setUniform("u_this", cfg.aa)
+    // For blending, blends with itself
+    cfg.shaa.setUniform("blend", blend)
 
     if (i % 2 == 0) {
       cfg.s1.rect(-W / 2, -H / 2, W, H)
@@ -210,6 +224,8 @@ const sketch = (s) => {
       cfg.largeCanvas = cfg.aa
       c = cfg.aa.get()
     }
+    // Depending on parity, show one or the other. Each one just computes the
+    // shader using the other as texture input.
     i++
     c.resize(0, s.height)
     if (c.width > s.width) {
@@ -222,26 +238,30 @@ const sketch = (s) => {
     }
     s.image(c, 0, 0)
     s.pop()
-
   }
 
 
   const createGUI = (gui) => {
     cfg.title = "Lif, RB 2023/6 \u{1F1E8}\u{1F1ED}"
     cfg.info = "Game of Life implemented in a shader (so fast it loses an E)"
-    cfg.subinfo = "It was very hard to get this to work, even if it's basic. Uses a couple canvases I keep swapping as images, as far as I understand shaders and GLSL at the moment using framebuffers could be better. 3 years ago I had a lot of fun with Life variations… and I have several simulations I want to run pixel by pixel, this was a good first step.<br/>It has an additional 'aa' shader which is not really antialiasing but a weighted blur. Makes it look nicer, I think."
+    cfg.subinfo = "It was very hard to get this to work, even if it's basic. Uses a couple canvases I keep swapping as images, as far as I understand shaders and GLSL at the moment using framebuffers could be better. 3 years ago I had a lot of fun with Life variations… and I have several simulations I want to run pixel by pixel, this was a good first step.<br/>It has an additional 'aa' shader which is not really antialiasing but a weighted blur. Makes it look nicer, I think.<br/>Defaults to 0.5 resolution because otherwise you don't see the cells. <code>blend</code> leaves a trail of live and dead cells."
     cfg.s = s
     R = new Key("r", () => {
-      gui.spin(() => {
-        i = 0
-        gui.unmark()
-        gui.update()
-        initialize()
-      })
-      T.action()
+      i = 0
+      gui.unmark()
+      gui.update()
+      initializeShaders()
     })
 
     let resetCanvas = new Command(R, "reset")
+    let B = new Key("b", () => {
+      T.action()
+      blend = !blend
+      R.action()
+    })
+    let blendInfo = new Boolean(() => blend)
+    let blendControl = new Control([B], "\"Blend\"", blendInfo)
+
     T = new Key("t", () => {
       if(looping){
         s.noLoop()
@@ -251,7 +271,7 @@ const sketch = (s) => {
         s.loop()
       }
     })
-    let loopingInfo = new String(() => looping)
+    let loopingInfo = new Boolean(() => looping)
     let stopAnimation = new Control([T], "Animation enabled", loopingInfo)
     let Pn = new Key(")", () => {
       paletteIdx = (paletteIdx + 1) % paletteNames.length
@@ -266,11 +286,11 @@ const sketch = (s) => {
     let paletteInfo = new String(() => paletteNames[paletteIdx])
     let paletteControl = new Control([Pp, Pn], "Current palette", paletteInfo)
 
-
     let S = new Key("s", () => {
       let c = cfg.largeCanvas.get()
       cfg.alternate.image(c, 0, 0)
-      const identifier = `${cfg.seeder.hex()}@${cfg.hd.toPrecision(2)}`
+      const shortBlend = blend ? "b" : "o"
+      const identifier = `${shortBlend}.${cfg.seeder.hex()}@${cfg.hd.toPrecision(2)}`
       const sigCfg = {
         s: s,
         scene: cfg.alternate,
@@ -291,10 +311,8 @@ const sketch = (s) => {
     })
     let saveCmd = new Command(S, "save the canvas")
 
-
-
     cfg.commands = [saveCmd, resetCanvas, cfg.seeder.command]
-    cfg.controls = [stopAnimation, paletteControl, cfg.seeder.control]
+    cfg.controls = [paletteControl, cfg.seeder.control, stopAnimation, blendControl]
     cfg.skipSaveCmd = true
     gui = createBaseGUI(cfg)
     return gui

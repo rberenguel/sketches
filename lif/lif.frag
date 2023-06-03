@@ -19,13 +19,13 @@ bool close(float a, float b){
 }
 
 bool close(vec4 a, vec4 b){
-  return close(a.r, b.r) &&close(a.g, b.g) &&close(a.b, b.b) &&close(a.a, b.a);
+  return close(a.r, b.r) && close(a.g, b.g) && close(a.b, b.b) && close(a.a, b.a);
 }
 
 
 int alive(vec2 coord) {
+  // Textures in GLSL and canvases in p5js are reversed
   vec4 c = texture(u_canvas, vec2(coord.x, 1.0-coord.y));
-  //return (close(c.r, u_lcol.r) && close(c.a, u_lcol.a)) ? 1 : 0;
   return close(c, u_lcol) ? 1 : 0;
 }
 
@@ -53,7 +53,6 @@ void main() {
       nowAlive = true;
     }
   }
-  vec4 col = texture(u_canvas, vec2(coord.x, 1.0 - coord.y));
   vec4 gol = nowAlive ? u_lcol : u_dcol ;
   life = gol;
 }
