@@ -1,17 +1,32 @@
+#version 300 es
+
 #ifdef GL_ES
 precision highp float;
 #endif
 
 
-varying vec2 vTexCoord;
+in vec2 vTexCoord;
 uniform sampler2D u_canvas;
+uniform vec4 u_lcol;
+uniform vec4 u_dcol;
 uniform float dx;
 uniform float dy;
 
+out vec4 life;
+
+bool close(float a, float b){
+  return abs(a - b) < 1e-5;
+}
+
+bool close(vec4 a, vec4 b){
+  return close(a.r, b.r) &&close(a.g, b.g) &&close(a.b, b.b) &&close(a.a, b.a);
+}
+
 
 int alive(vec2 coord) {
-  vec4 c = texture2D(u_canvas, vec2(coord.x, 1.0-coord.y));
-  return (c.r < 0.3 && c.a > 0.5) ? 1 : 0;
+  vec4 c = texture(u_canvas, vec2(coord.x, 1.0-coord.y));
+  //return (close(c.r, u_lcol.r) && close(c.a, u_lcol.a)) ? 1 : 0;
+  return close(c, u_lcol) ? 1 : 0;
 }
 
 
@@ -38,7 +53,7 @@ void main() {
       nowAlive = true;
     }
   }
-  vec4 col = texture2D(u_canvas, vec2(coord.x, 1.0 - coord.y));
-  vec4 gol = nowAlive ?  vec4(.2, 0., 0., 1.) : vec4(0.9, .9, 0.9, 1.);
-  gl_FragColor = gol;
+  vec4 col = texture(u_canvas, vec2(coord.x, 1.0 - coord.y));
+  vec4 gol = nowAlive ? u_lcol : u_dcol ;
+  life = gol;
 }

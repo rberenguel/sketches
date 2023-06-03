@@ -92,9 +92,14 @@ function createBaseGUI(config) {
 
   const commands = config.commands || []
   const controls = config.controls || []
-  gui = gui.withCommands([saveCmd,
-    ...commands
-  ])
+  if(config.skipSaveCmd){
+    gui = gui.withCommands([...commands
+    ])
+  } else {
+    gui = gui.withCommands([saveCmd,
+      ...commands
+    ])
+  }
   if(config.skipHD){
     gui = gui.withControls([...controls])    
   } else {
@@ -109,4 +114,4 @@ function createBaseGUI(config) {
   config.seeder.setup(gui)
   gui.update()
   return gui
-  }
+}
