@@ -4,7 +4,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 202306 - Lif  [#p5js](https://p5js.org)
+## 202306 - Lif &#127464&#127469; [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/lif/"><img src="samples/lif.png" width="360"/></a>
 
@@ -18,7 +18,7 @@ Generative art sketches. Newest first
 ---
 
 
-## 202305 - Creation &#127464&#127469 [#p5js](https://p5js.org)
+## 202305 - Creation &#127464&#127469; [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/creation/"><img src="samples/creation.png" width="360"/></a>
 
@@ -31,7 +31,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 202305 - Temple &#127464&#127469 [#p5js](https://p5js.org)
+## 202305 - Temple &#127464&#127469; [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/temple/"><img src="samples/temple.png" width="360"/></a>
 
@@ -44,7 +44,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 202305 - (Through)&sup2; the trees &#127464&#127469 [#p5js](https://p5js.org)
+## 202305 - (Through)&sup2; the trees &#127464&#127469; [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/through2/"><img src="samples/through2.png" width="360"/></a>
 
