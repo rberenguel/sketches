@@ -48,6 +48,7 @@ const sketch = (s) => {
         s.noLoop()
         cfg.seeder = new Seeder()
         gui = createGUI()
+        gui.fetch()
         gui.toggle()
     }
 
