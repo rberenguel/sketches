@@ -6,12 +6,12 @@ Generative art sketches. Newest first
 
 ## 202306 - Ideas :switzerland: [#p5js](https://p5js.org)
 
-<a href="https://rberenguel.github.io/sketches/lif/"><img src="samples/lif.png" width="360"/></a>
+<a href="https://rberenguel.github.io/sketches/ideas/"><img src="samples/ideas.png" width="360"/></a>
 
 ---
 
 - A network of ideas?
-- [code](lif/lif.js) Shape and color are resolution independent, but the layout of connecting lines and small circles is not. It will look very similar though
+- [code](ideas/ideas.js) Shape and color are resolution independent, but the layout of connecting lines and small circles is not. It will look very similar though
 - Explore it [here](https://rberenguel.github.io/sketches/ideas/index.html)
 - NEW [See in place](https://rberenguel.github.io/sketches/showcasing/index.html?img=ideas)
 
