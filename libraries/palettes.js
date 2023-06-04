@@ -30,7 +30,9 @@ const wernerBasePalette = [wernerBase.lightGray,
 ]
 
 const solarizedDark = {
+  base00: "#657b83",
     base01: "#002b36",
+  base02: "#073642",
     yellow: "#b58900",
     orange: "#cb4b16",
     red: "#d30102",

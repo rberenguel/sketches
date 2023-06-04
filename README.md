@@ -4,7 +4,20 @@ Generative art sketches. Newest first
 
 ---
 
-## 202305 - Lif &#127464&#127469 [#p5js](https://p5js.org)
+## 202306 - Ideas :switzerland: [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/lif/"><img src="samples/lif.png" width="360"/></a>
+
+---
+
+- A network of ideas?
+- [code](lif/lif.js) Shape and color are resolution independent, but the layout of connecting lines and small circles is not. It will look very similar though
+- Explore it [here](https://rberenguel.github.io/sketches/ideas/index.html)
+- NEW [See in place](https://rberenguel.github.io/sketches/showcasing/index.html?img=ideas)
+
+---
+
+## 202306 - Lif :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/lif/"><img src="samples/lif.png" width="360"/></a>
 
@@ -18,7 +31,7 @@ Generative art sketches. Newest first
 ---
 
 
-## 202305 - Creation &#127464&#127469 [#p5js](https://p5js.org)
+## 202305 - Creation :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/creation/"><img src="samples/creation.png" width="360"/></a>
 
@@ -31,7 +44,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 202305 - Temple &#127464&#127469 [#p5js](https://p5js.org)
+## 202305 - Temple :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/temple/"><img src="samples/temple.png" width="360"/></a>
 
@@ -44,7 +57,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 202305 - (Through)&sup2; the trees &#127464&#127469 [#p5js](https://p5js.org)
+## 202305 - (Through)&sup2; the trees :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/through2/"><img src="samples/through2.png" width="360"/></a>
 
@@ -57,7 +70,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 202305 - Bubbles [#p5js](https://p5js.org)
+## 202305 - Bubbles :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/bubbles/"><img src="samples/bubbles.png" width="360"/></a>
 
@@ -70,7 +83,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 202305 - Out of Fabric [#p5js](https://p5js.org)
+## 202305 - Out of Fabric :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/out-of-fabric/"><img src="samples/out-of-fabric.png" width="360"/></a>
 
@@ -83,7 +96,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 202305 - Underwater [#p5js](https://p5js.org)
+## 202305 - Underwater :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/underwater/"><img src="samples/underwater.png" width="360"/></a>
 
@@ -96,7 +109,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 202304 - Flows [#p5js](https://p5js.org)
+## 202304 - Flows :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/flows/"><img src="samples/flows.png" width="360"/></a>
 
@@ -108,7 +121,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 202304 - Modern Art [#p5js](https://p5js.org)
+## 202304 - Modern :switzerland: Art [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/modern-art/"><img src="samples/modern-art.png" width="360"/></a>
 
@@ -120,7 +133,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 202304 - La Truche [#p5js](https://p5js.org)
+## 202304 - La Truche :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/la-truche/"><img src="samples/la-truche.png" width="360"/></a>
 
@@ -133,7 +146,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 202304 - Stained [#p5js](https://p5js.org)
+## 202304 - Stained :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/stained/"><img src="samples/stained.png" width="360"/></a>
 
@@ -146,7 +159,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 202304 - Synthwave [#p5js](https://p5js.org)
+## 202304 - Synthwave :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/synthwave/"><img src="samples/synthwave.png" width="360"/></a>
 
@@ -159,7 +172,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 202303 - 70s Patch [#p5js](https://p5js.org)
+## 202303 - 70s Patch :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/70s-patch/"><img src="samples/70s-patch.png" width="360"/></a>
 
@@ -172,7 +185,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 202303 - Pencils [#p5js](https://p5js.org)
+## 202303 - Pencils :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/pencils/"><img src="samples/pencils.png" width="360"/></a>
 
