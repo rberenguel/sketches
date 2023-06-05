@@ -11,6 +11,7 @@ import {
 
 import {
   getLargeCanvas,
+  copyColor,
   signature
 } from '../libraries/misc.js'
 
@@ -69,8 +70,10 @@ const sketch = (s) => {
     }
     scene.translate(x, y)
     scene.rotate(angle)
-    scene.line(0, -wall/2, length, -wall/2)
-    scene.line(0, wall/2, length, wall/2)
+    sketchedLine(scene, 0, -wall/2, length, -wall/2, scene.color("black"))
+    sketchedLine(scene, 0, wall/2, length, wall/2, scene.color("black"))
+    //scene.line(0, -wall/2, length, -wall/2)
+    //scene.line(0, wall/2, length, wall/2)
     scene.pop()
   }
 
@@ -90,7 +93,33 @@ const sketch = (s) => {
     scene.pop()
   }
 
-  function room(scene, x, y, w, h, wsize){
+  const nrm = (v) => Math.sqrt(v[0] * v[0] + v[1] * v[1])
+
+  /*function sketchedLine(scene, x1, y1, x2, y2, _color){
+    scene.stroke(_color)
+    scene.line(x1, y1, x2, y2)
+  }*/
+  function sketchedLine(scene, x1, y1, x2, y2, _color) {
+    let color = copyColor(scene, _color)
+    for (let i = 0; i < 20; i++) {
+      const p1 = [x1 + cfg.hd * (1 - 2 * scene.random()) << 0, y1 + cfg.hd * (1 - 2 * scene.random()) << 0]
+      const p2 = [x2 + cfg.hd * (1 - 2 * scene.random()) << 0, y2 + cfg.hd * (1 - 2 * scene.random()) << 0]
+      const v = [p2[0] - p1[0], p2[1] - p1[1]]
+      const n = nrm(v)
+      const nv = [v[0] / n, v[1] / n]
+      const nn = scene.randomGaussian(n, n / 2.0)
+      const thirdDiff = (nn - n) / 3
+      const np1 = [p1[0] + thirdDiff * nv[0], p1[1] + thirdDiff * nv[1]]
+      const np2 = [p2[0] - thirdDiff * nv[0], p2[1] - thirdDiff * nv[1]]
+      scene.strokeWeight(scene.random(cfg.hd * 3, cfg.hd * 4) << 0)
+      color.setAlpha(scene.random(5, 10))
+      scene.stroke(color)
+      scene.line(...np1, ...np2)
+    }
+  }
+
+
+  function nave(scene, config){//x, y, w, h, wsize){
     /*scene.push()
     scene.translate(x, y)
     scene.stroke("red")
@@ -98,6 +127,9 @@ const sketch = (s) => {
     scene.noFill()
     scene.rect(-0.5*w, -0.5*h, 0.5*w, 0.5*h)
     scene.pop()*/
+    const [x, y] = config.naveCenter
+    const [w, h] = config.naveSize
+    const wsize = config.wallSize
     const lengthColumns = scene.random(4, 8) << 0
     console.log(lengthColumns)
     const gap = w/lengthColumns
@@ -118,17 +150,19 @@ const sketch = (s) => {
 
     scene.push()
     scene.drawingContext.setLineDash([scene.random(4, 6) << 0, scene.random(13, 16) << 0]);
-    scene.line(startx, y-0.25*h, startx+gap, y+0.25*h) // Middle ceiling left
-    scene.line(startx, y+0.25*h, startx+gap, y-0.25*h)
-    scene.line(startx, y-0.5*h, startx+gap, y-0.25*h) // Top ceiling left
-    scene.line(startx, y-0.25*h, startx+gap, y-0.5*h)
-    scene.line(startx, y+0.5*h, startx+gap, y+0.25*h) // Bottom ceiling left
-    scene.line(startx, y+0.25*h, startx+gap, y+0.5*h)
+
+    //sketchedLine(scene, 0, wall/2, length, wall/2, scene.color("black"))
+    sketchedLine(scene, startx, y-0.25*h, startx+gap, y+0.25*h, scene.color("black")) // Middle ceiling left
+    sketchedLine(scene, startx, y+0.25*h, startx+gap, y-0.25*h, scene.color("black"))
+    sketchedLine(scene, startx, y-0.5*h, startx+gap, y-0.25*h, scene.color("black")) // Top ceiling left
+    sketchedLine(scene, startx, y-0.25*h, startx+gap, y-0.5*h, scene.color("black"))
+    sketchedLine(scene, startx, y+0.5*h, startx+gap, y+0.25*h, scene.color("black")) // Bottom ceiling left
+    sketchedLine(scene, startx, y+0.25*h, startx+gap, y+0.5*h, scene.color("black"))
     scene.pop()
 
     scene.push()
     scene.strokeWeight(6)
-    scene.line(startx-wsize, y-0.5*h, startx-wsize, y+0.5*h)
+    sketchedLine(scene, startx-wsize, y-0.5*h, startx-wsize, y+0.5*h, scene.color("black"))
     scene.pop()
 
     wall(scene, startx, y-0.5*h, gap, wsize, 0)
@@ -146,16 +180,17 @@ const sketch = (s) => {
       wall(scene, x, y-0.25*h, 0.25*h, wsize, -PI/2, true)
       column(scene, x, y-0.25*h, csize, csize, wsize)
       
+      if(i<lengthColumns){
       scene.push()
       scene.drawingContext.setLineDash([5, 15]);
-      scene.line(x, y-0.25*h, x+gap, y+0.25*h)
-      scene.line(x, y+0.25*h, x+gap, y-0.25*h)
-      scene.line(x, y-0.5*h, x+gap, y-0.25*h)
-      scene.line(x, y-0.25*h, x+gap, y-0.5*h)
-      scene.line(x, y+0.5*h, x+gap, y+0.25*h)
-      scene.line(x, y+0.25*h, x+gap, y+0.5*h)
+      sketchedLine(scene, x, y-0.25*h, x+gap, y+0.25*h, scene.color("black"))
+      sketchedLine(scene, x, y+0.25*h, x+gap, y-0.25*h, scene.color("black"))
+      sketchedLine(scene, x, y-0.5*h, x+gap, y-0.25*h, scene.color("black"))
+      sketchedLine(scene, x, y-0.25*h, x+gap, y-0.5*h, scene.color("black"))
+      sketchedLine(scene, x, y+0.5*h, x+gap, y+0.25*h, scene.color("black"))
+      sketchedLine(scene, x, y+0.25*h, x+gap, y+0.5*h, scene.color("black"))
       scene.pop()
-
+      }
       if(i<lengthColumns){
         wall(scene, x, y-0.25*h, gap, wsize, 0, true)
       }
@@ -175,6 +210,28 @@ const sketch = (s) => {
       }
   }
 
+  function transept(scene, config){//}, x, y, w, h, wsize){
+    const [x, y] = config.transeptCenter
+    const [w, h] = config.transeptSize
+    const [wn, hn] = config.naveSize
+    const wsize = config.wallSize
+    const csize = 4*wsize
+    scene.push()
+    scene.stroke("red")
+    scene.rectMode(s.CORNERS)
+    scene.noFill()
+    scene.rect(x-0.5*w, y-0.5*h, x+0.5*w, y+0.5*h)
+    scene.rect(x-0.5*w, y-0.5*hn, x+0.5*w, y+0.5*hn)
+    const outDivisions = scene.random(2, 4) << 0 // Could be more if longer
+    const gap = (0.5*h-0.5*hn)/outDivisions
+    const starty = y-0.5*h+gap
+    for(let i = 0; i < outDivisions; i++){
+      const y = starty + i*gap
+      column(scene, x-0.25*w, y, csize, csize, wsize)
+      column(scene, x+0.25*w, y, csize, csize, wsize)
+    }
+    scene.pop()
+  }
 
   s.draw = () => {
     let scene = s.createGraphics(cfg.hd * 1800 << 0, cfg.hd * 1200 << 0)
@@ -199,8 +256,18 @@ const sketch = (s) => {
     //column(scene, W/2, H/2, csize, csize, wsize)
     //wall(scene, W/2, H/2, 0.3*H, wsize, 0)
 
-    room(scene, 0.4*W, 0.6*H, 0.3*W, 0.4*H, wsize)
+    let cath = {
+      naveCenter: [0.2*W, 0.6*H],
+      naveSize: [0.3*W, 0.4*H],
+      wallSize: wsize,
+    }
 
+    cath.transeptCenter = [0.5*W, 0.6*H]
+    cath.transeptSize = [0.3*W, 0.7*H]
+
+    nave(scene, cath)//0.2*W, 0.6*H, 0.3*W, 0.4*H, wsize)
+    transept(scene, cath)//0.5*W, 0.6*H, 0.3*W, 0.7*H, wsize)
+    
 
     const identifier = `${cfg.seeder.hex()}@${cfg.hd.toPrecision(2)}`
     const sigCfg = {
