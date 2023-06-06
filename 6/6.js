@@ -53,10 +53,12 @@ const sketch = (s) => {
     gui.toggle()
   }
 
-  function column(scene, x, y, w, h, wall){
-    // center, size, wall size
+  function column(scene, x, y, w, h, wall, _angle){
+    // center, size, wall size rotation
+    let angle = _angle ? _angle : 0
     scene.push()
     scene.translate(x, y)
+    scene.rotate(angle)
     scene.rectMode(s.CORNERS)
     scene.rect(-wall/2, h/2, wall/2, -h/2)
     scene.rect(-w/2, -wall/2, +w/2, +wall/2)
@@ -219,31 +221,62 @@ function sketchedLine(scene, x1, y1, x2, y2, _color){
     const wsize = config.wallSize
     const csize = 4*wsize
     scene.rectMode(s.CORNERS)
-    scene.push()
+    /*scene.push()
     scene.noFill()
     scene.stroke(scene.color(0, 70, 70))
     scene.rect(x-0.5*w, y-0.5*h, x+0.5*w, y+0.5*h)
     scene.rect(x-0.5*w, y-0.5*hn, x+0.5*w, y+0.5*hn)
     scene.pop()
+    */
     const outDivisions = scene.random(2, 4) << 0 // Could be more if longer
     const gap = (0.5*h-0.5*hn)/outDivisions
-    const topy = y-0.5*h+gap
     support(scene,x-0.5*w,y-0.5*h, 0.5*csize, 1.5*wsize, -PI/2) // Top left pillar
     support(scene,x-0.5*w,y-0.5*h, 0.5*csize, 1.5*wsize, 0)
+    wall(scene, x-0.5*w, y-0.5*h, 0.25*w, wsize, 0, false)
     support(scene,x+0.5*w,y-0.5*h, 0.5*csize, 1.5*wsize, PI/2) // Top right pillar
     support(scene,x+0.5*w,y-0.5*h, 0.5*csize, 1.5*wsize, 0)
+    wall(scene, x+0.25*w, y-0.5*h, 0.25*w, wsize, 0, false)
     support(scene,x-0.5*w,y+0.5*h, 0.5*csize, 1.5*wsize, -PI/2) // Bottom left pillar
     support(scene,x-0.5*w,y+0.5*h, 0.5*csize, 1.5*wsize, -PI)
+    wall(scene, x-0.5*w, y+0.5*h, 0.25*w, wsize, 0, false)
     support(scene,x+0.5*w,y+0.5*h, 0.5*csize, 1.5*wsize, PI/2) // Bottom right pillar
     support(scene,x+0.5*w,y+0.5*h, 0.5*csize, 1.5*wsize, -PI)
+    wall(scene, x+0.25*w, y+0.5*h, 0.25*w, wsize, 0, false)
+    support(scene,x+0.25*w,y-0.5*h, 0.5*csize, 1.5*wsize, 0) // Top supports
+    support(scene,x+-0.25*w,y-0.5*h, 0.5*csize, 1.5*wsize, 0)
+    wall(scene, x-0.25*w, y-0.5*h, 0.5*w, wsize, 0, false)
+    support(scene,x+0.25*w,y+0.5*h, 0.5*csize, 1.5*wsize, PI) // Bottom supports
+    support(scene,x-0.25*w,y+0.5*h, 0.5*csize, 1.5*wsize, PI)
+    wall(scene, x-0.25*w, y+0.5*h, 0.5*w, wsize, 0, false)
 
 
+
+    const topy = y-0.5*h+gap
     // Top side
     for(let i = 0; i < outDivisions; i++){
       const y = topy + i*gap
+      wall(scene, x-0.5*w, y, gap, wsize, -PI/2, false)
+      wall(scene, x+0.5*w, y, gap, wsize, -PI/2, false)
+      scene.push()
+      scene.drawingContext.setLineDash([5, 15]);
+      sketchedLine(scene, x-0.5*w, y-gap, x-0.25*w, y, scene.color("black")) // Left outer crosses
+      sketchedLine(scene, x-0.25*w, y-gap, x-0.5*w, y, scene.color("black"))
+      sketchedLine(scene, x+0.5*w, y-gap, x+0.25*w, y, scene.color("black")) // Right outer crosses
+      sketchedLine(scene, x+0.25*w, y-gap, x+0.5*w, y, scene.color("black"))
+      sketchedLine(scene, x-0.25*w, y-gap, x+0.25*w, y, scene.color("black")) // Middle crosses
+      sketchedLine(scene, x+0.25*w, y-gap, x-0.25*w, y, scene.color("black"))
+      scene.pop()
+     }
+    for(let i = 0; i < outDivisions; i++){
+      const y = topy + i*gap
       column(scene, x-0.25*w, y, csize, csize, wsize)
+      wall(scene, x-0.25*w, y, gap, wsize, -PI/2, true) // Rightmost vertical
       column(scene, x+0.25*w, y, csize, csize, wsize)
-      let angle = -PI/2
+      wall(scene, x+0.25*w, y, gap, wsize, -PI/2, true) // Rightmost vertical
+      wall(scene, x-0.5*w, y, 0.5*w, wsize, 0, true) // Leftmost horizontal
+      wall(scene, x-0.25*w, y, 0.5*w, wsize, 0, true) // Middle horizontal
+      wall(scene, x+0.25*w, y, 0.25*w, wsize, 0, true) // Rightmost horizontal
+       let angle = -PI/2
       if(i==outDivisions-1){
         angle = -PI/4
       }
@@ -254,8 +287,27 @@ function sketchedLine(scene, x1, y1, x2, y2, _color){
     const bottomy = y + 0.5*hn
     for(let i = 0; i < outDivisions; i++){
       const y = bottomy + i*gap
+      wall(scene, x-0.5*w, y, gap, wsize, PI/2, false)
+      wall(scene, x+0.5*w, y, gap, wsize, PI/2, false)
+      scene.push()
+      scene.drawingContext.setLineDash([5, 15]);
+      sketchedLine(scene, x-0.5*w, y, x-0.25*w, y+gap, scene.color("black")) // Left outer crosses
+      sketchedLine(scene, x-0.25*w, y, x-0.5*w, y+gap, scene.color("black"))
+      sketchedLine(scene, x+0.5*w, y, x+0.25*w, y+gap, scene.color("black")) // Right outer crosses
+      sketchedLine(scene, x+0.25*w, y, x+0.5*w, y+gap, scene.color("black"))
+      sketchedLine(scene, x-0.25*w, y, x+0.25*w, y+gap, scene.color("black")) // Middle crosses
+      sketchedLine(scene, x+0.25*w, y, x-0.25*w, y+gap, scene.color("black"))
+      scene.pop()
+     }
+    for(let i = 0; i < outDivisions; i++){
+      const y = bottomy + i*gap
       column(scene, x-0.25*w, y, csize, csize, wsize)
+      wall(scene, x-0.25*w, y, gap, wsize, PI/2, true) // Leftmost vertical
       column(scene, x+0.25*w, y, csize, csize, wsize)
+      wall(scene, x+0.25*w, y, gap, wsize, PI/2, true) // Rightmost vertical
+      wall(scene, x-0.5*w, y, 0.5*w, wsize, 0, true) // Leftmost horizontal
+      wall(scene, x-0.25*w, y, 0.5*w, wsize, 0, true) // Middle horizontal
+      wall(scene, x+0.25*w, y, 0.25*w, wsize, 0, true) // Rightmost horizontal
       let angle = -PI/2
       if(i==0){
         angle = PI+PI/4
@@ -263,6 +315,68 @@ function sketchedLine(scene, x1, y1, x2, y2, _color){
         support(scene, x-0.5*w, y, 0.5*csize, 1.5*wsize, angle)
         support(scene, x+0.5*w, y, 0.5*csize, 1.5*wsize, PI/2)
     }
+    // Center area, fully hand-placed this time
+      supportColumn(scene, x-0.25*w, y-0.25*hn, csize) // UL
+      wall(scene, x-0.25*w, y-0.25*hn, 0.25*hn, wsize, -PI/2, true) // UL vert
+      wall(scene, x-0.25*w, y-0.25*hn, 0.25*w, wsize, -PI, true) // UL left
+      supportColumn(scene, x+0.25*w, y-0.25*hn, csize) // UR
+      wall(scene, x+0.25*w, y-0.25*hn, 0.25*hn, wsize, -PI/2, true) // UR vert
+      wall(scene, x+0.25*w, y-0.25*hn, 0.25*w, wsize, 0, true) // UR left
+      supportColumn(scene, x-0.25*w, y+0.25*hn, csize) // BL
+      wall(scene, x-0.25*w, y+0.25*hn, 0.25*hn, wsize, PI/2, true) // BL vert
+      wall(scene, x-0.25*w, y+0.25*hn, 0.25*w, wsize, -PI, true) // BL left
+      supportColumn(scene, x+0.25*w, y+0.25*hn, csize) // BR
+      wall(scene, x+0.25*w, y+0.25*hn, 0.25*hn, wsize, PI/2, true) // BR vert
+      wall(scene, x+0.25*w, y+0.25*hn, 0.25*w, wsize, 0, true) // BR left
+      scene.push()
+      scene.drawingContext.setLineDash([5, 15]);
+      // Middle fancy star
+      sketchedLine(scene, x-0.25*w, y-0.25*hn, x+0.5*w, y+0.5*hn, scene.color("black"))
+      sketchedLine(scene, x-0.25*w, y+0.25*hn, x+0.5*w, y-0.5*hn, scene.color("black"))
+      sketchedLine(scene, x, y-0.25*hn+wsize, x, y+0.25*hn-wsize, scene.color("black"))
+      sketchedLine(scene, x-0.25*w+wsize, y, x+0.25*w-wsize, y, scene.color("black"))
+
+      sketchedLine(scene, x-0.25*w, y-0.25*hn, x, y-0.125*hn, scene.color("black")) // Top
+      sketchedLine(scene, x+0.25*w, y-0.25*hn, x, y-0.125*hn, scene.color("black"))
+      sketchedLine(scene, x-0.125*w, y, x-0.25*w, y+0.25*hn, scene.color("black")) // Left
+      sketchedLine(scene, x-0.125*w, y, x-0.25*w, y-0.25*hn, scene.color("black"))
+      sketchedLine(scene, x-0.25*w, y+0.25*hn, x, y+0.125*hn, scene.color("black")) // Bottom
+      sketchedLine(scene, x+0.25*w, y+0.25*hn, x, y+0.125*hn, scene.color("black"))
+      sketchedLine(scene, x+0.125*w, y, x+0.25*w, y+0.25*hn, scene.color("black")) // Right
+      sketchedLine(scene, x+0.125*w, y, x+0.25*w, y-0.25*hn, scene.color("black"))
+ 
+
+      // End middle fancy cross
+      sketchedLine(scene, x-0.25*w, y-0.25*hn, x-0.5*w, y-0.5*hn, scene.color("black")) // UL
+      sketchedLine(scene, x-0.5*w, y-0.25*hn, x-0.25*w, y-0.5*hn, scene.color("black"))
+      wall(scene, x-0.25*w, y-0.25*hn, 0.5*hn, wsize, PI/2, true) // Mid vert left
+      wall(scene, x-0.25*w, y-0.25*hn, 0.5*w, wsize, 0, true) // Mid hor top
+      sketchedLine(scene, x+0.25*w, y-0.25*hn, x+0.5*w, y-0.5*hn, scene.color("black")) // UR
+      sketchedLine(scene, x+0.5*w, y-0.25*hn, x+0.25*w, y-0.5*hn, scene.color("black"))
+      wall(scene, x+0.25*w, y-0.25*hn, 0.5*hn, wsize, PI/2, true) // Mid vert Right
+      wall(scene, x-0.25*w, y+0.25*hn, 0.5*w, wsize, 0, true) // Mid hor bottom
+      sketchedLine(scene, x-0.25*w, y+0.25*hn, x-0.5*w, y+0.5*hn, scene.color("black")) // BL
+      sketchedLine(scene, x-0.5*w, y+0.25*hn, x-0.25*w, y+0.5*hn, scene.color("black"))
+      sketchedLine(scene, x+0.25*w, y+0.25*hn, x+0.5*w, y+0.5*hn, scene.color("black")) // BR
+      sketchedLine(scene, x+0.5*w, y+0.25*hn, x+0.25*w, y+0.5*hn, scene.color("black"))
+      sketchedLine(scene, x-0.5*w, y-0.25*hn, x-0.25*w, y+0.25*hn, scene.color("black")) // ML
+      sketchedLine(scene, x-0.25*w, y-0.25*hn, x-0.5*w, y+0.25*hn, scene.color("black"))
+      sketchedLine(scene, x+0.5*w, y-0.25*hn, x+0.25*w, y+0.25*hn, scene.color("black")) // MR
+      sketchedLine(scene, x+0.25*w, y-0.25*hn, x+0.5*w, y+0.25*hn, scene.color("black"))
+      sketchedLine(scene, x-0.25*w, y-0.5*hn, x+0.25*w, y-0.25*hn, scene.color("black")) // MT
+      sketchedLine(scene, x-0.25*w, y-0.25*hn, x+0.25*w, y-0.5*hn, scene.color("black"))
+      sketchedLine(scene, x-0.25*w, y+0.5*hn, x+0.25*w, y+0.25*hn, scene.color("black")) // MB
+      sketchedLine(scene, x-0.25*w, y+0.25*hn, x+0.25*w, y+0.5*hn, scene.color("black"))
+ 
+     }
+
+  function supportColumn(scene, x, y, size){
+    scene.push()
+    scene.translate(x, y)
+    scene.rotate(PI/4)
+    scene.rectMode(s.CENTER)
+    scene.rect(0, 0, size)
+    scene.pop()
   }
 
   s.draw = () => {
