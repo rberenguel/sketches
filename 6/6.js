@@ -95,11 +95,11 @@ const sketch = (s) => {
 
   const nrm = (v) => Math.sqrt(v[0] * v[0] + v[1] * v[1])
 
-  /*function sketchedLine(scene, x1, y1, x2, y2, _color){
-    scene.stroke(_color)
-    scene.line(x1, y1, x2, y2)
-  }*/
-  function sketchedLine(scene, x1, y1, x2, y2, _color) {
+function sketchedLine(scene, x1, y1, x2, y2, _color){
+    if(debug){
+      scene.stroke(_color)
+      scene.line(x1, y1, x2, y2)
+    } else {
     let color = copyColor(scene, _color)
     for (let i = 0; i < 20; i++) {
       const p1 = [x1 + cfg.hd * (1 - 2 * scene.random()) << 0, y1 + cfg.hd * (1 - 2 * scene.random()) << 0]
@@ -115,8 +115,10 @@ const sketch = (s) => {
       color.setAlpha(scene.random(5, 10))
       scene.stroke(color)
       scene.line(...np1, ...np2)
+ 
     }
   }
+}
 
 
   function nave(scene, config){//x, y, w, h, wsize){
@@ -145,7 +147,7 @@ const sketch = (s) => {
     support(scene, startx, y+0.25*h, 0.5*csize, 1.5*wsize, -PI/2) // Left down pillar
     support(scene, startx, y-0.5*h, 0.5*csize, 1.5*wsize, 0) // Left top edge pillars
     support(scene, startx, y-0.5*h, 0.5*csize, 1.5*wsize, -PI/2) // Left top edge pillars
-    support(scene, startx, y+0.5*h, 0.5*csize, 1.5*wsize, 0) // Left bottom edge pillars
+    support(scene, startx, y+0.5*h, 0.5*csize, 1.5*wsize, -PI) // Left bottom edge pillars
     support(scene, startx, y+0.5*h, 0.5*csize, 1.5*wsize, -PI/2) // Left bottom edge pillars
 
     scene.push()
@@ -216,21 +218,51 @@ const sketch = (s) => {
     const [wn, hn] = config.naveSize
     const wsize = config.wallSize
     const csize = 4*wsize
-    scene.push()
-    scene.stroke("red")
     scene.rectMode(s.CORNERS)
+    scene.push()
     scene.noFill()
+    scene.stroke(scene.color(0, 70, 70))
     scene.rect(x-0.5*w, y-0.5*h, x+0.5*w, y+0.5*h)
     scene.rect(x-0.5*w, y-0.5*hn, x+0.5*w, y+0.5*hn)
+    scene.pop()
     const outDivisions = scene.random(2, 4) << 0 // Could be more if longer
     const gap = (0.5*h-0.5*hn)/outDivisions
-    const starty = y-0.5*h+gap
+    const topy = y-0.5*h+gap
+    support(scene,x-0.5*w,y-0.5*h, 0.5*csize, 1.5*wsize, -PI/2) // Top left pillar
+    support(scene,x-0.5*w,y-0.5*h, 0.5*csize, 1.5*wsize, 0)
+    support(scene,x+0.5*w,y-0.5*h, 0.5*csize, 1.5*wsize, PI/2) // Top right pillar
+    support(scene,x+0.5*w,y-0.5*h, 0.5*csize, 1.5*wsize, 0)
+    support(scene,x-0.5*w,y+0.5*h, 0.5*csize, 1.5*wsize, -PI/2) // Bottom left pillar
+    support(scene,x-0.5*w,y+0.5*h, 0.5*csize, 1.5*wsize, -PI)
+    support(scene,x+0.5*w,y+0.5*h, 0.5*csize, 1.5*wsize, PI/2) // Bottom right pillar
+    support(scene,x+0.5*w,y+0.5*h, 0.5*csize, 1.5*wsize, -PI)
+
+
+    // Top side
     for(let i = 0; i < outDivisions; i++){
-      const y = starty + i*gap
+      const y = topy + i*gap
       column(scene, x-0.25*w, y, csize, csize, wsize)
       column(scene, x+0.25*w, y, csize, csize, wsize)
+      let angle = -PI/2
+      if(i==outDivisions-1){
+        angle = -PI/4
+      }
+        support(scene, x-0.5*w, y, 0.5*csize, 1.5*wsize, angle)
+        support(scene, x+0.5*w, y, 0.5*csize, 1.5*wsize, PI/2)
+     }
+    // Bottom side
+    const bottomy = y + 0.5*hn
+    for(let i = 0; i < outDivisions; i++){
+      const y = bottomy + i*gap
+      column(scene, x-0.25*w, y, csize, csize, wsize)
+      column(scene, x+0.25*w, y, csize, csize, wsize)
+      let angle = -PI/2
+      if(i==0){
+        angle = PI+PI/4
+      }
+        support(scene, x-0.5*w, y, 0.5*csize, 1.5*wsize, angle)
+        support(scene, x+0.5*w, y, 0.5*csize, 1.5*wsize, PI/2)
     }
-    scene.pop()
   }
 
   s.draw = () => {
@@ -257,13 +289,14 @@ const sketch = (s) => {
     //wall(scene, W/2, H/2, 0.3*H, wsize, 0)
 
     let cath = {
-      naveCenter: [0.2*W, 0.6*H],
+      naveCenter: [0.2*W, 0.4*H],
       naveSize: [0.3*W, 0.4*H],
       wallSize: wsize,
     }
 
-    cath.transeptCenter = [0.5*W, 0.6*H]
     cath.transeptSize = [0.3*W, 0.7*H]
+    cath.transeptCenter = [cath.naveCenter[0]+0.5*(cath.naveSize[0]+cath.transeptSize[0]), 
+      cath.naveCenter[1]]
 
     nave(scene, cath)//0.2*W, 0.6*H, 0.3*W, 0.4*H, wsize)
     transept(scene, cath)//0.5*W, 0.6*H, 0.3*W, 0.7*H, wsize)
@@ -308,8 +341,15 @@ const sketch = (s) => {
     })
 
     let resetCanvas = new Command(R, "reset")        
+    let D = new Key("d", () => {
+      debug = !debug
+      R.action()
+    })
 
-    cfg.commands = [resetCanvas, cfg.seeder.command]
+    let toggleDebug = new Command(D, "debug")        
+
+
+    cfg.commands = [toggleDebug, resetCanvas, cfg.seeder.command]
     cfg.controls = [cfg.seeder.control]
 
     gui = createBaseGUI(cfg)
