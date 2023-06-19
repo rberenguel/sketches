@@ -23,14 +23,13 @@ const sketch = (s) => {
 
   let gui
   let debug = false
-  let hd = 2
   let shader, vert, frag, includesGLSL = {}
   let includes = []
   let palette = []
   let W, H, R, sh, scene
   // Globals needed in controls, commands or deep arguments
   let cfg = {
-    hd: 1.0,
+    hd: 2.0,
     seeder: undefined,
     largeCanvas: undefined,
     palette: [],
@@ -48,7 +47,7 @@ const sketch = (s) => {
     canvas.mousePressed(() => {})
     s.frameRate(20)
     s.noLoop()
-    scene = s.createGraphics(1000*hd, 1000*hd, s.WEBGL)
+    scene = s.createGraphics(1000*cfg.hd, 1000*cfg.hd, s.WEBGL)
     cfg.seeder = new Seeder()
     gui = createGUI()
     gui.toggle()
@@ -128,10 +127,10 @@ const sketch = (s) => {
         }
       }
       cfg.concrete.noStroke()
-      for(let i=0;i<W;i+=hd){
-        for(let j=0;j<H;j+=hd){
+      for(let i=0;i<W;i+=cfg.hd){
+        for(let j=0;j<H;j+=cfg.hd){
           cfg.concrete.fill(255*cfg.concrete.random())
-          cfg.concrete.circle(i, j, hd)
+          cfg.concrete.circle(i, j, cfg.hd)
         }
       }
     }
@@ -195,7 +194,7 @@ const sketch = (s) => {
       bottom: H,
       identifier: identifier,
       sig: "Rajola | rb'23",
-      hd: cfg.hd,
+      hd: cfg.hd*0.5,
       font: cfg.font,
       adjustFont: true
     }
