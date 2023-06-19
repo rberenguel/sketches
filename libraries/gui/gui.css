@@ -2,6 +2,12 @@
     font-family: monoid;
     src: url(../libraries/gui/monoid-regular-webfont.woff);
 }
+
+code {
+  font-family: monospace !important;
+  text-decoration: none !important;
+}
+
 #container {
       align-items: center;
       justify-content: center;

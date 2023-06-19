@@ -224,34 +224,34 @@ class FluentGUI {
   }
 
   mark() {
-	// Mark GUI as needing a redraw
+    // Mark GUI as needing a redraw
     this.triangle.classList.add("dirty")
-	this.update()
+    this.update()
   }
 
   unmark() {
-	// Remove mark
+    // Remove mark
     this.triangle.classList.remove("dirty")
-	this.update()
+    this.update()
   }
 
   fetch(){
     if (this.cmds) {
       for (let cmd of this.cmds) {
-		 cmd.key.fetch()
+        cmd.key.fetch()
       }
     }
     if (this.states) {
       for (let state of this.states) {
         if (state.keys) {
           for (let sub of state.keys) {
-			 sub.fetch()
+            sub.fetch()
           }
         }
       }	  
-	}
+    }
   }
-  
+
   dispatch(key) {
     if (this.cmds) {
       for (let cmd of this.cmds) {
@@ -264,7 +264,16 @@ class FluentGUI {
     if (this.states) {
       for (let state of this.states) {
         if (state.keys) {
-          for (let sub of state.keys) {
+          let uppers = state.keys.filter(k => k.originalKey == k.originalKey.toUpperCase())
+          let lowers = state.keys.filter(k => k.originalKey != k.originalKey.toUpperCase())
+          for (let sub of uppers) {
+            if (sub.originalKey == key) {
+              sub._act()
+              this.update()
+              return
+            }
+          }
+          for (let sub of lowers) {
             if (sub.key == key.toLowerCase()) {
               sub._act()
               this.update()
@@ -275,4 +284,4 @@ class FluentGUI {
       }
     }
   }
-  }
+}

@@ -4,6 +4,20 @@ Generative art sketches. Newest first
 
 ---
 
+## 202306 - Rajola :switzerland: [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/rajola/"><img src="samples/rajola.png" width="360"/></a>
+
+---
+
+- Chladni patterns using a palette based on classic Catalan hydraulic tiles, with a generative cement texture. All in a GLSL shader (well, except the noise).
+- [code](rajola/rajola.js) Resolution is hardcoded, but the code is resolution independent.
+- Explore it [here](https://rberenguel.github.io/sketches/rajola/index.html)
+- NEW [See in place](https://rberenguel.github.io/sketches/showcasing/index.html?img=rajola)
+
+---
+
+
 ## 202306 - Ideas :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/ideas/"><img src="samples/ideas.png" width="360"/></a>
