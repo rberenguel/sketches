@@ -19,6 +19,7 @@ export {
 class Key {
   constructor(key, action, set, extended) {
     this.key = key.toLowerCase()
+    this.originalKey = key
     this.action = action
     this.extended = extended || key
     this.set = set
@@ -47,7 +48,7 @@ class Key {
 
   format() {
     let code = $.cel("code")
-    let text = $.ctn(this.key.toUpperCase())
+    let text = $.ctn(this.originalKey || this.key.toUpperCase())
     code.appendChild(text)
     code.onclick = () => this._act()
     return code
