@@ -52,6 +52,7 @@ const sketch = (s) => {
     cfg.seeder = new Seeder()
     gui = createGUI()
     gui.toggle()
+    gui.fetch()
     scene.randomSeed(cfg.seeder.get())
      gui.spin(() => {
       s.clear();
@@ -234,27 +235,42 @@ const sketch = (s) => {
 
     let resetCanvas = new Command(R, "draw with current settings")
 
-    let incA = new Key("P", () => {a+=0.1; R.action()})
+    let incA = new Key("P", () => {a+=0.1; R.action()}, (x) => {
+      a = parseFloat(x)
+      gui.update()
+    }, "p_a")
     let decA = new Key("p", () => {a-=0.1; R.action()})
     let aInt = new Float(() => a)
     let aControl = new Control([decA, incA],
       "+/- a", aInt)
-    let incB = new Key("Q", () => {b+=0.1; R.action()})
+    let incB = new Key("Q", () => {b+=0.1; R.action()}, (x) => {
+      b = parseFloat(x)
+      gui.update()
+    }, "p_b")
     let decB = new Key("q", () => {b-=0.1; R.action()})
     let bInt = new Float(() => b)
     let bControl = new Control([decB, incB],
       "+/- b", bInt)
-    let incM = new Key("M", () => {m+=0.1; R.action()})
+    let incM = new Key("M", () => {m+=0.1; R.action()}, (x) => {
+      m = parseFloat(x)
+      gui.update()
+    }, "p_m")
     let decM = new Key("m", () => {m-=0.1; R.action()})
     let mInt = new Float(() => m)
     let mControl = new Control([decM, incM],
       "+/- m", mInt)
-    let incN = new Key("N", () => {n+=0.1; R.action()})
+    let incN = new Key("N", () => {n+=0.1; R.action()}, (x) => {
+      n = parseFloat(x)
+      gui.update()
+    }, "p_n")
     let decN = new Key("n", () => {n-=0.1; R.action()})
     let nInt = new Float(() => n)
     let nControl = new Control([decN, incN],
       "+/- n", nInt)
-    let incK = new Key("K", () => {k=((k+0.5)+40)%40; R.action()})
+    let incK = new Key("K", () => {k=((k+0.5)+40)%40; R.action()}, (x) => {
+      k = parseFloat(x)
+      gui.update()
+    }, "p_k")
     let decK = new Key("k", () => {k=((k-0.5)+40)%40; R.action()})
     let kInt = new Float(() => k)
     let kControl = new Control([decK, incK],
