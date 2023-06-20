@@ -214,6 +214,75 @@ function sketchedLine(scene, x1, y1, x2, y2, _color){
       }
   }
 
+  function apse(scene, config){
+    const [x, y] = config.transeptCenter
+    const [w, h] = config.naveSize
+    const [ww, hh] = config.transeptSize
+    const wsize = config.wallSize
+    const csize = 4*wsize
+    const asep = 0.25*h
+    scene.rectMode(s.CORNERS)
+    scene.push()
+    scene.noFill()
+    scene.stroke(scene.color(0, 70, 70))
+    scene.rect(x+0.5*w, y-0.5*h, x+w+0.5*h+asep, y+0.5*h)
+    scene.rect(x+0.5*w, y-0.5*h, x+0.5*w+asep, y+0.5*h)
+    //scene.arc(x+0.5*w+asep, y, h, h,-PI/2, PI/2)
+    scene.circle(x+0.5*w, y-0.25*h, 30) 
+    scene.circle(x+0.5*w, y+0.25*h, 30) 
+    scene.circle(x+0.5*w+asep, y-0.25*h, 30) 
+    scene.circle(x+0.5*w+asep, y+0.25*h, 30) 
+    scene.line(x+0.5*w+asep, y+0.25*h, x+0.5*w, y+0.25*h)
+    scene.line(x+0.5*w+asep, y-0.25*h, x+0.5*w, y-0.25*h)
+    // Archs
+    scene.line(x+0.5*w, y-0.5*h, x+0.5*w+asep, y-0.25*h) // Upper
+    scene.line(x+0.5*w, y-0.25*h, x+0.5*w+asep, y-0.5*h)
+    scene.line(x+0.5*w, y+0.5*h, x+0.5*w+asep, y+0.25*h) // Lower
+    scene.line(x+0.5*w, y+0.25*h, x+0.5*w+asep, y+0.5*h)
+    scene.line(x+0.5*w, y+0.25*h, x+0.5*w+asep, y-0.25*h) // Middle
+    scene.line(x+0.5*w, y-0.25*h, x+0.5*w+asep, y+0.25*h)
+      //scene.arc(x+0.5*w+asep, y, 0.5*h, 0.5*h,-PI/2, PI/2)
+    const divs = (scene.random(3, 5) << 0)*2
+    let innerPillars = []
+    for(let i = 0; i <= divs;i++){ // This is duplicating the columns above
+      const a = -0.5*PI+i*PI/divs
+      const xx = x+0.5*w+asep+0.25*h*Math.cos(a)
+      const yy = y+0.25*h*Math.sin(a)
+      innerPillars.push([xx, yy])
+    }
+    const bx = x+0.5*w+asep+0.2*0.25*h
+    scene.circle(bx, y, 30)
+    for(let i=0; i<innerPillars.length-1;i++){
+      const [sx, sy] = innerPillars[i]
+      const [ex, ey] = innerPillars[i+1]
+      scene.circle(sx, sy, 30)
+      if(i==0)scene.line(sx, sy, bx, y)
+      scene.line(ex, ey, bx, y)
+      scene.line(sx,sy,ex,ey)
+    }
+    let outerPillars = []
+    for(let i = 0; i <= divs;i++){ // This is duplicating the columns above
+      const a = -0.5*PI+i*PI/divs
+      const xx = x+0.5*w+asep+0.5*h*Math.cos(a)
+      const yy = y+0.5*h*Math.sin(a)
+      outerPillars.push([xx, yy])
+    }
+    //const bx = x+0.5*w+asep+0.2*0.5*h
+    //scene.circle(bx, y, 30)
+    for(let i=0; i<outerPillars.length-1;i++){
+      const [sox, soy] = outerPillars[i]
+      const [eox, eoy] = outerPillars[i+1]
+      const [six, siy] = innerPillars[i]
+      const [eix, eiy] = innerPillars[i+1]
+      if(i!=0)scene.circle(sox, soy, 30)
+      //scene.line(xx, yy, bx, y)
+      scene.line(sox, soy, eix, eiy)
+      scene.line(six, siy, eox, eoy)
+      scene.line(sox,soy,eox,eoy)
+    }
+      scene.pop()
+  }
+
   function transept(scene, config){//}, x, y, w, h, wsize){
     const [x, y] = config.transeptCenter
     const [w, h] = config.transeptSize
@@ -367,7 +436,7 @@ function sketchedLine(scene, x1, y1, x2, y2, _color){
       sketchedLine(scene, x-0.25*w, y-0.25*hn, x+0.25*w, y-0.5*hn, scene.color("black"))
       sketchedLine(scene, x-0.25*w, y+0.5*hn, x+0.25*w, y+0.25*hn, scene.color("black")) // MB
       sketchedLine(scene, x-0.25*w, y+0.25*hn, x+0.25*w, y+0.5*hn, scene.color("black"))
- 
+      scene.pop()
      }
 
   function supportColumn(scene, x, y, size){
@@ -381,6 +450,7 @@ function sketchedLine(scene, x1, y1, x2, y2, _color){
 
   s.draw = () => {
     let scene = s.createGraphics(cfg.hd * 1800 << 0, cfg.hd * 1200 << 0)
+    scene.background("white")
     W = scene.width, H = scene.height
     let dly = s.createGraphics(W, H)
     scene.randomSeed(cfg.seeder.get())
@@ -414,7 +484,7 @@ function sketchedLine(scene, x1, y1, x2, y2, _color){
 
     nave(scene, cath)//0.2*W, 0.6*H, 0.3*W, 0.4*H, wsize)
     transept(scene, cath)//0.5*W, 0.6*H, 0.3*W, 0.7*H, wsize)
-    
+    apse(scene, cath)
 
     const identifier = `${cfg.seeder.hex()}@${cfg.hd.toPrecision(2)}`
     const sigCfg = {
