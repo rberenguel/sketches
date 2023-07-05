@@ -67,13 +67,17 @@ const sketch = (s) => {
 
   function wall(scene, x, y, length, wall, angle, dashed){
     scene.push()
+    let rn
     if(dashed){
       scene.drawingContext.setLineDash([5, 15]);
+      rn = () => scene.random(10, 14)
+    } else {
+      rn = () => false
     }
     scene.translate(x, y)
     scene.rotate(angle)
-    sketchedLine(scene, 0, -wall/2, length, -wall/2, scene.color("black"))
-    sketchedLine(scene, 0, wall/2, length, wall/2, scene.color("black"))
+    sketchedLine(scene, 0, -wall/2, length, -wall/2, scene.color("black"), rn())
+    sketchedLine(scene, 0, wall/2, length, wall/2, scene.color("black"), rn())
     //scene.line(0, -wall/2, length, -wall/2)
     //scene.line(0, wall/2, length, wall/2)
     scene.pop()
@@ -97,12 +101,26 @@ const sketch = (s) => {
 
   const nrm = (v) => Math.sqrt(v[0] * v[0] + v[1] * v[1])
 
-function sketchedLine(scene, x1, y1, x2, y2, _color){
+function sketchedLine(scene, x1, y1, x2, y2, _color, dashed){
     if(debug){
       scene.stroke(_color)
       scene.line(x1, y1, x2, y2)
     } else {
     let color = copyColor(scene, _color)
+    if(dashed){
+      const dx = x2-x1
+      const dy = y2-y1
+      const l = Math.sqrt(dx*dx+dy*dy)
+      for(let i=0;i<dashed;i++){
+        if(i%3>=1)continue
+        const sx = x1+i/dashed*dx
+        const sy = y1+i/dashed*dy
+        const ex = x1+(i+1)/dashed*dx
+        const ey = y1+(i+1)/dashed*dy
+        sketchedLine(scene, sx, sy, ex, ey, _color, false)
+      }
+      return
+    }
     for (let i = 0; i < 20; i++) {
       const p1 = [x1 + cfg.hd * (1 - 2 * scene.random()) << 0, y1 + cfg.hd * (1 - 2 * scene.random()) << 0]
       const p2 = [x2 + cfg.hd * (1 - 2 * scene.random()) << 0, y2 + cfg.hd * (1 - 2 * scene.random()) << 0]
@@ -153,20 +171,21 @@ function sketchedLine(scene, x1, y1, x2, y2, _color){
     support(scene, startx, y+0.5*h, 0.5*csize, 1.5*wsize, -PI/2) // Left bottom edge pillars
 
     scene.push()
-    scene.drawingContext.setLineDash([scene.random(4, 6) << 0, scene.random(13, 16) << 0]);
-
+    // It looks better if there is additional dashing when drawing
+    scene.drawingContext.setLineDash([scene.random(4, 6) << 0, scene.random(13, 16) << 0])
     //sketchedLine(scene, 0, wall/2, length, wall/2, scene.color("black"))
-    sketchedLine(scene, startx, y-0.25*h, startx+gap, y+0.25*h, scene.color("black")) // Middle ceiling left
-    sketchedLine(scene, startx, y+0.25*h, startx+gap, y-0.25*h, scene.color("black"))
-    sketchedLine(scene, startx, y-0.5*h, startx+gap, y-0.25*h, scene.color("black")) // Top ceiling left
-    sketchedLine(scene, startx, y-0.25*h, startx+gap, y-0.5*h, scene.color("black"))
-    sketchedLine(scene, startx, y+0.5*h, startx+gap, y+0.25*h, scene.color("black")) // Bottom ceiling left
-    sketchedLine(scene, startx, y+0.25*h, startx+gap, y+0.5*h, scene.color("black"))
+    const rn = () => scene.random(10, 16)
+    sketchedLine(scene, startx, y-0.25*h, startx+gap, y+0.25*h, scene.color("black"), rn()) // Middle ceiling left
+    sketchedLine(scene, startx, y+0.25*h, startx+gap, y-0.25*h, scene.color("black"), rn())
+    sketchedLine(scene, startx, y-0.5*h, startx+gap, y-0.25*h, scene.color("black"), rn()) // Top ceiling left
+    sketchedLine(scene, startx, y-0.25*h, startx+gap, y-0.5*h, scene.color("black"), rn())
+    sketchedLine(scene, startx, y+0.5*h, startx+gap, y+0.25*h, scene.color("black"), rn()) // Bottom ceiling left
+    sketchedLine(scene, startx, y+0.25*h, startx+gap, y+0.5*h, scene.color("black"), rn())
     scene.pop()
 
     scene.push()
     scene.strokeWeight(6)
-    sketchedLine(scene, startx-wsize, y-0.5*h, startx-wsize, y+0.5*h, scene.color("black"))
+    sketchedLine(scene, startx-wsize, y-0.5*h, startx-wsize, y+0.5*h, scene.color("black"), rn())
     scene.pop()
 
     wall(scene, startx, y-0.5*h, gap, wsize, 0)
@@ -187,12 +206,12 @@ function sketchedLine(scene, x1, y1, x2, y2, _color){
       if(i<lengthColumns){
       scene.push()
       scene.drawingContext.setLineDash([5, 15]);
-      sketchedLine(scene, x, y-0.25*h, x+gap, y+0.25*h, scene.color("black"))
-      sketchedLine(scene, x, y+0.25*h, x+gap, y-0.25*h, scene.color("black"))
-      sketchedLine(scene, x, y-0.5*h, x+gap, y-0.25*h, scene.color("black"))
-      sketchedLine(scene, x, y-0.25*h, x+gap, y-0.5*h, scene.color("black"))
-      sketchedLine(scene, x, y+0.5*h, x+gap, y+0.25*h, scene.color("black"))
-      sketchedLine(scene, x, y+0.25*h, x+gap, y+0.5*h, scene.color("black"))
+      sketchedLine(scene, x, y-0.25*h, x+gap, y+0.25*h, scene.color("black"), rn())
+      sketchedLine(scene, x, y+0.25*h, x+gap, y-0.25*h, scene.color("black"), rn())
+      sketchedLine(scene, x, y-0.5*h, x+gap, y-0.25*h, scene.color("black"), rn())
+      sketchedLine(scene, x, y-0.25*h, x+gap, y-0.5*h, scene.color("black"), rn())
+      sketchedLine(scene, x, y+0.5*h, x+gap, y+0.25*h, scene.color("black"), rn())
+      sketchedLine(scene, x, y+0.25*h, x+gap, y+0.5*h, scene.color("black"), rn())
       scene.pop()
       }
       if(i<lengthColumns){
@@ -220,65 +239,140 @@ function sketchedLine(scene, x1, y1, x2, y2, _color){
     const [ww, hh] = config.transeptSize
     const wsize = config.wallSize
     const csize = 4*wsize
+    const scsize = 2*wsize
     const asep = 0.25*h
+    let radialCond
+    scene.randomSeed(cfg.seeder.get())
+    if(scene.random()<0.5){
+      radialCond = (i) => i % 2 == 1
+    } else {
+      radialCond = () => true
+    }
     scene.rectMode(s.CORNERS)
     scene.push()
-    scene.noFill()
-    scene.stroke(scene.color(0, 70, 70))
-    scene.rect(x+0.5*w, y-0.5*h, x+w+0.5*h+asep, y+0.5*h)
-    scene.rect(x+0.5*w, y-0.5*h, x+0.5*w+asep, y+0.5*h)
+    //scene.stroke(scene.color(0, 70, 70))
+    //scene.rect(x+0.5*w, y-0.5*h, x+w+0.5*h+asep, y+0.5*h)
+    //scene.rect(x+0.5*w, y-0.5*h, x+0.5*w+asep, y+0.5*h)
     //scene.arc(x+0.5*w+asep, y, h, h,-PI/2, PI/2)
-    scene.circle(x+0.5*w, y-0.25*h, 30) 
-    scene.circle(x+0.5*w, y+0.25*h, 30) 
-    scene.circle(x+0.5*w+asep, y-0.25*h, 30) 
-    scene.circle(x+0.5*w+asep, y+0.25*h, 30) 
-    scene.line(x+0.5*w+asep, y+0.25*h, x+0.5*w, y+0.25*h)
-    scene.line(x+0.5*w+asep, y-0.25*h, x+0.5*w, y-0.25*h)
+    //column(scene, x, y+0.25*h, csize, csize, wsize)
+    wall(scene, x+0.5*w, y-0.25*h, 0.25*h, wsize, -PI/2, true) // Go up
+    wall(scene, x+0.5*w, y-0.5*h, 0.25*h, wsize, 0, false) // Go right
+    support(scene,x+0.5*w+asep,y-0.5*h, 0.5*scsize, 1.5*wsize, 0)
+    wall(scene, x+0.5*w, y+0.25*h, 0.25*h, wsize, PI/2, true) // Go down
+    wall(scene, x+0.5*w, y+0.5*h, 0.25*h, wsize, 0, false) // Go right
+    support(scene,x+0.5*w+asep,y+0.5*h, 0.5*scsize, 1.5*wsize, PI)
+    column(scene, x+0.5*w, y-0.25*h, csize, csize, wsize) 
+    column(scene, x+0.5*w, y+0.25*h, csize, csize, wsize) 
+    wall(scene, x+0.5*w, y-0.25*h, 0.5*h, wsize, PI/2, true)
+    //scene.circle(x+0.5*w+asep, y-0.25*h, 30) 
+    //scene.circle(x+0.5*w+asep, y+0.25*h, 30) 
+    wall(scene, x+0.5*w+asep, y+0.25*h, asep, wsize, -PI)
+    wall(scene, x+0.5*w+asep, y-0.25*h, asep, wsize, -PI)
     // Archs
-    scene.line(x+0.5*w, y-0.5*h, x+0.5*w+asep, y-0.25*h) // Upper
-    scene.line(x+0.5*w, y-0.25*h, x+0.5*w+asep, y-0.5*h)
-    scene.line(x+0.5*w, y+0.5*h, x+0.5*w+asep, y+0.25*h) // Lower
-    scene.line(x+0.5*w, y+0.25*h, x+0.5*w+asep, y+0.5*h)
-    scene.line(x+0.5*w, y+0.25*h, x+0.5*w+asep, y-0.25*h) // Middle
-    scene.line(x+0.5*w, y-0.25*h, x+0.5*w+asep, y+0.25*h)
+    const rn = () => scene.random(10, 16)
+    scene.push()
+    scene.drawingContext.setLineDash([scene.random(4, 6) << 0, scene.random(13, 16) << 0]);
+    sketchedLine(scene, x+0.5*w, y-0.5*h, x+0.5*w+asep, y-0.25*h, scene.color("black"), rn()) // Upper
+    sketchedLine(scene, x+0.5*w, y-0.25*h, x+0.5*w+asep, y-0.5*h, scene.color("black"), rn())
+    sketchedLine(scene, x+0.5*w, y+0.5*h, x+0.5*w+asep, y+0.25*h, scene.color("black"), rn()) // Lower
+    sketchedLine(scene, x+0.5*w, y+0.25*h, x+0.5*w+asep, y+0.5*h, scene.color("black"), rn())
+    sketchedLine(scene, x+0.5*w, y+0.25*h, x+0.5*w+asep, y-0.25*h, scene.color("black"), rn()) // Middle
+    sketchedLine(scene, x+0.5*w, y-0.25*h, x+0.5*w+asep, y+0.25*h, scene.color("black"), rn())
+    scene.pop()
       //scene.arc(x+0.5*w+asep, y, 0.5*h, 0.5*h,-PI/2, PI/2)
-    const divs = (scene.random(3, 5) << 0)*2
+    const divs = (scene.random(3, 4) << 0)*2 + 1
     let innerPillars = []
     for(let i = 0; i <= divs;i++){ // This is duplicating the columns above
       const a = -0.5*PI+i*PI/divs
       const xx = x+0.5*w+asep+0.25*h*Math.cos(a)
       const yy = y+0.25*h*Math.sin(a)
-      innerPillars.push([xx, yy])
+      innerPillars.push([xx, yy, a])
     }
     const bx = x+0.5*w+asep+0.2*0.25*h
-    scene.circle(bx, y, 30)
+    //scene.circle(bx, y, 30)
+    supportColumn(scene, bx, y, scsize) // Center support
     for(let i=0; i<innerPillars.length-1;i++){
-      const [sx, sy] = innerPillars[i]
-      const [ex, ey] = innerPillars[i+1]
-      scene.circle(sx, sy, 30)
-      if(i==0)scene.line(sx, sy, bx, y)
-      scene.line(ex, ey, bx, y)
-      scene.line(sx,sy,ex,ey)
+      console.log("Foo")
+      const [sx, sy, sa] = innerPillars[i]
+      const [ex, ey, ea] = innerPillars[i+1]
+      scene.push()
+      scene.drawingContext.setLineDash([scene.random(4, 6) << 0, scene.random(13, 16) << 0]);
+      if(i==0)sketchedLine(scene, sx, sy, bx, y, scene.color("black"), rn())
+      sketchedLine(scene, ex, ey, bx, y, scene.color("black"), rn())
+      scene.pop()
+      const dy = ey-sy
+      const dx = ex-sx
+      const a = Math.atan2(dy, dx)
+      const l = Math.sqrt(dx*dx+dy*dy)
+      wall(scene, sx, sy, l, wsize, a)
+      supportColumn(scene, sx, sy, scsize, sa)
+      if(i==innerPillars.length-2){
+        supportColumn(scene, ex, ey, scsize, ea)
+      }
+      //sketchedLine(scene, sx,sy,ex,ey, scene.color("black"), rn())
     }
+    wall(scene, x+0.5*w+asep, y-0.5*h, h, wsize, PI/2, true)
     let outerPillars = []
     for(let i = 0; i <= divs;i++){ // This is duplicating the columns above
       const a = -0.5*PI+i*PI/divs
       const xx = x+0.5*w+asep+0.5*h*Math.cos(a)
       const yy = y+0.5*h*Math.sin(a)
-      outerPillars.push([xx, yy])
+      outerPillars.push([xx, yy, a])
     }
     //const bx = x+0.5*w+asep+0.2*0.5*h
     //scene.circle(bx, y, 30)
     for(let i=0; i<outerPillars.length-1;i++){
-      const [sox, soy] = outerPillars[i]
-      const [eox, eoy] = outerPillars[i+1]
+      const [sox, soy, soa] = outerPillars[i]
+      const [eox, eoy, eoa] = outerPillars[i+1]
       const [six, siy] = innerPillars[i]
       const [eix, eiy] = innerPillars[i+1]
-      if(i!=0)scene.circle(sox, soy, 30)
+      if(i!=0){
+        support(scene, sox, soy, 0.5*csize, 1.5*wsize, PI/2+soa)
+        //supportColumn(scene, sox, soy, scsize, soa)
+      }
+      //scene.circle(sox, soy, 30)
       //scene.line(xx, yy, bx, y)
-      scene.line(sox, soy, eix, eiy)
-      scene.line(six, siy, eox, eoy)
-      scene.line(sox,soy,eox,eoy)
+      const dy = eoy-soy
+      const dx = eox-sox
+      const a = Math.atan2(dy, dx)
+      const l = Math.sqrt(dx*dx+dy*dy)
+      if(radialCond(i)){
+        let radi = []
+        for(let j=0;j<4;j++){
+          const aa = a-j*PI/3
+          const xx = 0.5*(sox+eox)+0.5*l*Math.cos(aa)
+          const yy = 0.5*(soy+eoy)+0.5*l*Math.sin(aa)
+          radi.push([xx, yy, aa])
+        }
+        scene.push()
+        for(let j=0;j<radi.length-1;j++){
+          console.log(radi[j])
+          let [sx, sy, sa] = radi[j]
+          let [ex, ey, ea] = radi[j+1]
+          const dx = ex - sx
+          const dy = ey - sy
+          const aa = Math.atan2(dy, dx)
+          const l = Math.sqrt(dx*dx+dy*dy)
+          wall(scene, sx, sy, l, wsize, aa)
+          if(j!=0)support(scene, sx, sy, 0.5*csize, 1.5*wsize, PI/2+sa)
+        }
+        let [sx, sy, sa] = radi[0]
+        let [ex, ey, ea] = radi[radi.length-1]
+        const ddx = ex - sx
+        const ddy = ey - sy
+        const aa = Math.atan2(ddy, ddx)
+        const ll = Math.sqrt(ddx*ddx+ddy*ddy)
+        wall(scene, sx, sy, ll, wsize, aa, true)
+        scene.pop()
+      }else{
+        wall(scene, sox, soy, l, wsize, a)
+      }
+      scene.push()
+      scene.drawingContext.setLineDash([scene.random(4, 6) << 0, scene.random(13, 16) << 0]);
+      sketchedLine(scene, sox, soy, eix, eiy, scene.color("black"), rn())
+      sketchedLine(scene, six, siy, eox, eoy, scene.color("black"), rn())
+      scene.pop()
+      //scene.line(sox,soy,eox,eoy)
     }
       scene.pop()
   }
@@ -322,18 +416,19 @@ function sketchedLine(scene, x1, y1, x2, y2, _color){
 
     const topy = y-0.5*h+gap
     // Top side
+    const rn = () => scene.random(10, 16)
     for(let i = 0; i < outDivisions; i++){
       const y = topy + i*gap
       wall(scene, x-0.5*w, y, gap, wsize, -PI/2, false)
       wall(scene, x+0.5*w, y, gap, wsize, -PI/2, false)
       scene.push()
       scene.drawingContext.setLineDash([5, 15]);
-      sketchedLine(scene, x-0.5*w, y-gap, x-0.25*w, y, scene.color("black")) // Left outer crosses
-      sketchedLine(scene, x-0.25*w, y-gap, x-0.5*w, y, scene.color("black"))
-      sketchedLine(scene, x+0.5*w, y-gap, x+0.25*w, y, scene.color("black")) // Right outer crosses
-      sketchedLine(scene, x+0.25*w, y-gap, x+0.5*w, y, scene.color("black"))
-      sketchedLine(scene, x-0.25*w, y-gap, x+0.25*w, y, scene.color("black")) // Middle crosses
-      sketchedLine(scene, x+0.25*w, y-gap, x-0.25*w, y, scene.color("black"))
+      sketchedLine(scene, x-0.5*w, y-gap, x-0.25*w, y, scene.color("black"), rn()) // Left outer crosses
+      sketchedLine(scene, x-0.25*w, y-gap, x-0.5*w, y, scene.color("black"), rn())
+      sketchedLine(scene, x+0.5*w, y-gap, x+0.25*w, y, scene.color("black"), rn()) // Right outer crosses
+      sketchedLine(scene, x+0.25*w, y-gap, x+0.5*w, y, scene.color("black"), rn())
+      sketchedLine(scene, x-0.25*w, y-gap, x+0.25*w, y, scene.color("black"), rn()) // Middle crosses
+      sketchedLine(scene, x+0.25*w, y-gap, x-0.25*w, y, scene.color("black"), rn())
       scene.pop()
      }
     for(let i = 0; i < outDivisions; i++){
@@ -360,12 +455,12 @@ function sketchedLine(scene, x1, y1, x2, y2, _color){
       wall(scene, x+0.5*w, y, gap, wsize, PI/2, false)
       scene.push()
       scene.drawingContext.setLineDash([5, 15]);
-      sketchedLine(scene, x-0.5*w, y, x-0.25*w, y+gap, scene.color("black")) // Left outer crosses
-      sketchedLine(scene, x-0.25*w, y, x-0.5*w, y+gap, scene.color("black"))
-      sketchedLine(scene, x+0.5*w, y, x+0.25*w, y+gap, scene.color("black")) // Right outer crosses
-      sketchedLine(scene, x+0.25*w, y, x+0.5*w, y+gap, scene.color("black"))
-      sketchedLine(scene, x-0.25*w, y, x+0.25*w, y+gap, scene.color("black")) // Middle crosses
-      sketchedLine(scene, x+0.25*w, y, x-0.25*w, y+gap, scene.color("black"))
+      sketchedLine(scene, x-0.5*w, y, x-0.25*w, y+gap, scene.color("black"), rn()) // Left outer crosses
+      sketchedLine(scene, x-0.25*w, y, x-0.5*w, y+gap, scene.color("black"), rn())
+      sketchedLine(scene, x+0.5*w, y, x+0.25*w, y+gap, scene.color("black"), rn()) // Right outer crosses
+      sketchedLine(scene, x+0.25*w, y, x+0.5*w, y+gap, scene.color("black"), rn())
+      sketchedLine(scene, x-0.25*w, y, x+0.25*w, y+gap, scene.color("black"), rn()) // Middle crosses
+      sketchedLine(scene, x+0.25*w, y, x-0.25*w, y+gap, scene.color("black"), rn())
       scene.pop()
      }
     for(let i = 0; i < outDivisions; i++){
@@ -400,48 +495,51 @@ function sketchedLine(scene, x1, y1, x2, y2, _color){
       scene.push()
       scene.drawingContext.setLineDash([5, 15]);
       // Middle fancy star
-      sketchedLine(scene, x-0.25*w, y-0.25*hn, x+0.5*w, y+0.5*hn, scene.color("black"))
-      sketchedLine(scene, x-0.25*w, y+0.25*hn, x+0.5*w, y-0.5*hn, scene.color("black"))
-      sketchedLine(scene, x, y-0.25*hn+wsize, x, y+0.25*hn-wsize, scene.color("black"))
-      sketchedLine(scene, x-0.25*w+wsize, y, x+0.25*w-wsize, y, scene.color("black"))
+      sketchedLine(scene, x-0.25*w, y-0.25*hn, x+0.5*w, y+0.5*hn, scene.color("black"), rn())
+      sketchedLine(scene, x-0.25*w, y+0.25*hn, x+0.5*w, y-0.5*hn, scene.color("black"), rn())
+      sketchedLine(scene, x, y-0.25*hn+wsize, x, y+0.25*hn-wsize, scene.color("black"), rn())
+      sketchedLine(scene, x-0.25*w+wsize, y, x+0.25*w-wsize, y, scene.color("black"), rn())
 
-      sketchedLine(scene, x-0.25*w, y-0.25*hn, x, y-0.125*hn, scene.color("black")) // Top
-      sketchedLine(scene, x+0.25*w, y-0.25*hn, x, y-0.125*hn, scene.color("black"))
-      sketchedLine(scene, x-0.125*w, y, x-0.25*w, y+0.25*hn, scene.color("black")) // Left
-      sketchedLine(scene, x-0.125*w, y, x-0.25*w, y-0.25*hn, scene.color("black"))
-      sketchedLine(scene, x-0.25*w, y+0.25*hn, x, y+0.125*hn, scene.color("black")) // Bottom
-      sketchedLine(scene, x+0.25*w, y+0.25*hn, x, y+0.125*hn, scene.color("black"))
-      sketchedLine(scene, x+0.125*w, y, x+0.25*w, y+0.25*hn, scene.color("black")) // Right
-      sketchedLine(scene, x+0.125*w, y, x+0.25*w, y-0.25*hn, scene.color("black"))
+      sketchedLine(scene, x-0.25*w, y-0.25*hn, x, y-0.125*hn, scene.color("black"), rn()) // Top
+      sketchedLine(scene, x+0.25*w, y-0.25*hn, x, y-0.125*hn, scene.color("black"), rn())
+      sketchedLine(scene, x-0.125*w, y, x-0.25*w, y+0.25*hn, scene.color("black"), rn()) // Left
+      sketchedLine(scene, x-0.125*w, y, x-0.25*w, y-0.25*hn, scene.color("black"), rn())
+      sketchedLine(scene, x-0.25*w, y+0.25*hn, x, y+0.125*hn, scene.color("black"), rn()) // Bottom
+      sketchedLine(scene, x+0.25*w, y+0.25*hn, x, y+0.125*hn, scene.color("black"), rn())
+      sketchedLine(scene, x+0.125*w, y, x+0.25*w, y+0.25*hn, scene.color("black"), rn()) // Right
+      sketchedLine(scene, x+0.125*w, y, x+0.25*w, y-0.25*hn, scene.color("black"), rn())
  
 
       // End middle fancy cross
-      sketchedLine(scene, x-0.25*w, y-0.25*hn, x-0.5*w, y-0.5*hn, scene.color("black")) // UL
-      sketchedLine(scene, x-0.5*w, y-0.25*hn, x-0.25*w, y-0.5*hn, scene.color("black"))
+      sketchedLine(scene, x-0.25*w, y-0.25*hn, x-0.5*w, y-0.5*hn, scene.color("black"), rn()) // UL
+      sketchedLine(scene, x-0.5*w, y-0.25*hn, x-0.25*w, y-0.5*hn, scene.color("black"), rn())
       wall(scene, x-0.25*w, y-0.25*hn, 0.5*hn, wsize, PI/2, true) // Mid vert left
       wall(scene, x-0.25*w, y-0.25*hn, 0.5*w, wsize, 0, true) // Mid hor top
-      sketchedLine(scene, x+0.25*w, y-0.25*hn, x+0.5*w, y-0.5*hn, scene.color("black")) // UR
-      sketchedLine(scene, x+0.5*w, y-0.25*hn, x+0.25*w, y-0.5*hn, scene.color("black"))
+      sketchedLine(scene, x+0.25*w, y-0.25*hn, x+0.5*w, y-0.5*hn, scene.color("black"), rn()) // UR
+      sketchedLine(scene, x+0.5*w, y-0.25*hn, x+0.25*w, y-0.5*hn, scene.color("black"), rn())
       wall(scene, x+0.25*w, y-0.25*hn, 0.5*hn, wsize, PI/2, true) // Mid vert Right
       wall(scene, x-0.25*w, y+0.25*hn, 0.5*w, wsize, 0, true) // Mid hor bottom
-      sketchedLine(scene, x-0.25*w, y+0.25*hn, x-0.5*w, y+0.5*hn, scene.color("black")) // BL
-      sketchedLine(scene, x-0.5*w, y+0.25*hn, x-0.25*w, y+0.5*hn, scene.color("black"))
-      sketchedLine(scene, x+0.25*w, y+0.25*hn, x+0.5*w, y+0.5*hn, scene.color("black")) // BR
-      sketchedLine(scene, x+0.5*w, y+0.25*hn, x+0.25*w, y+0.5*hn, scene.color("black"))
-      sketchedLine(scene, x-0.5*w, y-0.25*hn, x-0.25*w, y+0.25*hn, scene.color("black")) // ML
-      sketchedLine(scene, x-0.25*w, y-0.25*hn, x-0.5*w, y+0.25*hn, scene.color("black"))
-      sketchedLine(scene, x+0.5*w, y-0.25*hn, x+0.25*w, y+0.25*hn, scene.color("black")) // MR
-      sketchedLine(scene, x+0.25*w, y-0.25*hn, x+0.5*w, y+0.25*hn, scene.color("black"))
-      sketchedLine(scene, x-0.25*w, y-0.5*hn, x+0.25*w, y-0.25*hn, scene.color("black")) // MT
-      sketchedLine(scene, x-0.25*w, y-0.25*hn, x+0.25*w, y-0.5*hn, scene.color("black"))
-      sketchedLine(scene, x-0.25*w, y+0.5*hn, x+0.25*w, y+0.25*hn, scene.color("black")) // MB
-      sketchedLine(scene, x-0.25*w, y+0.25*hn, x+0.25*w, y+0.5*hn, scene.color("black"))
+      sketchedLine(scene, x-0.25*w, y+0.25*hn, x-0.5*w, y+0.5*hn, scene.color("black"), rn()) // BL
+      sketchedLine(scene, x-0.5*w, y+0.25*hn, x-0.25*w, y+0.5*hn, scene.color("black"), rn())
+      sketchedLine(scene, x+0.25*w, y+0.25*hn, x+0.5*w, y+0.5*hn, scene.color("black"), rn()) // BR
+      sketchedLine(scene, x+0.5*w, y+0.25*hn, x+0.25*w, y+0.5*hn, scene.color("black"), rn())
+      sketchedLine(scene, x-0.5*w, y-0.25*hn, x-0.25*w, y+0.25*hn, scene.color("black"), rn()) // ML
+      sketchedLine(scene, x-0.25*w, y-0.25*hn, x-0.5*w, y+0.25*hn, scene.color("black"), rn())
+      sketchedLine(scene, x+0.5*w, y-0.25*hn, x+0.25*w, y+0.25*hn, scene.color("black"), rn()) // MR
+      sketchedLine(scene, x+0.25*w, y-0.25*hn, x+0.5*w, y+0.25*hn, scene.color("black"), rn())
+      sketchedLine(scene, x-0.25*w, y-0.5*hn, x+0.25*w, y-0.25*hn, scene.color("black"), rn()) // MT
+      sketchedLine(scene, x-0.25*w, y-0.25*hn, x+0.25*w, y-0.5*hn, scene.color("black"), rn())
+      sketchedLine(scene, x-0.25*w, y+0.5*hn, x+0.25*w, y+0.25*hn, scene.color("black"), rn()) // MB
+      sketchedLine(scene, x-0.25*w, y+0.25*hn, x+0.25*w, y+0.5*hn, scene.color("black"), rn())
       scene.pop()
      }
 
-  function supportColumn(scene, x, y, size){
+  function supportColumn(scene, x, y, size, a){
     scene.push()
     scene.translate(x, y)
+    if(a){
+      scene.rotate(a)
+    }
     scene.rotate(PI/4)
     scene.rectMode(s.CENTER)
     scene.rect(0, 0, size)
@@ -464,7 +562,17 @@ function sketchedLine(scene, x1, y1, x2, y2, _color){
       scene.image(dly, 0, 0)
     }
     scene.colorMode(s.HSB)
-    scene.fill("black")
+    if(!debug){
+      console.log("Noising")
+      scene.noStroke()
+      for(let i=0;i<W;i+=1){
+        for(let j=0;j<H;j+=1){
+          scene.fill(scene.color(60, 30*scene.noise(15*i/W, 20*j/H), 50+20*scene.noise(12*i/W, 18*j/H), 0.5))
+          scene.circle(i, j, 3)
+        }
+      }
+    }
+     scene.fill("black")
     scene.stroke("black")
     scene.strokeWeight(3)
     const csize = 0.03*H
