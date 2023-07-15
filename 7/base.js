@@ -101,17 +101,21 @@ const sketch = (s) => {
       const upys = upper.filter((v, i) => i%2 == 1)
       const loxs = lower.filter((v, i) => i%2 == 0 )
       const loys = lower.filter((v, i) => i%2 == 1)
-       for(let i=0;i<=100;i++){
+        scene.vertex(s.bezierPoint(...upxs, 1), s.bezierPoint(...upys, 1)
+, 0, 0, 0)//s.map(y, 0, H, 0, 1))
+        for(let i=99;i>=0;i--){
         const t = i/100.;
         const x = s.bezierPoint(...upxs, t)
         const y = s.bezierPoint(...upys, t)
-        scene.vertex(x, y, 0, s.map(x, 0, W, 0, 1), s.map(y, 0, H, 0, 1))
+        scene.vertex(x, y, 0, s.map(x, 0, W, 0, 1), 8)//s.map(0.5*H-y, 0, 0.5*H, 0, 8))
       }
-       for(let i=0;i<=100;i++){
+        scene.vertex(s.bezierPoint(...loxs, 1), s.bezierPoint(...loys, 1)
+, 0, 0, 0)//s.map(y, 0, H, 0, 1))
+       for(let i=1;i<=100;i++){
         const t = i/100.;
         const x = s.bezierPoint(...loxs, 1-t)
         const y = s.bezierPoint(...loys, 1-t)
-        scene.vertex(x, y, 0, s.map(x, 0, W, 0, 1), s.map(y, 0, H, 0, 1))
+        scene.vertex(x, y, 0, s.map(x, 0, W, 0, 1), 8)//s.map(y-0.5*H, 0, 0.5*H, 0, 8))
       }
 
 
