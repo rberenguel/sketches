@@ -4,6 +4,19 @@ Generative art sketches. Newest first
 
 ---
 
+## 202308 - Sail away :switzerland: [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/sailaway/"><img src="samples/sailaway.png" width="360"/></a>
+
+---
+
+- Started playing with translucent rectangles and circles, got clouds
+- [code](sailaway/sailaway.js) Resolution is hardcoded, but the code is resolution independent.
+- Explore it [here](https://rberenguel.github.io/sketches/sailaway/index.html)
+- NEW [See in place](https://rberenguel.github.io/sketches/showcasing/index.html?img=sailaway)
+
+---
+
 ## 202306 - Rajola :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/rajola/"><img src="samples/rajola.png" width="360"/></a>
