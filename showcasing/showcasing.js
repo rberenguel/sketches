@@ -90,6 +90,16 @@ const sketch = (s) => {
     cfg.backgrounds.push(bg)
 
     const images = [{
+        src: "thats-no-moon-s.png",
+        color: "#55555530",
+        blendMode: "multiply",
+        name: "That's no moon"
+      },{
+        src: "big-bang-s.png",
+        color: "#55555530",
+        blendMode: "multiply",
+        name: "Big Bang"
+      },{
         src: "sailaway-s.png",
         color: "#55555530",
         blendMode: "multiply",
