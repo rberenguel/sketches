@@ -4,6 +4,32 @@ Generative art sketches. Newest first
 
 ---
 
+## 202308 - That's no moon :switzerland: [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/thats-no-moon/"><img src="samples/thats-no-moon.png" width="360"/></a>
+
+---
+
+- The "stars" in the sketch below made me think of craters in a moon. I added some hack for a "like a sphere projection" and got this (the starfield is based on the one in Synthwave)
+- [code](thats-no-moon/thats-no-moon.js) Partially resolution independent
+- Explore it [here](https://rberenguel.github.io/sketches/thats-no-moon/index.html)
+- NEW [See in place](https://rberenguel.github.io/sketches/showcasing/index.html?img=thats-no-moon)
+
+---
+
+## 202308 - Big Bang :switzerland: [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/big-bang/"><img src="samples/big-bang.png" width="360"/></a>
+
+---
+
+- Tried to see what happens when you draw a circle only drawing tangent lines to it, tapered in reverse (less dense at the contact point). How I got here is hard to say.
+- [code](big-bang/big-bang.js) Partially resolution independent
+- Explore it [here](https://rberenguel.github.io/sketches/big-bang/index.html)
+- NEW [See in place](https://rberenguel.github.io/sketches/showcasing/index.html?img=big-bang)
+
+---
+
 ## 202308 - Sail away :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/sailaway/"><img src="samples/sailaway.png" width="360"/></a>
