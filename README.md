@@ -8,6 +8,8 @@ Generative art sketches. Newest first
 
 <a href="https://rberenguel.github.io/sketches/palette-spheres/"><img src="samples/palette-spheres.png" width="360"/></a>
 
+<a href="https://rberenguel.github.io/sketches/samples/palette-spheres.mp4"><img src="samples/palette-spheres.gif" width="360"/></a>
+
 ---
 
 - I explored circles-with-shadows, and tweaked the code to make it animated. Artistically it is not fascinating, but it works as a codebase to remind me how to animate things as I write them.
