@@ -90,6 +90,11 @@ const sketch = (s) => {
     cfg.backgrounds.push(bg)
 
     const images = [{
+        src: "palette-spheres-s.png",
+        color: "#55555530",
+        blendMode: "multiply",
+        name: "Palette spheres"
+      }, {
         src: "thats-no-moon-s.png",
         color: "#55555530",
         blendMode: "multiply",
