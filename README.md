@@ -4,7 +4,7 @@ Generative art sketches. Newest first
 
 ---
 
-## 202308 - Palette spheres :switzerland: [#p5js](https://p5js.org)
+## 202308 - Palette spheres :switzerland: :movie_camera: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/palette-spheres/"><img src="samples/palette-spheres.png" width="360"/></a>
 
