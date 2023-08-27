@@ -8,7 +8,7 @@ Generative art sketches. Newest first
 
 <a href="https://rberenguel.github.io/sketches/palette-spheres/"><img src="samples/palette-spheres.png" width="360"/></a>
 
-<video src="samples/palette-spheres.mp4" width="360"/>
+<video src="https://raw.githubusercontent.com/rberenguel/sketches/master/samples/palette-spheres.mp4" width="360"/>
 
 ---
 
