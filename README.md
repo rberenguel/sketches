@@ -4,6 +4,20 @@ Generative art sketches. Newest first
 
 ---
 
+## 202308 - Palette spheres :switzerland: :movie_camera: [#p5js](https://p5js.org)
+
+<a href="https://rberenguel.github.io/sketches/palette-spheres/"><img src="samples/palette-spheres.png" width="360"/></a>
+
+---
+
+- I explored circles-with-shadows, and tweaked the code to make it animated. Artistically it is not fascinating, but it works as a codebase to remind me how to animate things as I write them.
+- [code](palette-spheres/palette-spheres.js) Code is resolution independent but I have disabled the controls
+- Explore it [here](https://rberenguel.github.io/sketches/palette-spheres/index.html)
+- NEW [See in place](https://rberenguel.github.io/sketches/showcasing/index.html?img=palette-spheres)
+
+---
+
+
 ## 202308 - That's no moon :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/thats-no-moon/"><img src="samples/thats-no-moon.png" width="360"/></a>

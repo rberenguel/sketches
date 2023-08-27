@@ -331,7 +331,7 @@ const sketch = (s) => {
       "Cycle palettes", paletteShow)
 
     let pDists = new Key("w", cycleParticleDistributions)
-    let pDistsCmd = new Command(pDists, "cycle through palette distributions")
+    let pDistsCmd = new Command(pDists, "cycle through particle distributions")
     let pDistsShow = new String(() => particleDistribution.name)
     let pDistsControl = new Control([pDists],
       "Cycle distributions", pDistsShow)

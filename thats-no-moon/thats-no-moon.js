@@ -21,8 +21,8 @@ import {
 } from '../libraries/eases.js'
 
 import {
-  solarizedDark,
-} from '../libraries/palettes.js'
+  canvasRGBA
+} from '../libraries/3rdparty/stackblur.js'
 
 const sketch = (s) => 
 {
@@ -212,11 +212,15 @@ const sketch = (s) =>
     scene.circle(0,0,0.9*H)
     circ(scene, [0, 0, 0.05*H], 200)
     scene.pop()
+
+    canvasRGBA(scene.canvas, 0, 0, W, H, Math.max(2, (0.5 + cfg.hd) << 0))
+
     backdrop.background("black")
     backdrop.colorMode(s.HSB)
     for (let i = 0; i < W / cfg.hd; i++) {
       for (let j = 0; j < H / cfg.hd; j++) {
-        let cc = backdrop.color((scene.randomGaussian(240, 100)+360) % 360, 
+        let cc = backdrop.color(
+          (scene.randomGaussian(240, 100)+360) % 360, 
           scene.randomGaussian(15, 10), 
           scene.randomGaussian(80, 10))
         backdrop.fill(cc)
