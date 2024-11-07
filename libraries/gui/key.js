@@ -1,11 +1,7 @@
 // Ruben Berenguel, 2020/05
-import {
-  $
-} from './dom.js'
+import { $ } from "./dom.js";
 
-export {
-  Key
-}
+export { Key };
 
 /**
     A Key description. It is formed of a character and a lambda/method/function
@@ -18,39 +14,39 @@ export {
 */
 class Key {
   constructor(key, action, set, extended) {
-    this.key = key.toLowerCase()
-    this.originalKey = key
-    this.action = action
-    this.extended = extended || key
-    this.set = set
+    this.key = key.toLowerCase();
+    this.originalKey = key;
+    this.action = action;
+    this.extended = extended || key;
+    this.set = set;
   }
 
   _act() {
-    this.action()
+    this.action();
     if (this.gui !== undefined) {
-      this.gui.update()
+      this.gui.update();
     }
   }
 
   fetch() {
     if (!this.set) {
-      return
+      return;
     }
-    const queryString = window.location.search
-    const urlParams = new URLSearchParams(queryString)
-    const value = urlParams.get(this.extended)
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const value = urlParams.get(this.extended);
     if (value) {
-      this.set(value)
-      this.gui.unmark()
-      this.gui.update()
+      this.set(value);
+      this.gui.unmark();
+      this.gui.update();
     }
   }
 
   format() {
-    let code = $.cel("code")
-    let text = $.ctn(this.originalKey || this.key.toUpperCase())
-    code.appendChild(text)
-    code.onclick = () => this._act()
-    return code
+    let code = $.cel("code");
+    let text = $.ctn(this.originalKey || this.key.toUpperCase());
+    code.appendChild(text);
+    code.onclick = () => this._act();
+    return code;
   }
 }

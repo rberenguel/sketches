@@ -1,8 +1,8 @@
 // Ruben Berenguel, 2020/05
 
-import { $ } from './dom.js'
+import { $ } from "./dom.js";
 
-export { Command }
+export { Command };
 
 /**
     A Command, in general, affects no variables and just modifies some global
@@ -14,42 +14,38 @@ export { Command }
     be shown on the right.
 */
 class Command {
-    constructor(key, task) {
-        if (key === undefined)
-            throw new Error("Controls need keys defined")
+  constructor(key, task) {
+    if (key === undefined) throw new Error("Controls need keys defined");
 
-        if (task === undefined)
-            throw new Error("Controls need task defined")
+    if (task === undefined) throw new Error("Controls need task defined");
 
+    this.key = key;
+    this.task = task;
+  }
 
-        this.key = key
-        this.task = task
-    }
+  withVariable(variable) {
+    this.variable = variable;
+  }
 
-    withVariable(variable) {
-        this.variable = variable
-    }
+  format() {
+    let command = $.cel("p");
+    let press = $.ctn("Press ");
+    let thisKey = this.key.format();
+    let toDoThis = $.ctn(`: ${this.task}`);
+    let variableDisplay;
+    if (this.variable !== undefined) {
+      let span = $.cel("span");
+      span.style.float = "right";
+      span.append(this.variable.span());
+      span.onclick = thisKey.onclick;
+      variableDisplay = span;
+    } else variableDisplay = "";
+    command.append(press, thisKey, toDoThis, variableDisplay);
+    command.classList.add("command");
+    return command;
+  }
 
-    format() {
-        let command = $.cel("p");
-        let press = $.ctn("Press ")
-        let thisKey = this.key.format()
-        let toDoThis = $.ctn(`: ${this.task}`)
-        let variableDisplay
-        if (this.variable !== undefined) {
-            let span = $.cel("span")
-            span.style.float = "right"
-            span.append(this.variable.span())
-            span.onclick = thisKey.onclick
-            variableDisplay = span
-        } else
-            variableDisplay = ""
-        command.append(press, thisKey, toDoThis, variableDisplay)
-        command.classList.add("command")
-        return command
-    }
-
-    _act() {
-        this.key._act()
-    }
+  _act() {
+    this.key._act();
+  }
 }

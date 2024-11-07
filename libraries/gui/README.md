@@ -1,6 +1,6 @@
 # GUI helper for my p5js projects
 
-More information soon. 
+More information soon.
 
 ## Usage
 
