@@ -1,19 +1,19 @@
- #seed {
-     width: auto;
-     margin: auto;
-     position: absolute;
-     top: 30%;
-     left: 40%;
-     background-color: rgba(50, 50, 50, 0.8);
-     color: rgba(200, 200, 200);
-     padding: 1em;
-     border-radius: 3px;
-     visibility: hidden;
+#seed {
+  width: auto;
+  margin: auto;
+  position: absolute;
+  top: 30%;
+  left: 40%;
+  background-color: rgba(50, 50, 50, 0.8);
+  color: rgba(200, 200, 200);
+  padding: 1em;
+  border-radius: 3px;
+  visibility: hidden;
 }
- #seed > label {
-     text-align: center;
-     margin: auto;
+#seed > label {
+  text-align: center;
+  margin: auto;
 }
- #seedInfo {
-     font-size: 70% 
+#seedInfo {
+  font-size: 70%;
 }
