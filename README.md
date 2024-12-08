@@ -19,7 +19,6 @@ Generative art sketches. Newest first
 
 ---
 
-
 ## 202308 - That's no moon :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/thats-no-moon/"><img src="samples/thats-no-moon.png" width="360"/></a>
@@ -72,7 +71,6 @@ Generative art sketches. Newest first
 
 ---
 
-
 ## 202306 - Ideas :switzerland: [#p5js](https://p5js.org)
 
 <a href="https://rberenguel.github.io/sketches/ideas/"><img src="samples/ideas.png" width="700"/></a>
@@ -98,7 +96,6 @@ Generative art sketches. Newest first
 - NEW [See in place](https://rberenguel.github.io/sketches/showcasing/index.html?img=lif)
 
 ---
-
 
 ## 202305 - Creation :switzerland: [#p5js](https://p5js.org)
 
@@ -212,7 +209,6 @@ Generative art sketches. Newest first
 - [code](la-truche/truche.js) This is not resolution independent even if it has the controls in place. Could be made to be, though.
 - Explore it [here](https://rberenguel.github.io/sketches/la-truche/index.html)
 
-
 ---
 
 ## 202304 - Stained :switzerland: [#p5js](https://p5js.org)
@@ -224,7 +220,6 @@ Generative art sketches. Newest first
 - I have a project that needs generative stained glass, so here it is
 - [code](stained/stained.js) This should be resolution independent (except for the noise in the metal) but haven't really tried
 - Explore it [here](https://rberenguel.github.io/sketches/stained/index.html)
-
 
 ---
 
@@ -238,7 +233,6 @@ Generative art sketches. Newest first
 - [code](synthwave/synthwave-hd.js) This should be largely resolution independent code
 - Explore it [here](https://rberenguel.github.io/sketches/synthwave/index.html)
 
-
 ---
 
 ## 202303 - 70s Patch :switzerland: [#p5js](https://p5js.org)
@@ -251,7 +245,6 @@ Generative art sketches. Newest first
 - [code](70s-patch/70s-hd.js) This should be largely resolution independent code
 - Explore it [here](https://rberenguel.github.io/sketches/70s-patch/index.html)
 
-
 ---
 
 ## 202303 - Pencils :switzerland: [#p5js](https://p5js.org)
@@ -263,7 +256,6 @@ Generative art sketches. Newest first
 - Based on [this](https://twitter.com/meezwhite/status/1611791711969181697?s=12&t=ym-awO5tGUYR8G03Ua4bww) 2023 Genuary entry by [meezwhite](https://twitter.com/meezwhite). A large part of the mechanics are based on [Iris](#Iris).
 - [code](pencils/pencils-hd.js) This should be largely resolution independent code
 - Explore it [here](https://rberenguel.github.io/sketches/pencils/index.html)
-
 
 ---
 
@@ -293,7 +285,7 @@ Generative art sketches. Newest first
 
 ## 202008 - Chord diagram [#d3js/v6](https://d3js.org)
 
-<a href="https://rberenguel.github.io/sketches/chord/"><img src="samples/chord.png" width="700"/></a> 
+<a href="https://rberenguel.github.io/sketches/chord/"><img src="samples/chord.png" width="700"/></a>
 
 ---
 
@@ -306,9 +298,10 @@ Generative art sketches. Newest first
 
 ## 202006 - Iris [#p5js](https://p5js.org)
 
-<a href="https://rberenguel.github.io/sketches/iris/"><img src="samples/iris.png" width="700"/></a> 
+<a href="https://rberenguel.github.io/sketches/iris/"><img src="samples/iris.png" width="700"/></a>
 
 ---
+
 - Generative irises
 - [code](iris/iris-hd.js) (new version, this should be resolution independent code)
 - Explore it [here](https://rberenguel.github.io/sketches/iris/index.html)
@@ -318,9 +311,10 @@ Generative art sketches. Newest first
 
 ## 202005 - Crazy nights [#p5js](https://p5js.org)
 
-<a href="https://rberenguel.github.io/sketches/nights/"><img src="samples/nights.png" width="700"/></a> 
+<a href="https://rberenguel.github.io/sketches/nights/"><img src="samples/nights.png" width="700"/></a>
 
 ---
+
 - Star field simulation that grew into rolling hills and "moon"
 - [code](nights/nights.js)
 - Explore it [here](https://rberenguel.github.io/sketches/nights/index.html)
@@ -329,25 +323,25 @@ Generative art sketches. Newest first
 
 ## 202005 - Divide et impera [#p5js](https://p5js.org)
 
-<a href="https://rberenguel.github.io/sketches/divide/"><img src="samples/divide.png" width="700"/></a> 
+<a href="https://rberenguel.github.io/sketches/divide/"><img src="samples/divide.png" width="700"/></a>
 
 ---
+
 - [code](divide/divide.js)
 - Color treemap via naive k-means palette extraction below
 - Explore it [here](https://rberenguel.github.io/sketches/divide/index.html)
-
 
 ---
 
 ## 202005 - Palette [#p5js](https://p5js.org)
 
-<a href="https://rberenguel.github.io/sketches/palette/"><img src="samples/palette.png" width="700"/></a> 
+<a href="https://rberenguel.github.io/sketches/palette/"><img src="samples/palette.png" width="700"/></a>
 
 ---
+
 - Naive k-means palette extraction. Offers two modes (centroid or closest color to centroid) and allows you to use your own images and change the number of clusters
 - [code](palette/palette.js)
 - Explore it [here](https://rberenguel.github.io/sketches/palette/index.html)
-
 
 ---
 
@@ -356,6 +350,7 @@ Generative art sketches. Newest first
 <a href="https://rberenguel.github.io/sketches/blot-painting/"><img src="samples/blot.jpg" width="360"/></a> <a href="https://rberenguel.github.io/sketches/blot-painting/"><img src="samples/painting.jpg" width="360"/></a>
 
 ---
+
 - Based on Esteban Hufstedler's [Ink Splashes](https://estebanhufstedler.com/2018/10/02/splash/)
 - [code](blot-painting/)
 - Explore it [here](https://rberenguel.github.io/sketches/blot-painting/index.html)
@@ -368,10 +363,10 @@ Generative art sketches. Newest first
 <a href="https://rberenguel.github.io/sketches/watercolour/"><img src="samples/watercolour.jpg" width="700"/></a>
 
 ---
+
 - Based on Tyler Hobb's [polygon deformation](https://tylerxhobbs.com/essays/2017/a-generative-approach-to-simulating-watercolor-paints)
 - [code](watercolour/watercolour.js)
 - See it [here](https://rberenguel.github.io/sketches/watercolour/index.html)
-
 
 ---
 
@@ -380,6 +375,7 @@ Generative art sketches. Newest first
 <a href="https://rberenguel.github.io/sketches/crazy/"><img src="samples/crazy.jpg" width="700"/></a>
 
 ---
+
 - Based on Anders Hoff's [Sand Splines](https://inconvergent.net/generative/sand-spline/)
 - [code](crazy/crazy.js)
 - See it here [here](https://rberenguel.github.io/sketches/crazy/index.html)
@@ -387,6 +383,7 @@ Generative art sketches. Newest first
 ---
 
 ## 202005 - Conway's Game of Life [#p5js](https://p5js.org)
+
 - [code](life/life.js)
 - See it here [here](https://rberenguel.github.io/sketches/life/index.html)
 
@@ -397,9 +394,9 @@ Generative art sketches. Newest first
 <a href="https://mostlymaths.net/2020/05/sorting-myself-out.html/"><img src="samples/sorting.gif" width="700"/></a>
 
 ---
-- [code](sorting/sorting.js) 
-- See it [here](https://mostlymaths.net/2020/05/sorting-myself-out.html/index.html)
 
+- [code](sorting/sorting.js)
+- See it [here](https://mostlymaths.net/2020/05/sorting-myself-out.html/index.html)
 
 ---
 
@@ -408,5 +405,6 @@ Generative art sketches. Newest first
 <a href="https://rberenguel.github.io/sketches/hailstorm/"><img src="samples/hailstorm.jpg" width="700"/></a>
 
 ---
-- [code](hailstorm/hailstorm.js) 
+
+- [code](hailstorm/hailstorm.js)
 - See it [here](https://rberenguel.github.io/sketches/hailstorm/index.html)

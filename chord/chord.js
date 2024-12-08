@@ -35,7 +35,7 @@ function chord(labelFile, matrixFile) {
         [chart.node().clientWidth, 0.9 * window.innerHeight],
       ])
       .scaleExtent([0.8, 4])
-      .on("zoom", zoomer(mainG))
+      .on("zoom", zoomer(mainG)),
   );
   mainG.selectAll("*").remove();
 
@@ -69,7 +69,7 @@ function chord(labelFile, matrixFile) {
         .append("g")
         .attr(
           "transform",
-          "translate(" + width / 2 + "," + height / 2 + ") scale(0.7)"
+          "translate(" + width / 2 + "," + height / 2 + ") scale(0.7)",
         )
 
         .datum(chord(matrix));

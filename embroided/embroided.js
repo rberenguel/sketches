@@ -231,8 +231,10 @@ const sketch = (s) => {
   s.draw = () => {};
 
   function createGUI() {
-    let info = "Simulated embroidery, based on the procedure used in <a href='https://www.sidefx.com/tutorials/fakebroidery/'>this</a> Houdini tutorial";
-    let subinfo = "I wrote this several months ago, but never posted the code because I wanted to rewrite/clean it. I'd still want to rewrite it, but I guess it's better in the open";
+    let info =
+      "Simulated embroidery, based on the procedure used in <a href='https://www.sidefx.com/tutorials/fakebroidery/'>this</a> Houdini tutorial";
+    let subinfo =
+      "I wrote this several months ago, but never posted the code because I wanted to rewrite/clean it. I'd still want to rewrite it, but I guess it's better in the open";
     let S = new Key("s", () => {
       s.save("img.png");
     });
@@ -256,7 +258,7 @@ const sketch = (s) => {
       info,
       subinfo,
       [saveCmd, resetCanvas],
-      [rControl]
+      [rControl],
     );
 
     let QM = new Key("?", () => gui.toggle());

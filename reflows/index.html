@@ -1,43 +1,43 @@
 <!doctype html>
 <html>
-    <head>
-        <script src="../libraries/3rdparty/p5.min.js"></script>
-        <script type="module" src="reflows.js"></script>
-        <link rel="stylesheet" type='text/css' href="../libraries/gui/gui.css">
-        <style>
-         div#gui {
-             background-color: rgba(50, 50, 50, 0.8);
-             color: rgba(200, 200, 200);
-			   }
-		     #spinner {
-			       border-color: #CC9933 #CC9933 transparent transparent;
-		     }
-			 div#progress {
-				display: block; 
-			 }
-       #seed {
-         width: auto;
-         margin: auto;
-         position: absolute;
-         top: 30%;
-         left: 40%;
-         background-color: rgba(50, 50, 50, 0.8);
-         color: rgba(200, 200, 200);
-         padding: 1em;
-         border-radius: 3px;
-         visibility: hidden;         
-       }
-       #seed > label {
-         text-align: center;
-         margin: auto;
-       }
-       #seedInfo {
-         font-size: 70%
-       }
-        </style>
-    </head>
-    <body style="margin:0">
-        <div id="seed"></div>
-      <div id="gui"></div>
-    </body>
+  <head>
+    <script src="../libraries/3rdparty/p5.min.js"></script>
+    <script type="module" src="reflows.js"></script>
+    <link rel="stylesheet" type="text/css" href="../libraries/gui/gui.css" />
+    <style>
+      div#gui {
+        background-color: rgba(50, 50, 50, 0.8);
+        color: rgba(200, 200, 200);
+      }
+      #spinner {
+        border-color: #cc9933 #cc9933 transparent transparent;
+      }
+      div#progress {
+        display: block;
+      }
+      #seed {
+        width: auto;
+        margin: auto;
+        position: absolute;
+        top: 30%;
+        left: 40%;
+        background-color: rgba(50, 50, 50, 0.8);
+        color: rgba(200, 200, 200);
+        padding: 1em;
+        border-radius: 3px;
+        visibility: hidden;
+      }
+      #seed > label {
+        text-align: center;
+        margin: auto;
+      }
+      #seedInfo {
+        font-size: 70%;
+      }
+    </style>
+  </head>
+  <body style="margin: 0">
+    <div id="seed"></div>
+    <div id="gui"></div>
+  </body>
 </html>
