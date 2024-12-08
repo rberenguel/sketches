@@ -120,7 +120,7 @@ const sketch = (s) => {
       info,
       subinfo,
       [saveCmd],
-      []
+      [],
     );
     let QM = new Key("?", () => gui.toggle());
     let hide = new Command(QM, "hide this");

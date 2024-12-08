@@ -1,167 +1,262 @@
-export {
-  glassTexture, glassTextureForRennie, glassTextureForRennie2
-}
+export { glassTexture, glassTextureForRennie, glassTextureForRennie2 };
 
-import {
-  darken,
-  shuffle
-} from '../libraries/misc.js'
-
+import { darken, shuffle } from "../libraries/misc.js";
 
 function glassTexture(s, scene, seed, hd) {
-  arcBasedTexture(s, scene, seed, 0.008, 12 * hd, scene.SCREEN, "arc", false, hd) // bright
-  arcBasedTexture(s, scene, seed, 0.009, 11 * hd, scene.HARD_LIGHT, "arc_filled", true, hd)
-  arcBasedTexture(s, scene, seed, 0.008, 12 * hd, scene.SOFT_LIGHT, "arc", false, hd)
-  arcBasedTexture(s, scene, seed, 0.02, 8 * hd, s.MULTIPLY, "arc", false, hd)
-  backlight(s, scene, scene.DODGE, 1.0, "#AAA", "#333")
+  arcBasedTexture(
+    s,
+    scene,
+    seed,
+    0.008,
+    12 * hd,
+    scene.SCREEN,
+    "arc",
+    false,
+    hd,
+  ); // bright
+  arcBasedTexture(
+    s,
+    scene,
+    seed,
+    0.009,
+    11 * hd,
+    scene.HARD_LIGHT,
+    "arc_filled",
+    true,
+    hd,
+  );
+  arcBasedTexture(
+    s,
+    scene,
+    seed,
+    0.008,
+    12 * hd,
+    scene.SOFT_LIGHT,
+    "arc",
+    false,
+    hd,
+  );
+  arcBasedTexture(s, scene, seed, 0.02, 8 * hd, s.MULTIPLY, "arc", false, hd);
+  backlight(s, scene, scene.DODGE, 1.0, "#AAA", "#333");
 }
 
 function glassTextureForRennie(s, scene, seed, hd) {
-  arcBasedTexture(s, scene, seed, 0.001, 2 * hd, scene.SCREEN, "arc", false, hd, 5) // bright
-  arcBasedTexture(s, scene, seed, 0.002, 1.5 * hd, scene.HARD_LIGHT, "arc_filled", true, hd, 7)
-  arcBasedTexture(s, scene, seed, 0.003, 2 * hd, scene.SOFT_LIGHT, "arc", false, hd, 8)
-  arcBasedTexture(s, scene, seed, 0.001, 3 * hd, s.MULTIPLY, "arc", false, hd, 9)
-  backlight(s, scene, scene.DODGE, 1.0, "#AAA", "#333")
+  arcBasedTexture(
+    s,
+    scene,
+    seed,
+    0.001,
+    2 * hd,
+    scene.SCREEN,
+    "arc",
+    false,
+    hd,
+    5,
+  ); // bright
+  arcBasedTexture(
+    s,
+    scene,
+    seed,
+    0.002,
+    1.5 * hd,
+    scene.HARD_LIGHT,
+    "arc_filled",
+    true,
+    hd,
+    7,
+  );
+  arcBasedTexture(
+    s,
+    scene,
+    seed,
+    0.003,
+    2 * hd,
+    scene.SOFT_LIGHT,
+    "arc",
+    false,
+    hd,
+    8,
+  );
+  arcBasedTexture(
+    s,
+    scene,
+    seed,
+    0.001,
+    3 * hd,
+    s.MULTIPLY,
+    "arc",
+    false,
+    hd,
+    9,
+  );
+  backlight(s, scene, scene.DODGE, 1.0, "#AAA", "#333");
 }
 
-function  glassTextureForRennie2(s, scene, seed, size, hd, style, density, blurLevel){
-  let maskingLayer = s.createGraphics(scene.width, scene.height)
-  let c = scene.get()
-  maskingLayer.image(c, 0, 0)
-  scene.randomSeed(seed)
-  scene.push()
-  const PI = scene.PI
-  let texture = s.createGraphics(scene.width, scene.height)
-  texture.strokeWeight(1.0 / hd)
-  let coords = []
-  let drawer, fill
+function glassTextureForRennie2(
+  s,
+  scene,
+  seed,
+  size,
+  hd,
+  style,
+  density,
+  blurLevel,
+) {
+  let maskingLayer = s.createGraphics(scene.width, scene.height);
+  let c = scene.get();
+  maskingLayer.image(c, 0, 0);
+  scene.randomSeed(seed);
+  scene.push();
+  const PI = scene.PI;
+  let texture = s.createGraphics(scene.width, scene.height);
+  texture.strokeWeight(1.0 / hd);
+  let coords = [];
+  let drawer, fill;
   if (style.startsWith("arc")) {
-    drawer = (i, j, factor, r, start, end) => texture.arc(i, j, factor * r, r, start, end)
+    drawer = (i, j, factor, r, start, end) =>
+      texture.arc(i, j, factor * r, r, start, end);
   }
   if (style.startsWith("circle")) {
-    drawer = (i, j, factor, r, start, end) => texture.circle(i, j, r)
+    drawer = (i, j, factor, r, start, end) => texture.circle(i, j, r);
   }
   if (style.endsWith("filled")) {
-    fill = true
+    fill = true;
   } else {
-    fill = false
+    fill = false;
   }
   for (let i = 0; i < texture.width; i++) {
     for (let j = 0; j < texture.height; j++) {
       if (scene.random() < density) {
-        coords.push([i, j])
+        coords.push([i, j]);
       }
     }
   }
-  const shuffledCoords = shuffle(coords) // might need seeding
+  const shuffledCoords = shuffle(coords); // might need seeding
   for (let coord of shuffledCoords) {
-    let [i, j] = coord
+    let [i, j] = coord;
     //const grain = 50 + 100 * scene.noise(i, j)
-    const color = scene.color(20+200*scene.noise(i/scene.width), 20+200*scene.noise(j/scene.height), 20+200*scene.noise(scene.random()), 10*scene.noise(scene.random()))
+    const color = scene.color(
+      20 + 200 * scene.noise(i / scene.width),
+      20 + 200 * scene.noise(j / scene.height),
+      20 + 200 * scene.noise(scene.random()),
+      10 * scene.noise(scene.random()),
+    );
     if (fill) {
-      texture.fill(color)
+      texture.fill(color);
     } else {
-      texture.noFill()
+      texture.noFill();
     }
-    texture.stroke(color)
-    const r = size * scene.random()
-    const start = scene.random(0, 2 * PI)
-    const end = scene.random(start + PI - PI / 15, start - PI - PI / 15)
-    drawer(i, j, 1, r, start, end)
+    texture.stroke(color);
+    const r = size * scene.random();
+    const start = scene.random(0, 2 * PI);
+    const end = scene.random(start + PI - PI / 15, start - PI - PI / 15);
+    drawer(i, j, 1, r, start, end);
   }
   // This backlight is what gives the final nice touch,
   // for some reason
   //if (true) backlight(s, texture, scene.LIGHTEST, 0.9, "#222", "#222")
-  c = texture.get()
-  c.resize(scene.width, 0)
-  c.mask(maskingLayer)
-  if(blurLevel>0)c.filter(scene.BLUR, blurLevel*hd)
-  scene.blendMode(scene.MULTIPLY)
-  scene.image(c, 0, 0)
-  scene.pop()
+  c = texture.get();
+  c.resize(scene.width, 0);
+  c.mask(maskingLayer);
+  if (blurLevel > 0) c.filter(scene.BLUR, blurLevel * hd);
+  scene.blendMode(scene.MULTIPLY);
+  scene.image(c, 0, 0);
+  scene.pop();
 }
 
-function arcBasedTexture(s, scene, seed, density, size, mode, style, light, hd, mulfactor) {
-  let f = mulfactor
-  if(mulfactor===undefined){
-    f = 1
+function arcBasedTexture(
+  s,
+  scene,
+  seed,
+  density,
+  size,
+  mode,
+  style,
+  light,
+  hd,
+  mulfactor,
+) {
+  let f = mulfactor;
+  if (mulfactor === undefined) {
+    f = 1;
   }
-  scene.randomSeed(seed)
-  scene.push()
-  const PI = scene.PI
-  let texture = s.createGraphics(scene.width, scene.height)
-  texture.strokeWeight(1.0 / hd)
-  let coords = []
-  let drawer, fill
+  scene.randomSeed(seed);
+  scene.push();
+  const PI = scene.PI;
+  let texture = s.createGraphics(scene.width, scene.height);
+  texture.strokeWeight(1.0 / hd);
+  let coords = [];
+  let drawer, fill;
   if (style.startsWith("arc")) {
-    drawer = (i, j, factor, r, start, end) => texture.arc(i, j, factor * r, r, start, end)
+    drawer = (i, j, factor, r, start, end) =>
+      texture.arc(i, j, factor * r, r, start, end);
   }
   if (style.startsWith("circle")) {
-    drawer = (i, j, factor, r, start, end) => texture.circle(i, j, r)
+    drawer = (i, j, factor, r, start, end) => texture.circle(i, j, r);
   }
   if (style.endsWith("filled")) {
-    fill = true
+    fill = true;
   } else {
-    fill = false
+    fill = false;
   }
   for (let i = 0; i < texture.width; i++) {
     for (let j = 0; j < texture.height; j++) {
       if (scene.random() < density) {
-        coords.push([i, j])
+        coords.push([i, j]);
       }
     }
   }
-  const shuffledCoords = shuffle(coords) // might need seeding
+  const shuffledCoords = shuffle(coords); // might need seeding
   for (let coord of shuffledCoords) {
-    let [i, j] = coord
-    const grain = 50 + 100 * scene.noise(i, j)
-    const color = scene.color(30 + grain, 30 + grain, 30 + grain, grain)
+    let [i, j] = coord;
+    const grain = 50 + 100 * scene.noise(i, j);
+    const color = scene.color(30 + grain, 30 + grain, 30 + grain, grain);
     if (fill) {
-      texture.fill(color)
+      texture.fill(color);
     } else {
-      texture.noFill()
+      texture.noFill();
     }
-    texture.stroke(color)
-    const r = size * scene.random()
-    const factor = f*scene.random(1.2, 4)
-    const start = scene.random(0, 2 * PI)
-    const end = scene.random(start + PI - PI / 15, start - PI - PI / 15)
-    drawer(i, j, factor, r, start, end)
+    texture.stroke(color);
+    const r = size * scene.random();
+    const factor = f * scene.random(1.2, 4);
+    const start = scene.random(0, 2 * PI);
+    const end = scene.random(start + PI - PI / 15, start - PI - PI / 15);
+    drawer(i, j, factor, r, start, end);
   }
   // This backlight is what gives the final nice touch,
   // for some reason
-  if (light) backlight(s, texture, scene.LIGHTEST, 0.9, "#222", "#222")
-  let c = texture.get()
-  c.resize(scene.width, 0)
-  c.filter(scene.BLUR, 1)
-  scene.blendMode(mode)
-  scene.image(c, 0, 0)
-  scene.pop()
+  if (light) backlight(s, texture, scene.LIGHTEST, 0.9, "#222", "#222");
+  let c = texture.get();
+  c.resize(scene.width, 0);
+  c.filter(scene.BLUR, 1);
+  scene.blendMode(mode);
+  scene.image(c, 0, 0);
+  scene.pop();
 }
 
 function backlight(s, scene, mode, intensity, start, stop) {
   // Add a textured light layer. For some reason set in black
   // gives a terrific glass feel (this is overlaid on texture)
-  scene.push()
-  let blendMode = scene.HARD_LIGHT
+  scene.push();
+  let blendMode = scene.HARD_LIGHT;
   if (mode !== undefined) {
-    blendMode = mode
+    blendMode = mode;
   }
-  let layer = s.createGraphics(scene.width, scene.height)
-  let ctx = layer.drawingContext
-  const gradient = ctx.createLinearGradient(0, 0, scene.width, scene.height)
-  const bright = scene.color(start)
-  const dark = scene.color(stop)
-  const adjustedBright = darken(scene, bright, intensity)
-  const adjustedDark = darken(scene, dark, intensity)
+  let layer = s.createGraphics(scene.width, scene.height);
+  let ctx = layer.drawingContext;
+  const gradient = ctx.createLinearGradient(0, 0, scene.width, scene.height);
+  const bright = scene.color(start);
+  const dark = scene.color(stop);
+  const adjustedBright = darken(scene, bright, intensity);
+  const adjustedDark = darken(scene, dark, intensity);
   gradient.addColorStop(0, adjustedBright);
   gradient.addColorStop(1, adjustedDark);
   ctx.fillStyle = gradient;
-  layer.rectMode(scene.CORNERS)
-  layer.rect(0, 0, scene.width, scene.height)
-  let c = layer.get()
-  c.resize(scene.width, 0)
-  scene.blendMode(blendMode)
-  scene.image(c, 0, 0)
-  scene.pop()
+  layer.rectMode(scene.CORNERS);
+  layer.rect(0, 0, scene.width, scene.height);
+  let c = layer.get();
+  c.resize(scene.width, 0);
+  scene.blendMode(blendMode);
+  scene.image(c, 0, 0);
+  scene.pop();
 }

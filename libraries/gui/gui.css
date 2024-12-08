@@ -6,6 +6,16 @@
 code {
   font-family: monospace !important;
   text-decoration: none !important;
+  font-style: normal !important;
+  background-color: #66666666;
+  backdrop-filter: sepia(0.5);
+  padding-left: 0.1em;
+  padding-right: 0.1em;
+  border-radius: 0.05em;
+}
+
+code.clickable {
+  cursor: pointer;
 }
 
 #container {

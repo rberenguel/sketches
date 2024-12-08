@@ -1,230 +1,246 @@
 import {
-    Command,
-    GUI,
-    Boolean,
-    Input,
-    Integer,
-    String,
-    Float,
-    Key,
-    Control
-} from '../libraries/gui/gui.js'
+  Command,
+  GUI,
+  Boolean,
+  Input,
+  Integer,
+  String,
+  Float,
+  Key,
+  Control,
+} from "../libraries/gui/gui.js";
 
 import {
-    createBlots,
-    drawCloud,
-    drawBlot,
-    canvasUpdate,
-    blotPtsInMesh
-} from '../libraries/blotLibraries.js'
+  createBlots,
+  drawCloud,
+  drawBlot,
+  canvasUpdate,
+  blotPtsInMesh,
+} from "../libraries/blotLibraries.js";
 
-import { mod, getLargeCanvas } from '../libraries/misc.js'
+import { mod, getLargeCanvas } from "../libraries/misc.js";
 
 const sketch = (s) => {
+  let touched = 0;
+  let gui;
+  let blotCount = 20;
+  let blotSpread = 100;
+  let blotStrength = 1000;
+  let vectors = false;
+  let paint = 0;
+  let blotPoints, blotPointsArray;
+  let background, canvas, p5canvas;
+  let mesh400;
 
-    let touched = 0
-    let gui
-    let blotCount = 20
-    let blotSpread = 100
-    let blotStrength = 1000
-    let vectors = false
-    let paint = 0
-    let blotPoints, blotPointsArray
-    let background, canvas, p5canvas
-    let mesh400
+  s.preload = () => {
+    background = s.loadImage("../resources/gw.jpg");
+  };
 
-    s.preload = () => {
-        background = s.loadImage("../resources/gw.jpg");
+  function prepareImageAndDisplay(image) {
+    let { w, h } = getLargeCanvas(s, 1600);
+    if (p5canvas) p5canvas.remove();
+    if (image.height > image.width) {
+      image.resize(0, h);
+    } else {
+      image.resize(w, 0);
     }
+    image.loadPixels();
+    w = image.width;
+    h = image.height;
+    p5canvas = s.createCanvas(w, h).id("canvas");
+    canvas = s.createGraphics(p5canvas.width, p5canvas.height);
+    background = image;
 
-    function prepareImageAndDisplay(image) {
-        let {
-            w,
-            h
-        } = getLargeCanvas(s, 1600)
-        if (p5canvas) p5canvas.remove()
-        if(image.height>image.width){
-            image.resize(0, h)
-        }else{
-            image.resize(w, 0)
-        }
-        image.loadPixels()
-        w = image.width
-        h = image.height
-        p5canvas = s.createCanvas(w, h)
-            .id("canvas")
-        canvas = s.createGraphics(p5canvas.width, p5canvas.height)       
-        background = image
+    mesh400 = baseEvenMesh(400);
+    p5canvas.mousePressed(() => {
+      gui.update();
+      if (touched >= 0) {
+        let i = (s.mouseY * background.width + s.mouseX) * 4;
+        let ink = s.color(
+          background.pixels[i],
+          background.pixels[i + 1],
+          background.pixels[i + 2],
+          background.pixels[i + 3],
+        );
 
-        mesh400 = baseEvenMesh(400)
-        p5canvas.mousePressed(() => {
-            gui.update()
-            if (touched >= 0) {
-                let i = (s.mouseY * background.width + s.mouseX) * 4
-                let ink = s.color(background.pixels[i], background.pixels[i +
-                    1], background.pixels[i + 2], background.pixels[
-                    i + 3])
+        drawBlot(
+          {
+            s: s,
+            canvas: canvas,
+            background: background,
+            paint: paint,
+          },
+          s.mouseX,
+          s.mouseY,
+          ink,
+          {
+            mesh: mesh400,
+            blotPointsArray: blotPointsArray,
+          },
+          {
+            blotCount: blotCount,
+            blotStrength: blotStrength,
+            blotSpread: blotSpread,
+            vectors: vectors,
+          },
+        );
+      }
+      touched++;
+    });
+  }
 
-                drawBlot({
-                    s: s,
-                    canvas: canvas,
-                    background: background,
-                    paint: paint
-                }, s.mouseX, s.mouseY, ink, {
-                    mesh: mesh400,
-                    blotPointsArray: blotPointsArray
-                }, {
-                    blotCount: blotCount,
-                    blotStrength: blotStrength,
-                    blotSpread: blotSpread,
-                    vectors: vectors
-                })
-            }
-            touched++
-        })
-        
+  s.setup = () => {
+    prepareImageAndDisplay(background);
+    gui = createGUI();
+    gui.toggle();
+    blotPointsArray = new Array(5000);
+    blotPoints = 0;
+  };
+
+  function baseEvenMesh(spread) {
+    let pxs = [];
+    for (let j = 0; j < spread; j++) {
+      for (let i = 0; i < spread; i++) {
+        let cx = spread / 2.0 - i;
+        let cy = spread / 2.0 - j;
+        if (Math.sqrt(cx * cx + cy * cy) > 200) continue;
+        pxs.push([i, j]);
+      }
     }
+    return pxs;
+  }
 
+  function loadImageFromInput(callback) {
+    return (inputEvent) => {
+      let filename = inputEvent.target.files[0];
+      let fr = new FileReader();
+      fr.onload = (fileEvent) => {
+        let rawImage = new Image();
+        rawImage.src = fileEvent.target.result;
+        rawImage.onload = () => {
+          let image = s.createImage(rawImage.width, rawImage.height);
+          image.drawingContext.drawImage(rawImage, 0, 0);
+          callback(image);
+        };
+      };
+      fr.readAsDataURL(filename);
+    };
+  }
 
-    s.setup = () => {
-        prepareImageAndDisplay(background)
-        gui = createGUI()
-        gui.toggle()
-        blotPointsArray = new Array(5000)
-        blotPoints = 0
-    }
+  function createGUI() {
+    let info = `Tap/click on the canvas to trigger an ink blot with the colour of the (not shown) background image. It will take a bit (it's expensive to compute)`;
+    let subinfo = `If on mobile, make sure the canvas <br/>is focused first`;
+    let C = new Key("c", () => {
+      canvas.clear();
+      s.clear();
+    });
+    let resetCanvas = new Command(C, "clear the canvas");
+    let S = new Key("s", () => {
+      canvas.save("img.png");
+    });
+    let save = new Command(S, "save the canvas");
+    let P = new Key("p", () =>
+      console.log(performance.getEntriesByType("measure")),
+    );
+    let perfLog = new Command(P, "log performance to console");
 
+    let cmds = [resetCanvas, save, perfLog];
 
-    function baseEvenMesh(spread) {
-        let pxs = []
-        for (let j = 0; j < spread; j++) {
-            for (let i = 0; i < spread; i++) {
-                let cx = spread / 2.0 - i
-                let cy = spread / 2.0 - j
-                if (Math.sqrt(cx * cx + cy * cy) > 200) continue
-                pxs.push([i, j])
-            }
-        }
-        return pxs
-    }
+    let fileInputControl = new Input(
+      "Choose your own image",
+      "file",
+      "image/*",
+      loadImageFromInput((img) => {
+        s.clear();
+        prepareImageAndDisplay(img);
+        canvasUpdate({
+          s: s,
+          canvas: canvas,
+          background: background,
+          paint: paint,
+        });
+      }),
+    );
 
-    function loadImageFromInput(callback) {
+    let incB = new Key(">", () => blotCount++);
+    let decB = new Key("<", () => blotCount--);
+    let blotCountInt = new Integer(() => blotCount);
+    let blotCountControl = new Control(
+      [decB, incB],
+      "+/- blot count",
+      blotCountInt,
+    );
+    let incS = new Key(".", () => {
+      blotSpread += 5;
+    });
+    let decS = new Key(",", () => {
+      blotSpread -= 5;
+    });
+    let blotSpreadInt = new Integer(() => blotSpread);
+    let blotSpreadControl = new Control(
+      [decS, incS],
+      "+/- blot spread",
+      blotSpreadInt,
+    );
+    let incI = new Key(")", () => {
+      blotStrength *= 2;
+    });
+    let decI = new Key("(", () => {
+      blotStrength /= 2;
+    });
+    let blotStrengthFlt = new Float(() => blotStrength);
+    let blotStrengthControl = new Control(
+      [decI, incI],
+      "+/- blot strength",
+      blotStrengthFlt,
+    );
+    let T = new Key("t", () => {
+      paint = mod(paint + 1, 3);
 
-        return (inputEvent) => {
-            let filename = inputEvent.target.files[0]
-            let fr = new FileReader()
-            fr.onload = (fileEvent) => {
-                let rawImage = new Image()
-                rawImage.src = fileEvent.target.result
-                rawImage.onload = () => {
-                    let image = s.createImage(rawImage.width,
-                        rawImage
-                        .height)
-                    image.drawingContext.drawImage(rawImage, 0,
-                        0)
-                    callback(image)
-                }
-            }
-            fr.readAsDataURL(filename)
-        }
-    }
+      canvasUpdate({
+        s: s,
+        canvas: canvas,
+        background: background,
+        paint: paint,
+      });
+    });
 
+    let backgroundStates = ["solid/blank", "solid/solid", "alpha/solid"];
+    let paintString = new String(() => backgroundStates[paint]);
+    let paintControl = new Control([T], "paint/background", paintString);
+    let V = new Key("v", () => (vectors = !vectors));
+    let vectorsBool = new Boolean(() => vectors);
+    let vectorControl = new Control([V], "show vectors", vectorsBool);
+    let focusedBool = new Boolean(() => s.focused);
+    let focusedStatus = new Control(undefined, "canvas focused?", focusedBool);
+    let controls = [
+      fileInputControl,
+      focusedStatus,
+      paintControl,
+      blotCountControl,
+      blotSpreadControl,
+      blotStrengthControl,
+      vectorControl,
+    ];
+    let gui = new GUI(
+      '<a href="blot.html">Blot</a>/<b>Painting</b>, RB 2020/05',
+      info,
+      subinfo,
+      cmds,
+      controls,
+    );
+    let QM = new Key("?", () => gui.toggle());
+    let hide = new Command(QM, "hide this");
 
-    function createGUI() {
-        let info =
-            `Tap/click on the canvas to trigger an ink blot with the colour of the (not shown) background image. It will take a bit (it's expensive to compute)`
-        let subinfo = `If on mobile, make sure the canvas <br/>is focused first`
-        let C = new Key("c", () => {
-            canvas.clear()
-            s.clear()
-        })
-        let resetCanvas = new Command(C, "clear the canvas")
-        let S = new Key("s", () => {
-            canvas.save("img.png")
-        })
-        let save = new Command(S, "save the canvas")
-        let P = new Key("p", () => console.log(performance.getEntriesByType(
-            "measure")))
-        let perfLog = new Command(P, "log performance to console")
+    gui.addCmd(hide);
+    gui.update();
+    return gui;
+  }
 
-        let cmds = [resetCanvas, save, perfLog]
-        
-        let fileInputControl = new Input("Choose your own image", "file",
-            "image/*",
-            loadImageFromInput((img) => {
-                s.clear()
-                prepareImageAndDisplay(img)
-            canvasUpdate({
-                s: s,
-                canvas: canvas,
-                background: background,
-                paint: paint
-            })                
-        }))
+  s.keyReleased = () => {
+    gui.dispatch(s.key);
+  };
+};
 
-        
-        let incB = new Key(">", () => blotCount++)
-        let decB = new Key("<", () => blotCount--)
-        let blotCountInt = new Integer(() => blotCount)
-        let blotCountControl = new Control([decB, incB],
-            "+/- blot count", blotCountInt)
-        let incS = new Key(".", () => {
-            blotSpread += 5
-        })
-        let decS = new Key(",", () => {
-            blotSpread -= 5
-        })
-        let blotSpreadInt = new Integer(() => blotSpread)
-        let blotSpreadControl = new Control([decS, incS],
-            "+/- blot spread", blotSpreadInt)
-        let incI = new Key(")", () => {
-            blotStrength *= 2
-        })
-        let decI = new Key("(", () => {
-            blotStrength /= 2
-        })
-        let blotStrengthFlt = new Float(() => blotStrength)
-        let blotStrengthControl = new Control([decI, incI],
-            "+/- blot strength", blotStrengthFlt)
-        let T = new Key("t", () => {
-            paint = mod(paint + 1, 3)
-
-            canvasUpdate({
-                s: s,
-                canvas: canvas,
-                background: background,
-                paint: paint
-            })
-        })
-
-        let backgroundStates = ["solid/blank", "solid/solid", "alpha/solid"]
-        let paintString = new String(() => backgroundStates[paint])
-        let paintControl = new Control([T],
-            "paint/background", paintString)
-        let V = new Key("v", () => vectors = !vectors)
-        let vectorsBool = new Boolean(() => vectors)
-        let vectorControl = new Control([V], "show vectors", vectorsBool)
-        let focusedBool = new Boolean(() => s.focused)
-        let focusedStatus = new Control(undefined, "canvas focused?",
-            focusedBool)
-        let controls = [fileInputControl, focusedStatus, paintControl,
-            blotCountControl, blotSpreadControl,
-            blotStrengthControl, vectorControl
-        ]
-        let gui = new GUI("<a href=\"blot.html\">Blot</a>/<b>Painting</b>, RB 2020/05", info, subinfo, cmds,
-            controls)
-        let QM = new Key("?", () => gui.toggle())
-        let hide = new Command(QM, "hide this")
-
-        gui.addCmd(hide)
-        gui.update()
-        return gui
-    }
-
-    s.keyReleased = () => {
-        gui.dispatch(s.key)
-    }
-}
-
-p5.disableFriendlyErrors = true
-let p5sketch = new p5(sketch)
+p5.disableFriendlyErrors = true;
+let p5sketch = new p5(sketch);

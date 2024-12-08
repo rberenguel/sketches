@@ -44,6 +44,7 @@ class Key {
 
   format() {
     let code = $.cel("code");
+    code.classList.add("clickable");
     let text = $.ctn(this.originalKey || this.key.toUpperCase());
     code.appendChild(text);
     code.onclick = () => this._act();

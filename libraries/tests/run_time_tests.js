@@ -1,4 +1,4 @@
-import './time_test.js';
+import "./time_test.js";
 
 mocha.checkLeaks();
 mocha.run();
