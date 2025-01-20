@@ -7,10 +7,12 @@ const logDiv = document.getElementById("logdiv");
 
 let jazz = false
 
-/*{
+
   setJazz()
   jazz = true
-}*/
+
+
+let state = "splash"
 
 const sketch = (s) => {
   const arena = {
@@ -800,7 +802,7 @@ const sketch = (s) => {
       if (keys["KeyZ"]) {
         gameActions.button5();
       }
-
+      // TODO: saving the canvas should still work after the game has ended. Using noloop is too extreme
       return;
     }
 
@@ -830,6 +832,19 @@ const sketch = (s) => {
     }
   };
 
+  const splash = () => {
+    const sp = document.getElementById("splash");
+    sp.style.width = arena.w*0.66 + "px"
+    sp.style.height= arena.h + "px"
+    sp.addEventListener("click", () => {
+      sp.style.display = "none"
+      sp.style.zIndex = -1;
+      s.loop()
+      state = "play"
+    })
+  }
+
+
   s.setup = () => {
     window.addEventListener("gamepadconnected", function (e) {
       gamepadHandler(e, true);
@@ -850,12 +865,13 @@ const sketch = (s) => {
       gamepadHandler(e, false);
     });
     s.frameRate(30);
+    s.noLoop();
 
     s.createCanvas(arena.w, arena.h);
     document.body.style.width = arena.w + "px"
     document.body.style.height = arena.h + "px"
     s.background(200, 200, 200);
-    grid();
+    splash()
   };
 
   const turn = () => {
@@ -998,7 +1014,7 @@ const sketch = (s) => {
 
   let framecounter = 0
 
-  s.draw = () => {
+  const playingLoop = () => {
     framecounter++
     s.background(200, 200, 200);
 
@@ -1027,12 +1043,22 @@ const sketch = (s) => {
     }
     handlePad();
     framecounter = framecounter % 25
-    if(framecounter == 0){
+    if(framecounter == 0 && jazz){
       try{jazzing()}catch(err){
         console.log(err)}
     }
   };
-};
+
+
+  s.draw = () => {
+    if(state == "play"){
+      playingLoop()
+    }
+    if(state == "splash"){
+      
+    }
+  };
+}
 
 p5.disableFriendlyErrors = true;
 let p5sketch = new p5(sketch);

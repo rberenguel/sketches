@@ -12,6 +12,7 @@
     <script type="module" src="wip.js"></script>
     <link rel="stylesheet" type="text/css" href="../libraries/gui/gui.css" />
     <link rel="stylesheet" type="text/css" href="../libraries/gui/seeder.css" />
+    <link rel="stylesheet" type="text/css" href="./misc/caviar.css" />
     <style>
       div#gui {
         background-color: rgba(50, 50, 50, 0.8);
@@ -27,9 +28,44 @@
         width: 5em;
         background: darkgrey;
       }
+      #splash {
+        font-family: "Caviar Dreams";
+        font-size: 16px;
+        z-index: 10;
+        position: fixed;
+        left: 16.5%;
+        transform: translateX(-16.6%);
+        top: 2vh;
+      }
+      #splash h1 {
+        font-size: 110%;
+      }
+      #splash p {
+      
+      }
     </style>
   </head>
   <body style="margin: 0">
+    <div id="splash">
+      <h1>Shotgun Pollock</h1>
+      <p>Paint blobs have invaded the canvas, but you got your shotgun.</p>
+      <hr/>
+      <p>Controls</p>
+      <ul>
+        <li>Advance to the marked square <code>up arrow</code>/<code>gamepad up arrow</code></li>
+        <li>Go back from the marked square <code>down arrow</code>/<code>gamepad down arrow</code></li>
+        <li>Rotate clockwise <code>right arrow</code>/<code>gamepad right arrow</code></li>
+        <li>Rotate counterclockwise <code>left arrow</code>/<code>gamepad left arrow</code></li>
+        <li>Ready your shotgun <code>space</code>/<code>gamepad button 1</code></li>
+        <li>Shoot your shotgun <code>space</code>/<code>gamepad button 1</code></li>
+        <li>Reload your shotgun <code>R</code>/<code>gamepad button 4</code></li>
+        <li>Stop music <code>J</code>/<code>gamepad shoulder left</code></li>
+      </ul>
+      <p>Reloading, shooting, and moving up or down consume a turn. Blobs will move after that,
+       if a blob is close to you when it moves… you are done.</p>
+      <p>Blobs will move first sideways and then up towards you. Use walls and this knowledge to your advantage.</p>
+      <p></p>
+    </div>
     <div id="seed"></div>
     <div id="logdiv"></div>
     <div id="gui"></div>
