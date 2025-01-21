@@ -8,15 +8,15 @@ const logDiv = document.getElementById("logdiv");
 let jazz = false
 
 
-  setJazz()
-  jazz = true
+setJazz()
+jazz = true
 
 
 let state = "splash"
 
 const sketch = (s) => {
   const arena = {
-    gap: 100,
+    gap: 50,
     w: 600,
     h: 600,
     cw: 40,
@@ -885,18 +885,45 @@ const sketch = (s) => {
 
   const splash = () => {
     const sp = document.getElementById("splash");
-    sp.style.width = arena.w*0.66 + "px"
-    sp.style.height= arena.h + "px"
+    settingsElt.style.display = "none"
+    scoreElt.style.display = "none"
+    sp.style.zIndex = 1000;
+    //sp.style.width = arena.w*0.66 + "px"
+    //sp.style.height= arena.h + "px"
+    const shuffledColors = [...colors].sort(() => Math. random() - 0.5);
+    const letters = ["p_", "o1_", "l1_", "l2_", "o2_", "c_", "k_"]
+    for(let i=0; i< letters.length;i++){
+      const [r, g, b] = shuffledColors[i]
+      const l = document.getElementById(letters[i])
+      l.style.color = `rgb(${r*255}, ${g*255}, ${b*255})`
+    }
     sp.style.display = "block"
-    sp.addEventListener("click", () => {
+    sp.querySelector("h1").addEventListener("click", () => {
       sp.style.display = "none"
       sp.style.zIndex = -1;
       s.loop()
       state = "play"
       settingsElt.style.display = "block"
       scoreElt.style.display = "block"
+      settingsElt.addEventListener("click", (ev) => {
+        splash();
+      })
     })
-  }
+    const ctls = document.getElementById("help-wrapper") 
+    sp.querySelector("#help-button").addEventListener("click", () => {
+      ctls.style.zIndex = 1000;
+      ctls.style.display = "block";
+    })
+    ctls.addEventListener("click", () => {
+      ctls.style.zIndex = -1;
+      ctls.style.display = "none";
+    })
+    const mus = document.getElementById("music");
+    mus.addEventListener("click", () => {
+      mus.classList.toggle("no-music");
+      jazz = !jazz
+    })
+}
 
 
   s.setup = () => {
@@ -924,7 +951,7 @@ const sketch = (s) => {
     document.body.style.width = arena.w + "px"
     document.body.style.height = arena.h + "px"
     wrapper.style.width = arena.w + "px"
-    wrapper.style.height = arena.h + "px"
+    wrapper.style.height = arena.h + arena.gap + "px"
     // Force reflow
     document.body.offsetWidth; 
     wrapper.offsetWidth
@@ -1015,7 +1042,7 @@ const sketch = (s) => {
       s.strokeWeight(3)
       s.circle(e.ix*cw + cw/2, e.iy*cw+cw/2, e.s)
       s.pop()
-      s.noLoop();
+      state = "gameover"
       return;
     }
     const dx = Math.abs(px - ex);
@@ -1100,7 +1127,8 @@ const sketch = (s) => {
     }
     if (addedEnemiesAt != turnCount && turnCount % 10 == 0) {
       assigned = available();
-      addEnemies(1);
+      const toAdd = Math.floor(turnCount / 10)
+      addEnemies(Math.min(toAdd, Math.floor(arena.cw)));
       console.log("Adding enemies");
     }
     handlePad();
@@ -1125,6 +1153,9 @@ const sketch = (s) => {
     }
     if(state == "splash"){
       
+    }
+    if(state == "gameover"){
+      handlePad();
     }
   };
 }
