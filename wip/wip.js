@@ -16,10 +16,28 @@ let state = "splash"
 
 const sketch = (s) => {
   const arena = {
+    gap: 100,
     w: 600,
     h: 600,
     cw: 40,
   };
+
+  const wiw = window.innerWidth
+  const wih = window.innerHeight - arena.gap
+  if(wih < wiw){
+    // landscape
+    arena.w = wih
+    arena.h = wih
+    arena.cw = arena.w / 15
+  } else {
+    // portrait, or square. I want to make mobile nice here
+    arena.w = wiw
+    arena.cw = arena.w / 15
+    arena.h = Math.floor(wih / arena.cw) * arena.cw
+  }
+
+  const scoreElt = document.getElementById("score")
+  const settingsElt = document.getElementById("settings")
 
   const now = () => Date.now();
 
@@ -41,11 +59,11 @@ const sketch = (s) => {
 
   let prevHit = Date.now(); // Debouncing step movements
 
+  // A lot of these need to be in some "init"
   let addedEnemiesAt = -1;
-
   let availableBullets = 2;
-
   let turnCount = 0;
+  let score = 0;
 
   let bullets = [];
   let splats = [];
@@ -220,7 +238,7 @@ const sketch = (s) => {
     addedEnemiesAt = turnCount;
   };
 
-  //addEnemies(Math.floor(Math.sqrt((arena.w * arena.h) / (cw * cw))));
+  addEnemies(Math.floor(Math.sqrt((arena.w * arena.h) / (cw * cw))));
 
   const btns = {
     R: 15,
@@ -273,6 +291,7 @@ const sketch = (s) => {
           continue;
         }
         e.hit = true;
+        score += 10;
         const drum = Math.floor(Math.random()*3)
         try{
         if(jazz)
@@ -777,6 +796,38 @@ const sketch = (s) => {
     }
   };
 
+  const setupTouchZones = () => {
+    const up = document.getElementById("up-button")
+    const right = document.getElementById("right-button")
+    const left = document.getElementById("left-button")
+    const down = document.getElementById("down-button")
+    const button1 = document.getElementById("button-1")
+    const button4 = document.getElementById("button-4")
+    const handler = (elt, kn) => {
+      elt.addEventListener("mousedown", (ev) => {
+        keys[kn] = true; // Mark the key as pressed
+        ev.preventDefault()
+      })
+      elt.addEventListener("touchstart", (ev) => {
+        keys[kn] = true; // Mark the key as pressed
+        ev.preventDefault()
+      })
+      elt.addEventListener("mouseup", (ev) => {
+        keys[kn] = false; // Mark the key as unpressed
+        ev.preventDefault()
+      })    
+     elt.addEventListener("touchend", (ev) => {
+        keys[kn] = false; // Mark the key as unpressed
+        ev.preventDefault()
+      })  }
+    handler(up, "ArrowUp")
+    handler(down, "ArrowDown")
+    handler(left, "ArrowLeft")
+    handler(right, "ArrowRight")
+    handler(button1, "Space")
+    handler(button4, "KeyS")
+  }
+
   const handlePad = () => {
     let gamepads = navigator.getGamepads();
 
@@ -802,7 +853,7 @@ const sketch = (s) => {
       if (keys["KeyZ"]) {
         gameActions.button5();
       }
-      // TODO: saving the canvas should still work after the game has ended. Using noloop is too extreme
+      // TODO: saving the transparent should still work after the game has ended. Using noloop is too extreme
       return;
     }
 
@@ -836,11 +887,14 @@ const sketch = (s) => {
     const sp = document.getElementById("splash");
     sp.style.width = arena.w*0.66 + "px"
     sp.style.height= arena.h + "px"
+    sp.style.display = "block"
     sp.addEventListener("click", () => {
       sp.style.display = "none"
       sp.style.zIndex = -1;
       s.loop()
       state = "play"
+      settingsElt.style.display = "block"
+      scoreElt.style.display = "block"
     })
   }
 
@@ -866,11 +920,17 @@ const sketch = (s) => {
     });
     s.frameRate(30);
     s.noLoop();
-
-    s.createCanvas(arena.w, arena.h);
+    const wrapper = document.getElementById("gamewrapper")
     document.body.style.width = arena.w + "px"
     document.body.style.height = arena.h + "px"
+    wrapper.style.width = arena.w + "px"
+    wrapper.style.height = arena.h + "px"
+    // Force reflow
+    document.body.offsetWidth; 
+    wrapper.offsetWidth
+    s.createCanvas(arena.w, arena.h + arena.gap).parent(wrapper);
     s.background(200, 200, 200);
+    setupTouchZones()
     splash()
   };
 
@@ -1015,6 +1075,8 @@ const sketch = (s) => {
   let framecounter = 0
 
   const playingLoop = () => {
+    s.push()
+    s.translate(0, arena.gap)
     framecounter++
     s.background(200, 200, 200);
 
@@ -1044,9 +1106,16 @@ const sketch = (s) => {
     handlePad();
     framecounter = framecounter % 25
     if(framecounter == 0 && jazz){
-      try{jazzing()}catch(err){
-        console.log(err)}
+      scoreElt.innerText = score
+      if(jazz){
+        try{
+          jazzing()
+        } catch(err) {
+          console.log(err)
+        }
+      }
     }
+    s.pop()
   };
 
 

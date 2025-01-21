@@ -145,7 +145,6 @@ const nextPianoNote = () => {
 const jazzing = () => {
   nextPianoNote()
   if (rhythm == 0) {
-    console.log(`Current keysPerBeat: ${keysPerBeat}`);
     window.drumNoteSampler.triggerAttackRelease("c0", 1);
   }
   if (rhythm == 2) {
