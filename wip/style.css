@@ -1,0 +1,170 @@
+:root {
+  --background: rgb(200, 200, 200);
+  --gap: 50px;
+}
+
+div#gui {
+  background-color: rgba(50, 50, 50, 0.8);
+  color: rgba(200, 200, 200);
+}
+#spinner {
+  border-color: #cc9933 #cc9933 transparent transparent;
+}
+#logdiv {
+  position: fixed;
+  top: 1em;
+  left: 1em;
+  width: 5em;
+  background: darkgrey;
+}
+
+#splash {
+  transform: translate(0, -1 * var(--gap));
+  background-color: var(--background);
+  font-family: "Caviar Dreams";
+  font-size: 5rem;
+  z-index: 10;
+  position: absolute;
+  margin: auto;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(50, 50, 50, 0.5);
+}
+
+.hide {
+display: none;
+}
+
+#help-wrapper {
+  background-color: var(--background);
+  font-family: "Caviar Dreams";
+  display: none;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+#help {
+  background-color: var(--background);
+  padding: 1em;
+  position: relative;
+  left: calc(10% - 1em);
+  width: 80%;
+  font-size: 1.5rem;
+  border-radius: 1em;
+  border: 2px solid black;
+  top: 10%;
+  height: 80%;
+  overflow: scroll;
+}
+
+#music.no-music::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 1em;
+  height: 0.1em;
+  background-color: red;
+  transform: translateY(-50%) rotate(-45deg);
+}
+
+#splash h1 {
+  font-size: 5rem;
+}
+
+.floaty-button {
+  z-index: 5;
+  position: absolute;
+}
+
+.transp {
+  background-color: transparent !important;
+}
+
+#splash-controls {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%);
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  bottom: 25%;
+}
+
+#topmost-area {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+  height: var(--gap); /* I don't want to fiddle with rems in code */
+  left: 0;
+  width: 100%;
+}
+#left-button {
+  background-color: blue;
+  opacity: 50%;
+  top: var(--gap);
+  height: calc(100% - var(--gap));
+  left: 0;
+  width: 15%;
+}
+#score {
+  float: right;
+  padding-right: 1em;
+  margin-top: -15px; /* Very weird baseline, we have here */
+  font-size: 40px;
+  font-family: "bpdots";
+  color: chocolate;
+}
+#settings {
+  float: left;
+  padding-left: 1em;
+  font-size: 30px;
+}
+#right-button {
+  background-color: green;
+  opacity: 50%;
+  top: var(--gap);
+  height: calc(100% - var(--gap));
+  right: 0;
+  width: 15%;
+}
+#up-button {
+  background-color: yellow;
+  opacity: 50%;
+  left: 15%;
+  top: var(--gap);
+  width: 70%;
+  height: 25%;
+}
+#button-4 {
+  background-color: orange;
+  opacity: 50%;
+  left: 15%;
+  top: calc(25% + var(--gap));
+  width: 35%;
+  height: calc(50% - var(--gap));
+}
+#button-1 {
+  background-color: violet;
+  opacity: 50%;
+  top: calc(25% + var(--gap));
+  left: 50%;
+  width: 35%;
+  height: calc(50% - var(--gap));
+}
+#down-button {
+  background-color: brown;
+  opacity: 50%;
+  top: 75%;
+  left: 15%;
+  width: 70%;
+  height: calc(25%);
+}
+#gamewrapper {
+  position: relative;
+}
+
+
