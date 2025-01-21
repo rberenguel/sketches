@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+  <head>
+    
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+    <script src="jazz/Tone.js"></script>
+    <script src="../libraries/3rdparty/p5.min.js"></script>
+    <script type="module" src="wip.js"></script>
+    <link rel="stylesheet" type="text/css" href="../libraries/gui/gui.css" />
+    <link rel="stylesheet" type="text/css" href="../libraries/gui/seeder.css" />
+    <link rel="stylesheet" type="text/css" href="./misc/caviar.css" />
+    <link rel="stylesheet" type="text/css" href="./misc/bpdots.css" />
+    <style>
+      div#gui {
+        background-color: rgba(50, 50, 50, 0.8);
+        color: rgba(200, 200, 200);
+      }
+      #spinner {
+        border-color: #cc9933 #cc9933 transparent transparent;
+      }
+      #logdiv {
+        position: fixed;
+        top: 1em;
+        left: 1em;
+        width: 5em;
+        background: darkgrey;
+      }
+      #splash {
+        font-family: "Caviar Dreams";
+        font-size: 16px;
+        z-index: 10;
+        position: fixed;
+        left: 16.5%;
+        transform: translateX(-16.6%);
+        top: 2vh;
+      }
+      #splash h1 {
+        font-size: 110%;
+      }
+      #splash p {
+      
+      }
+      .floaty-button {
+        z-index: 5;
+        position: absolute;
+        background-color: transparent !important;
+      }
+      #topmost-area {
+        display: flex;
+        align-items: center;
+        justify-content: space-between; 
+        height: 100px; /* I don't want to fiddle with rems in code */
+        left: 0;
+        width: 100%;
+      }
+      #left-button {
+        background-color: blue;
+        top: 100px;
+        height: calc(100% - 100px);
+        left: 0;
+        width: 10%;
+      }
+      #score {
+        float: right;
+        padding-right: 1em;
+        margin-top: -25px; /* Very weird baseline, we have here */
+        font-size: 70px;
+        font-family: "bpdots";
+        color: chocolate;
+      }
+      #settings {
+        float: left;
+        padding-left: 1em;
+        font-size: 30px;
+      }
+      #right-button {
+        background-color: green;
+        top: 100px;
+        height: calc(100% - 100px);
+        right: 0;
+        width: 10%;
+      }
+      #up-button {
+        background-color: yellow;
+        left: 10%;
+        top: 100px;
+        width: 80%;
+        height: calc(30%);
+      }
+      #button-4 {
+        background-color: orange;
+        left: 10%;
+        top: calc(30% + 100px);
+        width: 40%;
+        height: calc(40% - 100px);
+      }
+      #button-1 {
+        background-color: violet;
+        top: calc(30% + 100px);
+        left: 50%;
+        width: 40%;
+        height: calc(40% - 100px);
+      }
+      #down-button {
+        background-color: brown;
+        top: calc(70%);
+        left: 10%;
+        width: 80%;
+        height: calc(30%);
+      }
+      #gamewrapper {
+        position: relative;
+      }
+
+    </style>
+  </head>
+  <body style="margin: 0">
+    <div id="gamewrapper">
+    <div id="topmost-area" class="floaty-button">
+      <div id="settings" style="display: none;">&#x2699;&#xFE0F;</div>
+      <div id="score" style="display: none;">0</div>
+    </div>
+    <div id="left-button" class="floaty-button"></div>
+    <div id="right-button" class="floaty-button"></div>
+    <div id="up-button" class="floaty-button"></div>
+    <div id="down-button" class="floaty-button"></div>
+    <div id="button-1" class="floaty-button"></div>
+    <div id="button-4" class="floaty-button"></div>
+    <div id="splash" style="display: none;">
+      <h1>Shotgun Pollock</h1>
+      <p>Paint blobs have invaded the canvas, but you got your shotgun.</p>
+      <hr/>
+      <p>Controls</p>
+      <ul>
+        <li>Advance to the marked square <code>up arrow</code>/<code>gamepad up arrow</code></li>
+        <li>Go back from the marked square <code>down arrow</code>/<code>gamepad down arrow</code></li>
+        <li>Rotate clockwise <code>right arrow</code>/<code>gamepad right arrow</code></li>
+        <li>Rotate counterclockwise <code>left arrow</code>/<code>gamepad left arrow</code></li>
+        <li>Ready your shotgun <code>space</code>/<code>gamepad button 1</code></li>
+        <li>Shoot your shotgun <code>space</code>/<code>gamepad button 1</code></li>
+        <li>Reload your shotgun <code>R</code>/<code>gamepad button 4</code></li>
+        <li>Stop music <code>J</code>/<code>gamepad shoulder left</code></li>
+      </ul>
+      <p>Reloading, shooting, and moving up or down consume a turn. Blobs will move after that,
+       if a blob is close to you when it moves… you are done.</p>
+      <p>Blobs will move first sideways and then up towards you. Use walls and this knowledge to your advantage.</p>
+      <p></p>
+    </div>
+    <div id="logdiv"></div>
+    </div>
+  </body>
+</html>
