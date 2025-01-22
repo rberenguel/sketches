@@ -1,16 +1,54 @@
 // This still needs a severe cleanup and quality-of-play
 // improvements, but it is usable
 
+import { set, get } from "./idb-keyval.js";
 import {setJazz, jazzing, nextPianoNote } from "./jazz/jazz.js"
+import { bindGamepadHandlers, bindKeyHandlers, handleControls, touchZoneHandler, getDeviceInput } from "./controlHandling.js"
 
 const logDiv = document.getElementById("logdiv");
 
-let jazz = false
+let keyMap = await get("keyMap")
 
+if(keyMap === undefined){
+  keyMap = {
+    "ArrowUp": "moveUp",
+    "ArrowDown": "moveDown",
+    "ArrowLeft": "moveLeft",
+    "ArrowRight": "moveRight",
+    "Space": "shoot",
+    "KeyX": "reload",
+    "KeyZ": "saveCanvas",
+  }
+}
 
-setJazz()
-jazz = true
+let buttonMap = await get("buttonMap")
 
+if(buttonMap === undefined){
+  buttonMap = {
+    "b15": "moveRight",
+    "b14": "moveLeft",
+    "b13": "moveDown",
+    "b12": "moveUp",
+    "b1": "shoot",
+    "b2": "reload",
+    "b4": "saveCanvas"
+  }
+}
+
+let jazz = await get("jazz")
+
+if(jazz === undefined){
+  jazz = true
+}
+
+const mus = document.getElementById("music");
+if(!jazz){
+  mus.classList.add("no-music")
+}
+
+if(jazz){
+  setJazz()
+}
 
 let state = "splash"
 
@@ -38,24 +76,12 @@ const sketch = (s) => {
 
   const scoreElt = document.getElementById("score")
   const settingsElt = document.getElementById("settings")
+  const sp = document.getElementById("splash");
 
   const now = () => Date.now();
 
-  const keys = {};
-
-  document.addEventListener("keydown", (event) => {
-    keys[event.code] = true; // Mark the key as pressed
-    event.preventDefault()
-  });
-
-  document.addEventListener("keyup", (event) => {
-    keys[event.code] = false; // Mark the key as released
-    event.preventDefault()
-  });
-
   const cw = arena.cw;
 
-  let controllers = [];
 
   let prevHit = Date.now(); // Debouncing step movements
 
@@ -240,20 +266,6 @@ const sketch = (s) => {
 
   addEnemies(Math.floor(Math.sqrt((arena.w * arena.h) / (cw * cw))));
 
-  const btns = {
-    R: 15,
-    L: 14,
-    U: 12,
-    D: 13,
-    A: 1,
-    B: 0,
-    X: 3,
-    Y: 2,
-    Select: 8,
-    R1: 5,
-    L1: 4,
-  };
-
   const shoot = (x, y, a, r, n) => {
     // x, y: starting position
     // a: angle, essentially looking-at, potentially with some shuffle
@@ -294,8 +306,8 @@ const sketch = (s) => {
         score += 10;
         const drum = Math.floor(Math.random()*3)
         try{
-        if(jazz)
-          window.drumNoteSampler.triggerAttackRelease([`f${drum}`], 1.2);
+          if(jazz)
+            window.drumNoteSampler.triggerAttackRelease([`f${drum}`], 1.2);
         }catch(err){
           console.log(err)
         }
@@ -525,38 +537,6 @@ const sketch = (s) => {
     drawEnemies();
     enemies = enemies.filter((e) => !e.dead);
   };
-
-  const gamepadHandler = (event, connecting) => {
-    let gamepad = event.gamepad;
-    if (connecting) {
-      controllers[gamepad.index] = gamepad;
-    } else {
-      delete controllers[gamepad.index];
-    }
-  };
-
-  const buttonPressed = (b) => {
-    if (typeof b == "object") {
-      return b.pressed; // binary
-    }
-    return b > 0.9; // analog value
-  };
-
-  const logPads = () => {
-    let gamepads = navigator.getGamepads();
-    for (let i in controllers) {
-      let controller = gamepads[i]; //controllers[i]
-      if (controller.buttons) {
-        for (let btn = 0; btn < controller.buttons.length; btn++) {
-          let val = controller.buttons[btn];
-          if (buttonPressed(val)) {
-            console.log(btn);
-          }
-        }
-      }
-    }
-  };
-
   const validMove = (pix, piy, d) => {
     if (d == "N") {
       if (piy == 0) {
@@ -657,42 +637,8 @@ const sketch = (s) => {
   };
 
   const gameActions = {
-    moveDown: () => {
-      nextPianoNote()
-      if (now() - prevHit < 100) {
-        return;
-      }
-      prevHit = now();
-      const ix = thingy.ix,
-        iy = thingy.iy;
-      const at = lookingAtGrid(thingy);
-      if (at == "U") {
-        if (!validMove(ix, iy, "N")) {
-          return;
-        }
-        thingy.iy -= 1;
-      }
-      if (at == "D") {
-        if (!validMove(ix, iy, "S")) {
-          return;
-        }
-        thingy.iy += 1;
-      }
-      if (at == "R") {
-        if (!validMove(ix, iy, "W")) {
-          return;
-        }
-        thingy.ix -= 1;
-      }
-      if (at == "L") {
-        if (!validMove(ix, iy, "E")) {
-          return;
-        }
-        thingy.ix += 1;
-      }
-      turn();
-    },
-    moveUp: () => {
+
+    "moveUp": () => {
       if (now() - prevHit < 100) {
         return;
       }
@@ -727,19 +673,53 @@ const sketch = (s) => {
       }
       turn();
     },
-    moveRight: () => {
-      thingy.a += 0.05;
+    "moveRight": () => {
+      thingy.a += 0.08;
       if (thingy.a > 2 * s.PI) {
         thingy.a = 0;
       }
     },
-    moveLeft: () => {
-      thingy.a -= 0.05;
+    "moveLeft": () => {
+      thingy.a -= 0.08;
       if (thingy.a < 0) {
         thingy.a = 2 * s.PI;
       }
     },
-    button1: () => {
+    "moveDown": () => {
+      nextPianoNote()
+      if (now() - prevHit < 100) {
+        return;
+      }
+      prevHit = now();
+      const ix = thingy.ix,
+        iy = thingy.iy;
+      const at = lookingAtGrid(thingy);
+      if (at == "U") {
+        if (!validMove(ix, iy, "N")) {
+          return;
+        }
+        thingy.iy -= 1;
+      }
+      if (at == "D") {
+        if (!validMove(ix, iy, "S")) {
+          return;
+        }
+        thingy.iy += 1;
+      }
+      if (at == "R") {
+        if (!validMove(ix, iy, "W")) {
+          return;
+        }
+        thingy.ix -= 1;
+      }
+      if (at == "L") {
+        if (!validMove(ix, iy, "E")) {
+          return;
+        }
+        thingy.ix += 1;
+      }
+      turn();
+    },    "shoot": () => {
       if (availableBullets == 0) {
         return;
       }
@@ -749,7 +729,7 @@ const sketch = (s) => {
       const drum = Math.floor(Math.random()*3)
       try{
         if(jazz)
-        window.drumNoteSampler.triggerAttackRelease([`c${drum}`], 1.0);}catch(err){console.log(err)}
+          window.drumNoteSampler.triggerAttackRelease([`c${drum}`], 1.0);}catch(err){console.log(err)}
       prevHit = now();
       if(!thingy.aiming){
         thingy.aiming = true;
@@ -773,7 +753,7 @@ const sketch = (s) => {
       thingy.aimingAnimation = 0.2
       turn();
     },
-    button4: () => {
+    "reload": () => {
       if (now() - prevHit < 500) {
         return;
       }
@@ -785,13 +765,13 @@ const sketch = (s) => {
       try{
 
         if(jazz)
-        window.drumNoteSampler.triggerAttackRelease([`b${drum}`], 1.0);
+          window.drumNoteSampler.triggerAttackRelease([`b${drum}`], 1.0);
       }catch(err){
         console.log(err)}
       availableBullets = 2;
       turn();
     },
-    button5: () => {
+    "saveCanvas": () => {
       s.saveCanvas();
     }
   };
@@ -803,112 +783,108 @@ const sketch = (s) => {
     const down = document.getElementById("down-button")
     const button1 = document.getElementById("button-1")
     const button4 = document.getElementById("button-4")
-    const handler = (elt, kn) => {
-      elt.addEventListener("mousedown", (ev) => {
-        keys[kn] = true; // Mark the key as pressed
-        ev.preventDefault()
-      })
-      elt.addEventListener("touchstart", (ev) => {
-        keys[kn] = true; // Mark the key as pressed
-        ev.preventDefault()
-      })
-      elt.addEventListener("mouseup", (ev) => {
-        keys[kn] = false; // Mark the key as unpressed
-        ev.preventDefault()
-      })    
-     elt.addEventListener("touchend", (ev) => {
-        keys[kn] = false; // Mark the key as unpressed
-        ev.preventDefault()
-      })  }
-    handler(up, "ArrowUp")
-    handler(down, "ArrowDown")
-    handler(left, "ArrowLeft")
-    handler(right, "ArrowRight")
-    handler(button1, "Space")
-    handler(button4, "KeyS")
+    touchZoneHandler(up, "ArrowUp")
+    touchZoneHandler(down, "ArrowDown")
+    touchZoneHandler(left, "ArrowLeft")
+    touchZoneHandler(right, "ArrowRight")
+    touchZoneHandler(button1, "Space")
+    touchZoneHandler(button4, "KeyS")
   }
 
-  const handlePad = () => {
-    let gamepads = navigator.getGamepads();
-
-    if (controllers.length == 0) {
-      if (keys["ArrowUp"]) {
-        gameActions.moveUp();
-      }
-      if (keys["ArrowDown"]) {
-        gameActions.moveDown();
-      }
-      if (keys["ArrowLeft"]) {
-        gameActions.moveLeft();
-      }
-      if (keys["ArrowRight"]) {
-        gameActions.moveRight();
-      }
-      if (keys["Space"]) {
-        gameActions.button1();
-      }
-      if (keys["KeyS"]) {
-        gameActions.button4();
-      }
-      if (keys["KeyZ"]) {
-        gameActions.button5();
-      }
-      // TODO: saving the transparent should still work after the game has ended. Using noloop is too extreme
-      return;
+  const rmap = (m) => {
+    let reversed = {}
+    for(let k in m){
+      reversed[m[k]] = k
     }
+    return reversed
+  }
 
-    for (let i in controllers) {
-      let controller = gamepads[i]; //controllers[i]
-      if (controller.buttons) {
-        const pressed = (b) => buttonPressed(controller.buttons[btns[b]]);
-        if (pressed("D")) {
-          gameActions.moveDown();
-        }
-        if (pressed("U")) {
-          gameActions.moveUp();
-        }
-        if (pressed("L")) {
-          gameActions.moveLeft();
-        }
-        if (pressed("R")) {
-          gameActions.moveRight();
-        }
-        if (pressed("A")) {
-          gameActions.button1();
-        }
-        if (pressed("Y")) {
-          gameActions.button4();
-        }
-      }
+  const presentKeyMap = (d) => {
+    const rkeymap = rmap(keyMap)
+    const rbuttonmap = rmap(buttonMap)
+    const e = t => document.createElement(t)
+    const wrapper = e("DIV")
+    const desc = e("P")
+    desc.innerText = "Tap on the keys or buttons to customise them. The settings will persist."
+    wrapper.appendChild(desc)
+    wrapper.classList.add("control-list-wrapper")
+    const table = e("TABLE")
+    wrapper.appendChild(table)
+    const headerRow = e("tr");
+    table.appendChild(headerRow);
+    const headerAction = e("th");
+    const headerButton = e("th");
+    const headerKey = e("th");
+    headerAction.innerText = "Action";
+    headerButton.innerText = "Button";
+    headerKey.innerText = "Key";
+    headerRow.append(headerAction, headerKey, headerButton);
+
+    for(let action in gameActions){
+      const row = e("tr")
+      table.appendChild(row)
+      const tda = e("td")
+      const tdb = e("td")
+      const tdk = e("td")
+      tdb.classList.add("gamepad-button")
+
+      const oldkey = rkeymap[action]
+      const oldbutton = rbuttonmap[action]
+      tdk.addEventListener("click", async ev => {
+        tdk.innerText = "???"
+        const nk =  await getDeviceInput("keyboard")
+        tdk.innerText = nk
+        keyMap[nk] = action
+        delete keyMap[oldkey]
+        await set("keyMap", keyMap)
+      })
+      tdb.addEventListener("click", async ev => {
+        tdb.innerText = "???"
+        const nb = await getDeviceInput("gamepad")
+        tdb.innerText = `b${nb}`    
+        buttonMap[`b${nb}`] = action
+        delete buttonMap[oldbutton]
+        await set("buttonMap", buttonMap)
+      })
+      tda.innerText = action
+      tdb.innerText = oldbutton
+      tdk.innerText = oldkey
+      row.append(tda, tdk, tdb)
     }
-  };
+    d.appendChild(wrapper)
+    const back = e("DIV")
+    back.innerText = "Go back"
+    back.classList.add("control-list-go-back")
+    wrapper.appendChild(back)
+  }
 
-  const splash = () => {
-    const sp = document.getElementById("splash");
+  const showGameElements = () => {
+    const mc = document.getElementById("mobile-controls");
+    mc.style.display = "block";
+    mc.style.zIndex = 1000;
+    s.loop()
+    state = "play"
+    settingsElt.style.display = "block"
+    scoreElt.style.display = "block"
+    settingsElt.addEventListener("click", (ev) => {
+      hideGameElements()
+      splash();
+    })
+  }
+
+  const hideGameElements = () => {
     settingsElt.style.display = "none"
     scoreElt.style.display = "none"
-    sp.style.zIndex = 1000;
-    //sp.style.width = arena.w*0.66 + "px"
-    //sp.style.height= arena.h + "px"
-    const shuffledColors = [...colors].sort(() => Math. random() - 0.5);
-    const letters = ["p_", "o1_", "l1_", "l2_", "o2_", "c_", "k_"]
-    for(let i=0; i< letters.length;i++){
-      const [r, g, b] = shuffledColors[i]
-      const l = document.getElementById(letters[i])
-      l.style.color = `rgb(${r*255}, ${g*255}, ${b*255})`
-    }
-    sp.style.display = "block"
+
+  }
+
+  const setupSplashMenu = () => {
     sp.querySelector("h1").addEventListener("click", () => {
       sp.style.display = "none"
       sp.style.zIndex = -1;
-      s.loop()
-      state = "play"
-      settingsElt.style.display = "block"
-      scoreElt.style.display = "block"
-      settingsElt.addEventListener("click", (ev) => {
-        splash();
-      })
+      showGameElements();
     })
+
     const ctls = document.getElementById("help-wrapper") 
     sp.querySelector("#help-button").addEventListener("click", () => {
       ctls.style.zIndex = 1000;
@@ -918,33 +894,44 @@ const sketch = (s) => {
       ctls.style.zIndex = -1;
       ctls.style.display = "none";
     })
-    const mus = document.getElementById("music");
-    mus.addEventListener("click", () => {
+    mus.addEventListener("click", async () => {
       mus.classList.toggle("no-music");
       jazz = !jazz
+      await set("jazz", jazz)
     })
-}
+    const scw = document.getElementById("setup-controls-wrapper") 
+    const setup = document.getElementById("setup-controls");
+    setup.addEventListener("click", () => {
+      scw.style.zIndex = 1000;
+      scw.style.display = "block";     
+    })
+
+    presentKeyMap(scw)
+
+    const back = document.querySelector(".control-list-go-back")
+    back.addEventListener("click", () => {
+      scw.style.zIndex = -1;
+      scw.style.display = "none";     
+    })  
+  }
+
+  const splash = () => {
+
+    sp.style.zIndex = 1000;
+    sp.style.display = "block"
+    const shuffledColors = [...colors].sort(() => Math. random() - 0.5);
+    const letters = ["p_", "o1_", "l1_", "l2_", "o2_", "c_", "k_"]
+    for(let i=0; i< letters.length;i++){
+      const [r, g, b] = shuffledColors[i]
+      const l = document.getElementById(letters[i])
+      l.style.color = `rgb(${r*255}, ${g*255}, ${b*255})`
+    }
+  }
 
 
   s.setup = () => {
-    window.addEventListener("gamepadconnected", function (e) {
-      gamepadHandler(e, true);
-      console.log(
-        "Gamepad connected at index %d: %s. %d buttons, %d axes.",
-        e.gamepad.index,
-        e.gamepad.id,
-        e.gamepad.buttons.length,
-        e.gamepad.axes.length
-      );
-    });
-    window.addEventListener("gamepaddisconnected", function (e) {
-      console.log(
-        "Gamepad disconnected from index %d: %s",
-        e.gamepad.index,
-        e.gamepad.id
-      );
-      gamepadHandler(e, false);
-    });
+    bindGamepadHandlers()
+    bindKeyHandlers()
     s.frameRate(30);
     s.noLoop();
     const wrapper = document.getElementById("gamewrapper")
@@ -955,9 +942,10 @@ const sketch = (s) => {
     // Force reflow
     document.body.offsetWidth; 
     wrapper.offsetWidth
+    setupSplashMenu()
+    setupTouchZones()
     s.createCanvas(arena.w, arena.h + arena.gap).parent(wrapper);
     s.background(200, 200, 200);
-    setupTouchZones()
     splash()
   };
 
@@ -1010,9 +998,9 @@ const sketch = (s) => {
       }
       try{
         if(jazz){
-        window.drumNoteSampler.triggerAttackRelease([`e0`], 1.1);
-        const now = window.drumNoteSampler.now();
-        window.drumNoteSampler.triggerAttackRelease([`f0`], 1.5, now + 0.4);
+          window.drumNoteSampler.triggerAttackRelease([`e0`], 1.1);
+          const now = window.drumNoteSampler.now();
+          window.drumNoteSampler.triggerAttackRelease([`f0`], 1.5, now + 0.4);
         }
       }catch(err){
         console.log(err)
@@ -1131,7 +1119,7 @@ const sketch = (s) => {
       addEnemies(Math.min(toAdd, Math.floor(arena.cw)));
       console.log("Adding enemies");
     }
-    handlePad();
+    handleControls(gameActions, keyMap, buttonMap);
     framecounter = framecounter % 25
     if(framecounter == 0 && jazz){
       scoreElt.innerText = score
@@ -1152,10 +1140,10 @@ const sketch = (s) => {
       playingLoop()
     }
     if(state == "splash"){
-      
+
     }
     if(state == "gameover"){
-      handlePad();
+      handleControls();
     }
   };
 }
