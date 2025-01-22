@@ -33,10 +33,10 @@ div#gui {
 }
 
 .hide {
-display: none;
+  display: none;
 }
 
-#help-wrapper {
+#help-wrapper,#setup-controls-wrapper {
   background-color: var(--background);
   font-family: "Caviar Dreams";
   display: none;
@@ -45,7 +45,7 @@ display: none;
   position: absolute;
 }
 
-#help {
+#help,.control-list-wrapper {
   background-color: var(--background);
   padding: 1em;
   position: relative;
@@ -57,6 +57,29 @@ display: none;
   top: 10%;
   height: 80%;
   overflow: scroll;
+}
+
+.control-list-wrapper > table {
+  margin: auto;
+  border-spacing: 1em;
+}
+
+.control-list-wrapper td,th {
+  padding: 0 1em;
+  text-align: center;
+}
+
+.gamepad-button::first-letter {
+  color: rgb(100, 100, 100);
+  padding-right: 0.5em;
+  font-size: 75%;
+}
+
+.control-list-go-back {
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 3em;
 }
 
 #music.no-music::before {

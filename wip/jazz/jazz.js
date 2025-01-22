@@ -116,7 +116,7 @@ const setJazz = () => {
 }
 const nextPianoNote = () => {
   if (noteCount % 3 == 0) {
-    if (Math.random(10) < 5) {
+    if (Math.random()*10 < 5) {
       currentChordChoice = baseChords;
     } else {
       currentChordChoice = highChords;
@@ -124,14 +124,14 @@ const nextPianoNote = () => {
   }
   chordIndex = Math.floor(Math.random() * currentChordChoice.length);
   if (noteCount == 0) {
-    transpose = 24 + -6 + Math.floor(Math.random(12));
+    transpose = 24 + -6 + Math.floor(Math.random()*12);
   }
   noteCount = noteCount + 1;
   noteCount = noteCount % 10;
   noteIndex = Math.floor(Math.random() * currentChordChoice[chordIndex].length);
   note = currentChordChoice[chordIndex][noteIndex] + transpose;
   const  play = midiToNote(note);
-  if (Math.random() * 10 > 3 && play) {
+  if (Math.random() * 10 > 0 && play) {
     const sustain = 0.5 + Math.random() * 1.3;
     try{
     window.pianoNoteSampler.triggerAttackRelease(play, sustain);
