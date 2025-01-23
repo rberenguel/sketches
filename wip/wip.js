@@ -53,7 +53,7 @@ if(jazz){
 let state = "splash"
 
 const sketch = (s) => {
-  const arena = {
+  let arena = {
     gap: 50,
     w: 600,
     h: 600,
@@ -74,8 +74,13 @@ const sketch = (s) => {
     arena.h = Math.floor(wih / arena.cw) * arena.cw
   }
 
+  arena.wc = arena.w / arena.cw
+  arena.hc = arena.h / arena.cw
+
   const scoreElt = document.getElementById("score")
   const settingsElt = document.getElementById("settings")
+  const gameStatusElt = document.getElementById("gameStatus")
+  const cameraElt = document.getElementById("saveCanvas")
   const sp = document.getElementById("splash");
 
   const now = () => Date.now();
@@ -85,50 +90,51 @@ const sketch = (s) => {
 
   let prevHit = Date.now(); // Debouncing step movements
 
-  // A lot of these need to be in some "init"
-  let addedEnemiesAt = -1;
-  let availableBullets = 2;
-  let turnCount = 0;
-  let score = 0;
+  let addedEnemiesAt;
+  let availableBullets;
+  let turnCount;
+  let score;
+  let bullets;
+  let splats;
+  let enemies;
+  let walls;
+  let wallsMap;
+  let shouldTurn;
+  let thingy
+  let assigned;
 
-  let bullets = [];
-  let splats = [];
 
-  let enemies = [];
-  let walls = [];
-  let wallsMap = {};
+  const startGame = () => {
+    addedEnemiesAt = -1;
+    availableBullets = 2;
+    turnCount = 0;
+    score = 0;
 
-  let shouldTurn = false;
+    bullets = [];
+    splats = [];
 
-  let bubblePoints = []
+    enemies = [];
+    walls = [];
+    wallsMap = {};
 
-  const bubbleAt = (ix, iy) => {
-    const random = (a) => Math.random() * a //s.random;
-    const ITER = cw*cw;
-    if(bubblePoints.length == 0){
+    shouldTurn = false;
+    thingy = {
+      ix: Math.floor((Math.random() * arena.w) / cw),
+      iy: Math.floor((Math.random() * arena.h) / cw),
+      d: 0,
+      a: Math.PI / 2,
+      aiming: false,
+      aimingAnimation: 0.0
+    };
 
-      for (let i = 0; i < ITER; i++) {
-        const a = random(s.PI * 2);
-        const r = cw/2.5 * (1.0 - random(random(random(random(random(1))))));
-        bubblePoints.push({r: r, a: a})
-      }
-    }
-    s.push()
-    s.translate(ix*cw+cw/2, iy*cw+cw/2)
-    s.colorMode(s.HSB);
-    for (let i = 0; i < ITER; i++) {
-      const a = bubblePoints[i].a
-      const r = bubblePoints[i].r
-      const foo = a / (2 * s.PI);
-      let col = s.color(360 * foo, 90, 90);
-      col.setAlpha(0.05);
-      s.stroke(col);
-      s.fill(col)
-      const x = Math.cos(a) * r;
-      const y = Math.sin(a) * r;
-      s.circle(x, y, 1);
-    }
-    s.pop()
+    assigned = around(thingy);
+
+
+
+    addWalls(Math.max(arena.h / arena.cw, arena.w / arena.cw));
+    addEnemies(Math.floor(Math.sqrt((arena.w * arena.h) / (cw * cw))));
+
+    state = "play"
   }
 
   const colors = [
@@ -178,9 +184,7 @@ const sketch = (s) => {
     }
   };
 
-  addWalls(Math.max(arena.h / arena.cw, arena.w / arena.cw));
 
-  console.log(wallsMap);
 
   const drawWalls = () => {
     s.push();
@@ -217,17 +221,6 @@ const sketch = (s) => {
     return a;
   };
 
-  let thingy = {
-    ix: Math.floor((Math.random() * arena.w) / cw),
-    iy: Math.floor((Math.random() * arena.h) / cw),
-    d: 0,
-    a: Math.PI / 2,
-    aiming: false,
-    aimingAnimation: 0.2
-  };
-
-  let assigned = around(thingy);
-
   const addEnemies = (n) => {
     for(let i=0; i < Math.min(5, n); i++){
       const drum = Math.floor(Math.random()*3)
@@ -250,7 +243,6 @@ const sketch = (s) => {
         iy: iy,
         jx: cw / 20 - (Math.random() * cw) / 10,
         jy: cw / 20 - (Math.random() * cw) / 10,
-
         d: 0,
         k: "circle",
         c: colors[Math.floor(Math.random() * colors.length)], // A normalized color
@@ -264,7 +256,6 @@ const sketch = (s) => {
     addedEnemiesAt = turnCount;
   };
 
-  addEnemies(Math.floor(Math.sqrt((arena.w * arena.h) / (cw * cw))));
 
   const shoot = (x, y, a, r, n) => {
     // x, y: starting position
@@ -374,7 +365,7 @@ const sketch = (s) => {
     animateSplats();
   };
 
-  function crossedWall(ox, oy, nx, ny) {
+  const crossedWall = (ox, oy, nx, ny) => {
     const pix = Math.floor(ox / cw);
     const piy = Math.floor(oy / cw);
     const nix = Math.floor(nx / cw);
@@ -446,31 +437,29 @@ const sketch = (s) => {
     s.rotate(thingy.a);
     s.stroke(50, 50, 50);
     s.fill(50, 50, 50);
-    //s.rect(0, -cw / 10, cw / 5, cw / 3);
     s.push();
-    s.strokeWeight(cw / 10);
+    s.strokeWeight(0.1*cw);
     s.circle(cw / 10, cw / 10, 3);
     s.noFill();
     s.arc(cw / 10, cw / 10, cw / 5, cw / 2.5, (3 * s.PI) / 2, s.PI / 2);
+    s.strokeWeight(0.07*cw)
+    if(thingy.aiming  && thingy.aimingAnimation < 1){
+      thingy.aimingAnimation += 0.15
+    }
+    const t = thingy.aimingAnimation
+    s.line(0.1*cw, 0.3*cw, -0.05*cw*t, -0.1*cw*t);
     s.pop();
     // Gun
-    //if(thingy.aiming ){
     s.stroke(100, 100, 100);
     s.strokeWeight(4);
-    s.line(0, -cw / 10, -cw / 4 * thingy.aimingAnimation, -cw / 10);
-    //}
-    if(thingy.aiming  && thingy.aimingAnimation < 1){
-      thingy.aimingAnimation += thingy.aimingAnimation 
-    }
+    const d = (0.2-t*0.3)*cw
+    const e = -0.05*cw-t*0.2*cw
+    s.line(0.1*cw, -0.1*cw, e, d); 
     const transpRed = s.color(200, 50, 50, 50);
-    //line(-150, 0, -150, 10)
-    //s.noFill();
-    //s.drawingContext.setLineDash([5, 15]);
     s.pop();
     s.push();
     s.stroke(transpRed);
     s.fill(transpRed);
-
     if(thingy.aiming){
       const x =
         thingy.ix * cw +
@@ -552,7 +541,7 @@ const sketch = (s) => {
       }
     }
     if (d == "S") {
-      if (piy == arena.h - 1) {
+      if (piy == arena.hc - 1) {
         return false;
       }
       const wat = wallsMap[pix]?.[piy];
@@ -565,7 +554,7 @@ const sketch = (s) => {
       }
     }
     if (d == "E") {
-      if (pix == arena.w - 1) {
+      if (pix == arena.wc - 1) {
         return false;
       }
       const wat = wallsMap[pix]?.[piy];
@@ -647,6 +636,14 @@ const sketch = (s) => {
       const ix = thingy.ix,
         iy = thingy.iy;
       const at = lookingAtGrid(thingy);
+      if(!thingy.aiming){
+        if(!validMove(ix, iy, "N")){
+          return;
+        }
+        thingy.iy -= 1;
+        turn();
+        return;
+      }
       if (at == "U") {
         if (!validMove(ix, iy, "S")) {
           return;
@@ -674,26 +671,65 @@ const sketch = (s) => {
       turn();
     },
     "moveRight": () => {
+      const ix = thingy.ix,
+        iy = thingy.iy;
+      const at = lookingAtGrid(thingy);
+      if(!thingy.aiming){
+        if (now() - prevHit < 100) {
+          return;
+        }
+        nextPianoNote()
+        prevHit = now();
+        if(!validMove(ix, iy, "E")){
+          return;
+        }
+        thingy.ix += 1;
+        turn();
+        return;
+      }      
       thingy.a += 0.08;
       if (thingy.a > 2 * s.PI) {
         thingy.a = 0;
       }
     },
     "moveLeft": () => {
-      thingy.a -= 0.08;
+      const ix = thingy.ix,
+        iy = thingy.iy;
+      const at = lookingAtGrid(thingy);
+      if(!thingy.aiming){
+        if (now() - prevHit < 100) {
+          return;
+        }
+        nextPianoNote()
+        prevHit = now();
+        if(!validMove(ix, iy, "W")){
+          return;
+        }
+        thingy.ix -= 1;
+        turn();
+        return;
+      }        thingy.a -= 0.08;
       if (thingy.a < 0) {
         thingy.a = 2 * s.PI;
       }
     },
     "moveDown": () => {
-      nextPianoNote()
       if (now() - prevHit < 100) {
         return;
       }
+      nextPianoNote()
       prevHit = now();
       const ix = thingy.ix,
         iy = thingy.iy;
       const at = lookingAtGrid(thingy);
+      if(!thingy.aiming){
+        if(!validMove(ix, iy, "S")){
+          return;
+        }
+        thingy.iy += 1;
+        turn();
+        return;
+      }
       if (at == "U") {
         if (!validMove(ix, iy, "N")) {
           return;
@@ -750,7 +786,7 @@ const sketch = (s) => {
       shoot(x, y, thingy.a, 3, 3);
       thingy.aiming = false;
       // TODO: smooth this
-      thingy.aimingAnimation = 0.2
+      thingy.aimingAnimation = 0.0
       turn();
     },
     "reload": () => {
@@ -865,7 +901,11 @@ const sketch = (s) => {
     s.loop()
     state = "play"
     settingsElt.style.display = "block"
+    cameraElt.style.display = "block"
     scoreElt.style.display = "block"
+    cameraElt.addEventListener("click", (ev) => {
+      s.saveCanvas()
+    })
     settingsElt.addEventListener("click", (ev) => {
       hideGameElements()
       splash();
@@ -874,6 +914,7 @@ const sketch = (s) => {
 
   const hideGameElements = () => {
     settingsElt.style.display = "none"
+    cameraElt.style.display = "none"
     scoreElt.style.display = "none"
 
   }
@@ -947,6 +988,7 @@ const sketch = (s) => {
     s.createCanvas(arena.w, arena.h + arena.gap).parent(wrapper);
     s.background(200, 200, 200);
     splash()
+    startGame()
   };
 
   const turn = () => {
@@ -1005,7 +1047,11 @@ const sketch = (s) => {
       }catch(err){
         console.log(err)
       }
-      logDiv.innerText = "Game over";
+      gameStatusElt.innerText = "Game over";
+      gameStatusElt.addEventListener("click", e => {
+        gameStatus.innerText = ""
+        startGame()
+      })
       s.push()
       const cx = thingy.ix*cw+cw/2
       const cy = thingy.iy*cw+cw/2
@@ -1094,8 +1140,9 @@ const sketch = (s) => {
     s.translate(0, arena.gap)
     framecounter++
     s.background(200, 200, 200);
-
-    highlightLookingAt(thingy, s.color(50, 50, 50));
+    if(thingy.aiming){
+      highlightLookingAt(thingy, s.color(50, 50, 50));
+    }
     processSplats();
     grid();    
     drawWalls();    
@@ -1103,9 +1150,13 @@ const sketch = (s) => {
     drawThingy();
     s.push();
     s.stroke("black");
-    s.fill("black");
-    for (let i = 0; i < availableBullets; i++) {
+    s.strokeWeight(4)
+    for (let i = 0; i < 2; i++) { // Total bullets
+      s.noFill()
       s.rectMode(s.CORNERS);
+      if(i<availableBullets){
+        s.fill("black");
+      }
       s.rect(20 + i * 15, 20, 30 + i * 15, 40, 5);
     }
     s.pop();
@@ -1117,7 +1168,6 @@ const sketch = (s) => {
       assigned = available();
       const toAdd = Math.floor(turnCount / 10)
       addEnemies(Math.min(toAdd, Math.floor(arena.cw)));
-      console.log("Adding enemies");
     }
     handleControls(gameActions, keyMap, buttonMap);
     framecounter = framecounter % 25

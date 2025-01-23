@@ -18,11 +18,16 @@ div#gui {
   background: darkgrey;
 }
 
+#gameStatus {
+  width: 10em;
+  font-family: "Caviar Dreams";
+}
+
 #splash {
   transform: translate(0, -1 * var(--gap));
   background-color: var(--background);
   font-family: "Caviar Dreams";
-  font-size: 5rem;
+  font-size: calc(3rem + (100vw - 400px) / 20);
   z-index: 10;
   position: absolute;
   margin: auto;
@@ -140,6 +145,8 @@ div#gui {
   font-size: 40px;
   font-family: "bpdots";
   color: chocolate;
+  width: 6em;
+  text-align: right;
 }
 #settings {
   float: left;
