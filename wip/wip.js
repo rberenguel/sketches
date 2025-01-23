@@ -788,7 +788,7 @@ const sketch = (s) => {
     touchZoneHandler(left, "ArrowLeft")
     touchZoneHandler(right, "ArrowRight")
     touchZoneHandler(button1, "Space")
-    touchZoneHandler(button4, "KeyS")
+    touchZoneHandler(button4, "KeyX")
   }
 
   const rmap = (m) => {
