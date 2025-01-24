@@ -6,10 +6,16 @@ const controllers = [];
 const touchZoneHandler = (elt, kn) => {
   elt.addEventListener("mousedown", (ev) => {
     keys[kn] = true; // Mark the key as pressed
+    if(elt.alsoClick){
+      elt.alsoClick();
+    }
     ev.preventDefault()
   })
   elt.addEventListener("touchstart", (ev) => {
     keys[kn] = true; // Mark the key as pressed
+    if(elt.alsoClick){
+      elt.alsoClick();
+    }
     ev.preventDefault()
   })
   elt.addEventListener("mouseup", (ev) => {

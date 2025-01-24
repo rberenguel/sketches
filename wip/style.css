@@ -19,8 +19,10 @@ div#gui {
 }
 
 #gameStatus {
-  width: 10em;
+  width: 12em;
+  font-size: 70%;
   font-family: "Caviar Dreams";
+  text-align: center;
 }
 
 #splash {
@@ -67,6 +69,7 @@ div#gui {
 .control-list-wrapper > table {
   margin: auto;
   border-spacing: 1em;
+  font-size: 3vw;
 }
 
 .control-list-wrapper td,th {
@@ -103,12 +106,16 @@ div#gui {
 }
 
 .floaty-button {
-  z-index: 5;
   position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Caviar dreams";
+  font-size: calc(2rem + 2vw);
 }
 
 .transp {
-  background-color: transparent !important;
+  opacity: 0;
 }
 
 #splash-controls {
@@ -131,8 +138,7 @@ div#gui {
   width: 100%;
 }
 #left-button {
-  background-color: blue;
-  opacity: 50%;
+  background-color: rgba(0, 0, 255, 0.5);
   top: var(--gap);
   height: calc(100% - var(--gap));
   left: 0;
@@ -145,49 +151,45 @@ div#gui {
   font-size: 40px;
   font-family: "bpdots";
   color: chocolate;
-  width: 6em;
+  width: 5em;
   text-align: right;
 }
-#settings {
+#settings, #saveCanvas {
+  width: 3em;
   float: left;
-  padding-left: 1em;
+  text-align: center;
   font-size: 30px;
 }
 #right-button {
-  background-color: green;
-  opacity: 50%;
+  background-color:rgba(0, 255, 0, 0.5);
   top: var(--gap);
   height: calc(100% - var(--gap));
   right: 0;
   width: 15%;
 }
 #up-button {
-  background-color: yellow;
-  opacity: 50%;
+  background-color: rgba(255, 255, 0, 0.5);
   left: 15%;
   top: var(--gap);
   width: 70%;
   height: 25%;
 }
 #button-4 {
-  background-color: orange;
-  opacity: 50%;
+  background-color: rgba(255, 150, 0, 0.5);
   left: 15%;
   top: calc(25% + var(--gap));
   width: 35%;
   height: calc(50% - var(--gap));
 }
 #button-1 {
-  background-color: violet;
-  opacity: 50%;
+  background-color: rgba(255, 0, 150, 0.5);
   top: calc(25% + var(--gap));
   left: 50%;
   width: 35%;
   height: calc(50% - var(--gap));
 }
 #down-button {
-  background-color: brown;
-  opacity: 50%;
+  background-color: rgba(255, 150, 150, 0.5);
   top: 75%;
   left: 15%;
   width: 70%;

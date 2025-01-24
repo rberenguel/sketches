@@ -20,24 +20,27 @@
   </head>
   <body style="margin: 0">
     <div id="gamewrapper">
-      <div id="topmost-area" class="floaty-button transp">
+      <div id="topmost-area" class="floaty-button">
         <div id="settings" style="display: none;">&#x2699;&#xFE0F;</div>
         <div id="saveCanvas" style="display: none;">&#x1F4F7;</div>
         <div id="gameStatus"></div>
         <div id="score" style="display: none;">0</div>
       </div>
       <div id="mobile-controls" style="display: none;">
-        <div id="left-button" class="floaty-button transp"></div>
-        <div id="right-button" class="floaty-button transp"></div>
-        <div id="up-button" class="floaty-button transp"></div>
-        <div id="down-button" class="floaty-button transp"></div>
-        <div id="button-1" class="floaty-button transp"></div>
-        <div id="button-4" class="floaty-button transp"></div>
+        <div id="left-button" class="floaty-button transp">L</div>
+        <div id="right-button" class="floaty-button transp">R</div>
+        <div id="up-button" class="floaty-button transp">U</div>
+        <div id="down-button" class="floaty-button transp">D</div>
+        <div id="button-1" class="floaty-button transp">Shoot</div>
+        <div id="button-4" class="floaty-button transp">Reload</div>
       </div>
       <div id="splash" style="display: none;">
+        <div id="title">
         <h1 style="margin-top: 20%;"><span style="margin-left: -1em;">Shotgun</span><br/>
           <span id="p_">P</span><span id="o1_">o</span><span id="l1_">l</span><span id="l2_">l</span><span id="o2_">o</span><span id="c_">c</span><span id="k_">k</span>
         </h1>
+        <p class="play">Tap to play</p>
+        </div>
         <div id="splash-controls">
           <div id="music">&#x1F3B5;</div>
           <div id="setup-controls">&#x1F579;</div>
@@ -48,7 +51,7 @@
       </div>
       <div id="help-wrapper">
         <div id="help">
-          <p>Paint blobs have invaded the canvas, but you got your shotgun.</p>
+          <p>Paint blobs have invaded the canvas, but you have your shotgun.</p>
           <hr/>
           <p>Controls</p>
           <ul>
@@ -60,12 +63,11 @@
             <li>When aiming, rotate counterclockwise <code>left arrow</code>/<code>gamepad left arrow</code></li>
             <li>Shoot your shotgun <code>space</code>/<code>gamepad button 1</code></li>
             <li>Reload your shotgun <code>R</code>/<code>gamepad button 4</code></li>
-            <li>Stop music <code>J</code>/<code>gamepad shoulder left</code></li>
           </ul>
           <p>Reloading, shooting, and moving up or down consume a turn. Blobs will move after that,
           if a blob is close to you when it moves… you are done.</p>
           <p>Blobs will move first sideways and then up towards you. Blobs that collide with others while following you get trapped and can't move. Use walls and this knowledge to your advantage. Every 10 turns more and more blobs will be added.</p>
-          <p></p>
+          <p>You can customise the controls with the joystick-looking menu, and turn off the music with the note symbol.</p>
         </div>
       </div>
     </div>

@@ -841,8 +841,29 @@ const sketch = (s) => {
     const e = t => document.createElement(t)
     const wrapper = e("DIV")
     const desc = e("P")
-    desc.innerText = "Tap on the keys or buttons to customise them. The settings will persist."
-    wrapper.appendChild(desc)
+    desc.innerHTML = "Tap on the keys or buttons to customise them. The settings will persist in your browser's <code>LocalStorage</code>."
+    const mob = e("P")
+    mob.innerText = "There are mobile controls by tapping on the screen, click here to see them"
+    const mc = document.getElementById("mobile-controls");
+    const mobs = Array.from(mc.querySelectorAll(".transp"))
+    mob.addEventListener("click", () => {
+      mc.style.display = "block";
+      mobs.map(m => {m.classList.toggle("transp");
+        m.style.zIndex = 1001
+        m.alsoClick = () => {
+          mc.style.display = "none";
+          mobs.map(mm => {
+            mm.classList.add("transp");
+            mm.style.zIndex = "default"
+            m.alsoClick = null
+          })
+          m.alsoClick = ""
+          wrapper.style.filter = "";
+        }
+      })
+      wrapper.style.filter = "blur(5px)";
+    })
+    wrapper.append(desc, mob)
     wrapper.classList.add("control-list-wrapper")
     const table = e("TABLE")
     wrapper.appendChild(table)
@@ -920,7 +941,7 @@ const sketch = (s) => {
   }
 
   const setupSplashMenu = () => {
-    sp.querySelector("h1").addEventListener("click", () => {
+    sp.querySelector(".play").addEventListener("click", () => {
       sp.style.display = "none"
       sp.style.zIndex = -1;
       showGameElements();
@@ -1047,7 +1068,7 @@ const sketch = (s) => {
       }catch(err){
         console.log(err)
       }
-      gameStatusElt.innerText = "Game over";
+      gameStatusElt.innerHTML = "Game over &#x21BB;";
       gameStatusElt.addEventListener("click", e => {
         gameStatus.innerText = ""
         startGame()
