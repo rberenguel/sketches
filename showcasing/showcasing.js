@@ -202,6 +202,12 @@ const sketch = (s) => {
         src: "painting-s.jpg",
         name: "Painting",
       },
+      {
+        src: "lightning-s.png",
+        color: "#55555530",
+        blendMode: "multiply",
+        name: "lightning",
+      },
     ];
     for (let imageData of images) {
       let img = new Image(500, 500);

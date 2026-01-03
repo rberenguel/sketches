@@ -188,7 +188,7 @@ const sketch = (s) => {
       const my = s.map(s.mouseY, 0, H, H / 2, -H / 2);
       //targetBuffer.point(s.mouseX, s.mouseY);
       cfg.drawOn = { x: s.mouseX - W, y: H - s.mouseY };
-      skip = true
+      skip = true;
       //targetBuffer.circle(, 20);
       //s.noLoop()
       //s.loop()
@@ -233,7 +233,6 @@ const sketch = (s) => {
     }
 
     if (!cfg.drawOn && !skip) {
-        
       cfg.sh1.setUniform("u_canvas", cfg.s2);
       cfg.sh2.setUniform("u_canvas", cfg.s1);
       // In each cycle, make sure the other canvas is the input,
@@ -273,8 +272,8 @@ const sketch = (s) => {
       s.image(c, 0, 0);
       s.pop();
     }
-    if(skip){
-        skip = false
+    if (skip) {
+      skip = false;
     }
   };
 
